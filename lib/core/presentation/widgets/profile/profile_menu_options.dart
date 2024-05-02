@@ -1,6 +1,7 @@
 import 'package:bismo/app/catalog/catalog_view.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:bismo/core/constants/app_icons.dart';
+import 'package:bismo/core/helpers/login_helper.dart';
 import 'package:flutter/material.dart';
 
 import 'profile_list_tile.dart';
@@ -25,9 +26,7 @@ class ProfileMenuOptions extends StatelessWidget {
           ProfileListTile(
             title: 'Мой профиль',
             icon: AppIcons.profilePerson,
-            onTap: () {
-             
-            },
+            onTap: () {},
           ),
           const Divider(thickness: 0.1),
           ProfileListTile(
@@ -51,7 +50,9 @@ class ProfileMenuOptions extends StatelessWidget {
           ProfileListTile(
             title: 'Выйти',
             icon: AppIcons.profileLogout,
-            onTap: () {},
+            onTap: () {
+              doLogout(context);
+            },
           ),
         ],
       ),
