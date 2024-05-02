@@ -66,7 +66,7 @@ class ProductTileSquare extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '\$${data.price.toInt()}',
+                      '${data.price.toInt()}₸',
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
@@ -76,7 +76,7 @@ class ProductTileSquare extends StatelessWidget {
                       width: 4,
                     ),
                     Text(
-                      '\$${data.mainPrice}',
+                      '${data.mainPrice}₸',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             decoration: TextDecoration.lineThrough,
                           ),

@@ -1,5 +1,8 @@
 import 'package:bismo/app/catalog/catalog_controller.dart';
+import 'package:bismo/app/config_screen/config_screen_controller.dart';
 import 'package:bismo/app/home/home_controller.dart';
+import 'package:bismo/app/login/login_controller.dart';
+import 'package:bismo/app/profile/profile_controller.dart';
 import 'package:bismo/core/models/bottom_nav_bar.dart';
 import 'package:bismo/core/models/button_data.dart';
 import 'package:bismo/core/providers/theme_provider.dart';
@@ -23,7 +26,7 @@ class _RootState extends State<Root> {
   List<ButtonData>? buttonDatas = [
     ButtonData(
         page: const HomeController(),
-        icon: Icons.widgets,
+        icon: Icons.shopping_bag_outlined,
         labelRu: 'Магазин',
         labelKk: 'Магазин',
         labelEn: 'Магазин',
@@ -31,27 +34,27 @@ class _RootState extends State<Root> {
         isProtected: false),
     ButtonData(
         page: const CatalogController(),
-        icon: Icons.widgets,
+        icon: Icons.manage_search,
         labelRu: 'Каталог',
         labelKk: 'Каталог',
         labelEn: 'Каталог',
         link: '/catalog',
         isProtected: false),
     ButtonData(
-        page: const CatalogController(),
-        icon: Icons.widgets,
+        page: const LoginController(),
+        icon: Icons.shopping_cart_outlined,
         labelRu: 'Мои заказы',
         labelKk: 'Мои заказы',
         labelEn: 'Мои заказы',
-        link: '/orders',
+        link: '/login',
         isProtected: false),
     ButtonData(
-        page: const CatalogController(),
-        icon: Icons.widgets,
-        labelRu: 'Настройки',
-        labelKk: 'Настройки',
-        labelEn: 'Настройки',
-        link: '/settings',
+        page: const ProfileController(),
+        icon: Icons.perm_identity,
+        labelRu: 'Профиль',
+        labelKk: 'Профиль',
+        labelEn: 'Профиль',
+        link: '/profile',
         isProtected: false),
   ];
 

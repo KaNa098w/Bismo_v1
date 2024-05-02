@@ -3,9 +3,11 @@ import 'package:bismo/core/classes/controller_manager.dart';
 import 'package:bismo/core/classes/display_manager.dart';
 import 'package:flutter/material.dart';
 
-class CatalogController extends StatelessController {
+import 'login_view.dart';
+
+class LoginController extends StatelessController {
   final String _title = 'Home Page';
-  const CatalogController({Key? key}) : super(key: key);
+  const LoginController({Key? key}) : super(key: key);
 
   @override
   bool get auth => false;

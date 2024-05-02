@@ -14,7 +14,7 @@ class OurNewItem extends StatelessWidget {
     return Column(
       children: [
         TitleAndActionButton(
-          title: 'Our New Item',
+          title: 'Новинки',
           onTap: () {
             // Navigator.pushNamed(context, AppRoutes.newItems)
           },
