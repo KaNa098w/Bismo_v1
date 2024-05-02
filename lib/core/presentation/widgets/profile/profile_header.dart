@@ -1,8 +1,9 @@
 import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:bismo/core/presentation/widgets/network_image.dart';
 import 'package:bismo/core/presentation/widgets/profile/profile_header_options.dart';
+import 'package:bismo/core/providers/user_provider.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({
@@ -44,6 +45,10 @@ class _UserData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var userProvider = context.watch<UserProvider>();
+
+    print(userProvider.user?.storeName);
+
     return Padding(
       padding: const EdgeInsets.all(AppDefaults.padding),
       child: Row(
@@ -64,13 +69,13 @@ class _UserData extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Бека бэк',
+                userProvider.user?.storeName ?? "",
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold, color: Colors.white),
               ),
               const SizedBox(height: 8),
               Text(
-                'ID: 1540580',
+                userProvider.user?.message ?? "",
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge

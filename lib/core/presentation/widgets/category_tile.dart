@@ -30,7 +30,7 @@ class CategoryTile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(AppDefaults.padding * 1.5),
+              padding: const EdgeInsets.all(AppDefaults.padding * 1),
               decoration: BoxDecoration(
                 color: backgroundColor ?? AppColors.textInputBackground,
                 shape: BoxShape.circle,
@@ -51,8 +51,9 @@ class CategoryTile extends StatelessWidget {
               label,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w500,
+                    fontSize: 14,
                   ),
-              maxLines: 1,
+              maxLines: 2,
               textAlign: TextAlign.center,
             ),
           ],
