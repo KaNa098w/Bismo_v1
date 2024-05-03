@@ -2,7 +2,9 @@ import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/presentation/widgets/app_images.dart';
 import 'package:bismo/core/presentation/widgets/auth/auth_form.dart';
 import 'package:bismo/core/presentation/widgets/network_image.dart';
+import 'package:bismo/core/presentation/widgets/registr/registr_form.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class LoginView extends StatefulWidget {
   final String? title;
@@ -20,6 +22,7 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       body: Column(
         children: [
@@ -44,7 +47,8 @@ class _LoginViewState extends State<LoginView> {
                   color: AppColors.primary,
                 ),
           ),
-          const AuthForm()
+          const AuthForm(),
+          const RegistrForm()
         ],
       ),
     );

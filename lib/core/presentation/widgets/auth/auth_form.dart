@@ -153,15 +153,48 @@ class _AuthFormState extends State<AuthForm> {
               child: Container(
                 alignment: Alignment.center,
                 child: const Text(
-                  "Авторизация",
+                  "Войти",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
-              
+            
+             
         
             ),
           ),
+          //  const SizedBox(
+          //   height: 33),
+          // Container(
+          //   padding: const EdgeInsets.symmetric(horizontal: 30),
+          //   width: double.infinity,
+          //   height: 43,
+          //   child: OutlinedButton(
+          //     style: OutlinedButton.styleFrom(
+          //       side: const BorderSide(
+          //         color: Colors.transparent,
+          //       ),
+          //       backgroundColor: Colors.white,
+          //       foregroundColor: Colors.black,
+          //       shape: RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.circular(100.0)),
+          //     ),
+          //     onPressed: ()  {
+          //       Navigator.push(
+          //         context,
+                
+          //       );
+          //     },
+          //     child: Container(
+          //       alignment: Alignment.center,
+          //       child: const Text(
+          //         "Зарегистрироваться",
+          //         textAlign: TextAlign.center,
+          //         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          //       ),
+          //     ),
+          //   ),
+          // ),   
         ],
       ),
     );
