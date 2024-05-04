@@ -1,3 +1,5 @@
+import 'package:bismo/app/login/regist/regist_controller.dart';
+import 'package:bismo/core/classes/route_manager.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/helpers/formatters.dart';
 import 'package:bismo/core/helpers/validation.dart';
@@ -42,8 +44,9 @@ class _RegistrFormState extends State<RegistrForm> {
       autovalidateMode: _validateMode,
       child: Column(
         children: [
-          
-          
+          const SizedBox(
+            height: 33,
+          ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 30),
             width: double.infinity,
@@ -58,11 +61,10 @@ class _RegistrFormState extends State<RegistrForm> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100.0)),
               ),
-              onPressed: ()  {
-                // Navigator.push(
-                //   context,
-                
-                // );
+              onPressed: () {
+                // Navigator.pushNamed(context, "/register");
+
+                Nav.toNamed(context, "/register");
               },
               child: Container(
                 alignment: Alignment.center,
@@ -73,7 +75,7 @@ class _RegistrFormState extends State<RegistrForm> {
                 ),
               ),
             ),
-          ),   
+          ),
         ],
       ),
     );

@@ -8,14 +8,14 @@ class AlreadyHaveAnAccount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return  Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('Already Have Account?'),
-        // TextButton(
-        //   // onPressed: () => Navigator.pushNamed(context, AppRoutes.login),
-        //   // child: const Text('Log In'),
-        // ),
+        const Text('У вас есть аккаунт?'),
+        TextButton(
+          onPressed: () => Navigator.pushNamed(context, '/login'),
+          child: const Text('Войти'),
+        ),
       ],
     );
   }

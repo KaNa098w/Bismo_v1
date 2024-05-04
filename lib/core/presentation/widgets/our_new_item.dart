@@ -16,7 +16,7 @@ class OurNewItem extends StatelessWidget {
         TitleAndActionButton(
           title: 'Новинки',
           onTap: () {
-            // Navigator.pushNamed(context, AppRoutes.newItems)
+             Navigator.pushNamed(context, '/product');
           },
         ),
         SingleChildScrollView(

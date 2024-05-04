@@ -18,4 +18,12 @@ class Validators {
 
   /// Plain Required Validator
   static final required = RequiredValidator(errorText: 'Field is required');
+
+  static bool isPhoneNumberValid(String? value) {
+    // Placeholder implementation
+    // Here, you need to add your logic to validate the phone number
+    // and return true if it's valid, false otherwise
+    // For example, you might check if the value is not null and matches a certain pattern
+    return value != null && value.isNotEmpty && value.length >= 8;
+  }
 }

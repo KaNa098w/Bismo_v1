@@ -74,39 +74,7 @@ class _AuthFormState extends State<AuthForm> {
               validator: (val) {
                 return null;
               },
-              // suffixIcon: Padding(
-              //   padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-              //   child: GestureDetector(
-              //     onTap: _toggleObscured,
-              //     child: Icon(
-              //       !_obscured
-              //           ? Icons.visibility_rounded
-              //           : Icons.visibility_off_rounded,
-              //       size: 24,
-              //       color: const Color(0x702b2b2b),
-              //     ),
-              //   ),
-              // )
             ),
-          const SizedBox(
-            height: 10,
-          ),
-          // GestureDetector(
-          //   onTap: () {
-          //     Nav.toNamed(context, "/reset_password");
-          //   },
-          //   child: Container(
-          //     padding: const EdgeInsets.only(right: 30),
-          //     alignment: Alignment.topRight,
-          //     child: Text(
-          //       AppLocalizations.of(context)!.lostPassword,
-          //       style: const TextStyle(
-          //           color: Color(0xFF707B81),
-          //           fontSize: 12,
-          //           fontWeight: FontWeight.w400),
-          //     ),
-          //   ),
-          // ),
           const SizedBox(
             height: 33,
           ),
@@ -158,43 +126,8 @@ class _AuthFormState extends State<AuthForm> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
-            
-             
-        
             ),
           ),
-          //  const SizedBox(
-          //   height: 33),
-          // Container(
-          //   padding: const EdgeInsets.symmetric(horizontal: 30),
-          //   width: double.infinity,
-          //   height: 43,
-          //   child: OutlinedButton(
-          //     style: OutlinedButton.styleFrom(
-          //       side: const BorderSide(
-          //         color: Colors.transparent,
-          //       ),
-          //       backgroundColor: Colors.white,
-          //       foregroundColor: Colors.black,
-          //       shape: RoundedRectangleBorder(
-          //           borderRadius: BorderRadius.circular(100.0)),
-          //     ),
-          //     onPressed: ()  {
-          //       Navigator.push(
-          //         context,
-                
-          //       );
-          //     },
-          //     child: Container(
-          //       alignment: Alignment.center,
-          //       child: const Text(
-          //         "Зарегистрироваться",
-          //         textAlign: TextAlign.center,
-          //         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          //       ),
-          //     ),
-          //   ),
-          // ),   
         ],
       ),
     );
