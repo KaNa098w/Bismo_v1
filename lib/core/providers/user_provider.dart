@@ -4,8 +4,11 @@ import 'dart:developer';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/exceptions.dart';
 import 'package:bismo/core/helpers/login_helper.dart';
+import 'package:bismo/core/models/user/SignInOtpResponse.dart';
 import 'package:bismo/core/models/user/auth_response.dart';
+import 'package:bismo/core/models/user/get_profile_response.dart';
 import 'package:bismo/core/models/user/oauth2_token_info.dart';
+import 'package:bismo/core/models/user/register_request.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
 import 'package:bismo/core/presentation/dialogs/loader_dialog.dart';
 import 'package:bismo/core/services/auth_service.dart';
@@ -96,7 +99,8 @@ class UserProvider extends ChangeNotifier {
     _oauth2TokenInfo = null;
   }
 
-  Future<bool> getOtpForSignIn(String phoneNumber, BuildContext ctx) async {
+  Future<SignInOtpResponse?> getOtpForSignIn(
+      String phoneNumber, BuildContext ctx) async {
     showLoader(ctx);
     try {
       var res = await AuthService().getOtpForSignIn(phoneNumber);
@@ -122,16 +126,16 @@ class UserProvider extends ChangeNotifier {
             );
           }
 
-          return false;
+          return null;
         }
 
         if (ctx.mounted) {
           hideLoader(ctx);
         }
 
-        return true;
+        return res;
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       log(e.toString());
       final errorMessage = DioExceptions.fromDioError(e).toString();
       if (e.response?.statusCode == 401) {
@@ -170,10 +174,10 @@ class UserProvider extends ChangeNotifier {
         }
       }
 
-      return false;
+      return null;
     }
 
-    return false;
+    return null;
   }
 
   Future<bool> signIn(String phoneNumber, String otp, BuildContext ctx) async {
@@ -212,7 +216,169 @@ class UserProvider extends ChangeNotifier {
 
         return true;
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
+      log(e.toString());
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      if (e.response?.statusCode == 401) {
+        if (ctx.mounted) {
+          hideLoader(ctx);
+          showAlertDialog(
+            context: ctx,
+            barrierDismissible: true,
+            title: "Ошибка",
+            content: "Неправильный номер телефона или код из смс",
+            actions: <Widget>[
+              CupertinoDialogAction(
+                onPressed: () => Navigator.of(ctx).pop(),
+                textStyle: const TextStyle(color: AppColors.primaryColor),
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        }
+      } else {
+        if (ctx.mounted) {
+          hideLoader(ctx);
+          showAlertDialog(
+            context: ctx,
+            barrierDismissible: true,
+            title: "Ошибка",
+            content: errorMessage,
+            actions: <Widget>[
+              CupertinoDialogAction(
+                onPressed: () => Navigator.of(ctx).pop(),
+                textStyle: const TextStyle(color: AppColors.primaryColor),
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        }
+      }
+
+      return false;
+    }
+
+    return false;
+  }
+
+  Future<bool> signUp(RegisterRequest request, BuildContext ctx) async {
+    showLoader(ctx);
+    try {
+      var res = await AuthService().signUp(request);
+
+      if (res != null) {
+        if ((res.success ?? false) == false) {
+          if (ctx.mounted) {
+            hideLoader(ctx);
+            showAlertDialog(
+              context: ctx,
+              barrierDismissible: true,
+              title: "Ошибка",
+              content: res.message ?? "",
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  textStyle: const TextStyle(color: AppColors.primaryColor),
+                  child: const Text("OK"),
+                ),
+              ],
+            );
+          }
+
+          return false;
+        }
+
+        if (ctx.mounted) {
+          // _user = res;
+          // doAuth(ctx, res);
+          hideLoader(ctx);
+          notifyListeners();
+        }
+
+        return true;
+      }
+    } on DioException catch (e) {
+      log(e.toString());
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      if (e.response?.statusCode == 401) {
+        if (ctx.mounted) {
+          hideLoader(ctx);
+          showAlertDialog(
+            context: ctx,
+            barrierDismissible: true,
+            title: "Ошибка",
+            content: "Ошибка авторизации",
+            actions: <Widget>[
+              CupertinoDialogAction(
+                onPressed: () => Navigator.of(ctx).pop(),
+                textStyle: const TextStyle(color: AppColors.primaryColor),
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        }
+      } else {
+        if (ctx.mounted) {
+          hideLoader(ctx);
+          showAlertDialog(
+            context: ctx,
+            barrierDismissible: true,
+            title: "Ошибка",
+            content: errorMessage,
+            actions: <Widget>[
+              CupertinoDialogAction(
+                onPressed: () => Navigator.of(ctx).pop(),
+                textStyle: const TextStyle(color: AppColors.primaryColor),
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        }
+      }
+
+      return false;
+    }
+
+    return false;
+  }
+
+  Future<bool> getProfile(String phoneNumber, BuildContext ctx) async {
+    showLoader(ctx);
+    try {
+      var res = await AuthService().getProfile(phoneNumber);
+
+      if (res != null) {
+        if ((res.success ?? false) == false) {
+          if (ctx.mounted) {
+            hideLoader(ctx);
+            showAlertDialog(
+              context: ctx,
+              barrierDismissible: true,
+              title: "Ошибка",
+              content: "Не удалось получить данные о пользователе.",
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  textStyle: const TextStyle(color: AppColors.primaryColor),
+                  child: const Text("OK"),
+                ),
+              ],
+            );
+          }
+
+          return false;
+        }
+
+        if (ctx.mounted) {
+          // _user = res;
+          // doAuth(ctx, res);
+          hideLoader(ctx);
+          notifyListeners();
+        }
+
+        return true;
+      }
+    } on DioException catch (e) {
       log(e.toString());
       final errorMessage = DioExceptions.fromDioError(e).toString();
       if (e.response?.statusCode == 401) {

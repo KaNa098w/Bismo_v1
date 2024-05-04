@@ -5,12 +5,8 @@ class ApiEndpoint {
 
   static const getOtpForSignIn = '$api/smsdetail';
   static const login = '$api/login';
+  static const getProfile = '$api/getprofile';
+  static const register = '$api/autorization';
 
-  static const List<String> urlsWithoutAuthorization = [
-    "/api/product/book",
-    "/api/product/review",
-    "/api/product/category",
-    "/api/user/auth/refresh-token",
-    "/api/configuration",
-  ];
+  static const List<String> urlsWithoutAuthorization = [];
 }

@@ -1,5 +1,6 @@
 import 'package:bismo/core/helpers/login_helper.dart';
 import 'package:bismo/core/models/user/auth_response.dart';
+import 'package:bismo/core/models/user/get_profile_response.dart';
 import 'package:bismo/core/providers/global_state_manager.dart';
 import 'package:bismo/core/providers/theme_provider.dart';
 import 'package:bismo/core/providers/user_provider.dart';

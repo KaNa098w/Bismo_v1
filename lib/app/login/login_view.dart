@@ -1,8 +1,8 @@
 import 'package:bismo/core/colors.dart';
+import 'package:bismo/core/helpers/app_bar_title.dart';
 import 'package:bismo/core/presentation/widgets/app_images.dart';
 import 'package:bismo/core/presentation/widgets/auth/auth_form.dart';
 import 'package:bismo/core/presentation/widgets/network_image.dart';
-import 'package:bismo/core/presentation/widgets/registr/registr_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -22,8 +22,14 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
+      appBar: AppBar(
+        title: appBarTitle("Авторизация"),
+        elevation: 0,
+        centerTitle: true,
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
       body: Column(
         children: [
           SizedBox(
@@ -48,7 +54,6 @@ class _LoginViewState extends State<LoginView> {
                 ),
           ),
           const AuthForm(),
-          const RegistrForm()
         ],
       ),
     );

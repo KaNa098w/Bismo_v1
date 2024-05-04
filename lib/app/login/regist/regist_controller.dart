@@ -14,9 +14,6 @@ class RegistController extends StatelessController {
 
   @override
   Display view(BuildContext context) {
-    var tm = context.read<ThemeProvider>();
-    tm.setNavIndex(0);
-
     return Display(
       title: _title,
       mobile: mobile.RegistView(title: _title),

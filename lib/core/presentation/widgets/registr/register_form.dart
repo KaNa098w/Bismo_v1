@@ -3,6 +3,7 @@ import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/helpers/formatters.dart';
 import 'package:bismo/core/helpers/validation.dart';
 import 'package:bismo/core/models/user/SignInOtpResponse.dart';
+import 'package:bismo/core/models/user/register_request.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
 import 'package:bismo/core/presentation/dialogs/loader_dialog.dart';
 import 'package:bismo/core/presentation/widgets/auth/custom_text_input_field.dart';
@@ -12,18 +13,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class AuthForm extends StatefulWidget {
-  const AuthForm({
+class RegisterForm extends StatefulWidget {
+  const RegisterForm({
     super.key,
   });
 
   @override
-  State<AuthForm> createState() => _AuthFormState();
+  State<RegisterForm> createState() => _RegisterFormState();
 }
 
-class _AuthFormState extends State<AuthForm> {
+class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
   final otpFieldFocusNode = FocusNode();
   AutovalidateMode _validateMode = AutovalidateMode.disabled;
@@ -54,6 +57,40 @@ class _AuthFormState extends State<AuthForm> {
               validator: (val) {
                 if (!isPhoneNumberValid(val)) {
                   return "Неправильный формат номера";
+                }
+                return null;
+              },
+            ),
+          if (!hidePhoneNumber)
+            const SizedBox(
+              height: 11,
+            ),
+          if (!hidePhoneNumber)
+            CustomTextInputField(
+              controller: _lastnameController,
+              maxLines: 1,
+              containerLabelText: "Фамилия",
+              hintTextStr: "Введите фамилию",
+              validator: (val) {
+                if (val == "") {
+                  return "Обязательное поле";
+                }
+                return null;
+              },
+            ),
+          if (!hidePhoneNumber)
+            const SizedBox(
+              height: 11,
+            ),
+          if (!hidePhoneNumber)
+            CustomTextInputField(
+              controller: _nameController,
+              maxLines: 1,
+              containerLabelText: "Имя",
+              hintTextStr: "Введите имя",
+              validator: (val) {
+                if (val == "") {
+                  return "Обязательное поле";
                 }
                 return null;
               },
@@ -94,6 +131,8 @@ class _AuthFormState extends State<AuthForm> {
                   String phoneNumber = _phoneNumberController.text
                       .replaceAll(RegExp(r'[^0-9]'), '')
                       .substring(1);
+                  String name = _nameController.text;
+                  String lastname = _lastnameController.text;
                   String pass = _otpController.text;
 
                   var userProvider = context.read<UserProvider>();
@@ -123,49 +162,29 @@ class _AuthFormState extends State<AuthForm> {
                       await userProvider.signIn(phoneNumber, pass, context);
                     }
                   } else {
-                    SignInOtpResponse? result = await userProvider
-                        .getOtpForSignIn(phoneNumber, context);
+                    RegisterRequest request = RegisterRequest(
+                      name: name,
+                      lastName: lastname,
+                      login: phoneNumber,
+                      nameStore: name,
+                      typeStore: "1",
+                    );
+                    var singUpResult =
+                        await userProvider.signUp(request, context);
 
-                    if (result != null) {
-                      setState(() {
-                        hidePhoneNumber = true;
-                        getOtpRes = result;
-                      });
+                    if (singUpResult) {
+                      SignInOtpResponse? result = await userProvider
+                          .getOtpForSignIn(phoneNumber, context);
+
+                      if (result != null) {
+                        setState(() {
+                          hidePhoneNumber = true;
+                          getOtpRes = result;
+                        });
+                      }
                     }
                   }
                 }
-              },
-              child: Container(
-                alignment: Alignment.center,
-                child: const Text(
-                  "Войти",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 33,
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            width: double.infinity,
-            height: 43,
-            child: OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(
-                  color: Colors.transparent,
-                ),
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100.0)),
-              ),
-              onPressed: () {
-                // Navigator.pushNamed(context, "/register");
-
-                Nav.toNamed(context, "/register");
               },
               child: Container(
                 alignment: Alignment.center,
