@@ -1,17 +1,38 @@
+import 'dart:convert';
+import 'dart:developer';
+import 'package:bismo/core/api_endpoints.dart';
+import 'package:bismo/core/app_http.dart';
+import 'package:bismo/core/colors.dart';
+import 'package:bismo/core/models/user/SignInOtpResponse.dart';
+import 'package:bismo/core/models/user/auth_response.dart';
+import 'package:bismo/core/models/user/get_profile_response.dart';
+import 'package:bismo/core/models/user/register_request.dart';
+import 'package:bismo/core/models/user/register_response.dart';
+import 'package:bismo/core/services/catalog_service.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:bismo/core/presentation/widgets/category_tile.dart'; // Импортируйте ваш виджет CategoryTile здесь
+import 'package:bismo/core/presentation/widgets/category_tile.dart';
 
-class CatologView extends StatefulWidget {
+/* 
+// Example Usage
+Map<String, dynamic> map = jsonDecode(<myJSONString>);
+var myRootNode = Root.fromJson(map);
+*/
+
+// Импортируйте ваш виджет CategoryTile здесь
+
+class CatalogView extends StatefulWidget {
   final String? title;
-  const CatologView({Key? key, this.title}) : super(key: key);
+  const CatalogView({Key? key, this.title}) : super(key: key);
 
   @override
-  State<CatologView> createState() => _CatologViewState();
+  State<CatalogView> createState() => _CatalogViewState();
 }
 
-class _CatologViewState extends State<CatologView> {
+class _CatalogViewState extends State<CatalogView> {
   late GlobalKey<NavigatorState> navigatorKey;
-  
+
   List<Map<String, dynamic>> categories = [
     {
       "imageLink": 'https://cdn-icons-png.flaticon.com/512/1198/1198284.png',
@@ -63,7 +84,22 @@ class _CatologViewState extends State<CatologView> {
   @override
   void initState() {
     super.initState();
-    navigatorKey = GlobalKey<NavigatorState>();
+    getCategories();
+  }
+
+  Future<CatalogResponse?> getCategories() async {
+    try {
+      var res = await CatalogService().getCategories('');
+
+      print(res?.toJson());
+
+      return res;
+    } on DioException catch (e) {
+      log(e.toString());
+
+      return null;
+    }
+
   }
 
   @override
@@ -78,7 +114,7 @@ class _CatologViewState extends State<CatologView> {
             onTap: () {
               switch (index) {
                 case 0:
-                   Navigator.pushNamed(context, '/item');
+                  Navigator.pushNamed(context, '/item');
                   break;
                 case 1:
                   // Действие для второй категории (Мясо и рыба)

@@ -55,7 +55,7 @@ class _GoodsViewState extends State<GoodsView> {
       if (decodedResponse['success'] == 'true') {
         final List<dynamic> goods = decodedResponse['goods'];
         products = goods.map((item) => Product.fromJson(item)).toList();
-        // Вызываем setState, чтобы обновить состояние и перерисовать ListView.builder
+       
         setState(() {});
       }
     }
@@ -76,7 +76,7 @@ class _GoodsViewState extends State<GoodsView> {
             subtitle: Text('Цена: ${product.price}'),
             leading: Image.network(product.photoUrl),
             onTap: () {
-              // Действие при нажатии на элемент списка
+             
             },
           );
         },

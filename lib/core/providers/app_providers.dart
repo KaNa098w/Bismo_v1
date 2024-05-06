@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 Future<List<SingleChildWidget>> getAppProviders() async {
-  AuthResponse? authResponse = await authData();
+  CategoryResponse? authResponse = await authData();
 
   return [
     ChangeNotifierProvider<ThemeProvider>(

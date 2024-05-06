@@ -14,8 +14,7 @@ class GoodsController extends StatelessController {
 
   @override
   Display view(BuildContext context) {
-    var tm = context.read<ThemeProvider>();
-    tm.setNavIndex(0);
+   
 
     return Display(
       title: _title,

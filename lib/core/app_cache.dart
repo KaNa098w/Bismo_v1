@@ -8,7 +8,7 @@ import 'package:bismo/core/models/user/user_info.dart';
 class AppCache {
   Map<String, String>? udata;
 
-  void doLogin(AuthResponse response) {
+  void doLogin(CategoryResponse response) {
     // Cache.saveData('auth_data', response.toJson());
 
     // Map<String, dynamic> data = response.toJson();
@@ -16,11 +16,11 @@ class AppCache {
     Cache.saveData('auth_data', jsonEncode(response.toJson()));
   }
 
-  Future<AuthResponse?> auth() async {
+  Future<CategoryResponse?> auth() async {
     var data = await Cache.readData('auth_data');
     if (data == null) return null;
 
-    AuthResponse authResponse = AuthResponse.fromJson(jsonDecode(data));
+    CategoryResponse authResponse = CategoryResponse.fromJson(jsonDecode(data));
 
     return authResponse;
 
