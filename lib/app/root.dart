@@ -109,7 +109,7 @@ class _RootState extends State<Root> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF00C3DC),
+        selectedItemColor: const Color.fromARGB(255, 7, 77, 182),
         unselectedItemColor: const Color(0xFF999999),
         currentIndex: index,
         onTap: (val) => _selectPage(val, context),

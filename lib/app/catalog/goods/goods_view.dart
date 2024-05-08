@@ -1,63 +1,56 @@
-import 'dart:convert';
+import 'dart:developer';
+import 'package:bismo/core/colors.dart';
+import 'package:bismo/core/helpers/app_bar_back.dart';
+import 'package:bismo/core/helpers/app_bar_title.dart';
+import 'package:bismo/core/models/catalog/category.dart';
+import 'package:bismo/core/presentation/widgets/category_tile.dart';
+import 'package:bismo/core/presentation/widgets/custom_empty_widget.dart';
+import 'package:bismo/core/presentation/widgets/custom_error_widget.dart';
+import 'package:bismo/core/services/catalog_service.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-
-class Product {
-  final String name;
-  final String code;
-  final int count;
-  final int price;
-  final String producer;
-  final String photoUrl;
-
-  Product({
-    required this.name,
-    required this.code,
-    required this.count,
-    required this.price,
-    required this.producer,
-    required this.photoUrl,
-  });
-
-  factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
-      name: json['nomenklatura'],
-      code: json['nomenklatura_kod'],
-      count: json['count'],
-      price: json['price'],
-      producer: json['producer'],
-      photoUrl: json['photo'],
-    );
-  }
-}
 
 class GoodsView extends StatefulWidget {
   final String? title;
-  final String? responseFromPostman;
-
-  const GoodsView({Key? key, this.title, this.responseFromPostman}) : super(key: key);
+  final String? catId;
+  const GoodsView({Key? key, this.title, this.catId}) : super(key: key);
 
   @override
-  _GoodsViewState createState() => _GoodsViewState();
+  State<GoodsView> createState() => _GoodsViewState();
 }
 
 class _GoodsViewState extends State<GoodsView> {
-  List<Product> products = [];
+  late GlobalKey<NavigatorState> navigatorKey;
+
+  CategoryResponse? categoryResponse;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _parseResponse(widget.responseFromPostman);
+    getCategories(widget.catId ?? "");
   }
 
-  void _parseResponse(String? response) {
-    if (response != null && response.isNotEmpty) {
-      final decodedResponse = json.decode(response);
-      if (decodedResponse['success'] == 'true') {
-        final List<dynamic> goods = decodedResponse['goods'];
-        products = goods.map((item) => Product.fromJson(item)).toList();
-       
-        setState(() {});
-      }
+  Future<CategoryResponse?> getCategories(String catId) async {
+    try {
+      var res = await CatalogService().getCategories(catId);
+
+      // log(res?.toJson().toString() ?? "");
+
+      setState(() {
+        categoryResponse = res;
+        isLoading = false;
+      });
+
+      return res;
+    } on DioException catch (e) {
+      log(e.toString());
+
+      setState(() {
+        isLoading = false;
+      });
+
+      return null;
     }
   }
 
@@ -65,22 +58,41 @@ class _GoodsViewState extends State<GoodsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title ?? 'Продукты и питания'),
+        title: appBarTitle(widget.title ?? ""),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: appBarBack(context),
       ),
-      body: ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          final product = products[index];
-          return ListTile(
-            title: Text(product.name),
-            subtitle: Text('Цена: ${product.price}'),
-            leading: Image.network(product.photoUrl),
-            onTap: () {
-             
-            },
-          );
-        },
-      ),
+      body: !isLoading
+          ? categoryResponse != null
+              ? Container(
+                  child: (categoryResponse?.body ?? []).isNotEmpty
+                      ? GridView.count(
+                          crossAxisCount: 3,
+                          children: List.generate(
+                              ((categoryResponse?.body) ?? []).length, (index) {
+                            return CategoryTile(
+                              imageLink:
+                                  categoryResponse?.body?[index].photo ?? "",
+                              label:
+                                  categoryResponse?.body?[index].catName ?? "",
+                              onTap: () {},
+                            );
+                          }),
+                        )
+                      : const CustomEmpty())
+              : const SizedBox(child: CustomErrorWidget())
+          : const Center(
+              child: SizedBox(
+                height: 50.0,
+                width: 50.0,
+                child: Center(
+                    child: CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                )),
+              ),
+            ),
     );
   }
 }

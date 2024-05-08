@@ -5,7 +5,7 @@ import 'package:bismo/core/classes/route_manager.dart';
 class Catalog extends RouteManager {
   static const String name = '';
   static const String catalog = '${Catalog.name}/catalog';
-  static const String goods = '${Catalog.name}/catalog';
+  static const String goods = '${Catalog.name}/goods';
 
   Catalog() {
     addRoute(Catalog.catalog, (context) => const CatalogController());
