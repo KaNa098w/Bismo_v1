@@ -44,8 +44,12 @@ class HttpManager {
       if (ApiEndpoint.urlsWithoutAuthorization.contains(options.uri.path)) {
         return handler.next(options);
       } else {
-        options.headers.putIfAbsent(
-            'Authorization', () => 'Basic d2ViOjc3NTc0OTk0NTFkbA==');
+        // options.headers.putIfAbsent(
+        //     'Authorization', () => 'Basic d2ViOjc3NTc0OTk0NTFkbA==');
+        String username = 'web';
+        String password = '7757499451dl';
+        options.headers.putIfAbsent('Authorization',
+            () => 'Basic ${base64.encode(utf8.encode('$username:$password'))}');
         return handler.next(options);
       }
       // }
@@ -54,7 +58,7 @@ class HttpManager {
       // return handler.next(options);
     }, onResponse: (response, handler) {
       handler.next(response);
-    }, onError: (DioError err, handler) async {
+    }, onError: (DioException err, handler) async {
       if (err.response != null) {
         handler.reject(err);
       } else {

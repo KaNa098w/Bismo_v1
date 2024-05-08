@@ -27,13 +27,13 @@ class UserProvider extends ChangeNotifier {
   bool get isButtonDisabled => _isButtonDisabled;
   Timer? _timer;
 
-  CategoryResponse? _user;
-  CategoryResponse? get user => _user;
+  AuthResponse? _user;
+  AuthResponse? get user => _user;
 
   late Oauth2TokenInfo? _oauth2TokenInfo;
   Oauth2TokenInfo? get oauth2TokenInfo => _oauth2TokenInfo;
 
-  UserProvider(CategoryResponse? authResponse) {
+  UserProvider(AuthResponse? authResponse) {
     if (authResponse == null) return;
     _user = authResponse;
   }
@@ -59,7 +59,7 @@ class UserProvider extends ChangeNotifier {
   //   notifyListeners();
   // }
 
-  void setInitData(CategoryResponse? data) {
+  void setInitData(AuthResponse? data) {
     _user = data;
     notifyListeners();
   }
@@ -99,13 +99,13 @@ class UserProvider extends ChangeNotifier {
     _oauth2TokenInfo = null;
   }
 
-  Future<CatalogResponse?> getOtpForSignIn(
+  Future<SingInOtpResponse?> getOtpForSignIn(
       String phoneNumber, BuildContext ctx) async {
     showLoader(ctx);
     try {
       var res = await AuthService().getOtpForSignIn(phoneNumber);
 
-      print(res?.toJson());
+      // print(res?.toJson());
 
       if (res != null) {
         if ((res.success ?? false) == false) {

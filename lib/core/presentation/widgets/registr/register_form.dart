@@ -31,7 +31,7 @@ class _RegisterFormState extends State<RegisterForm> {
   final otpFieldFocusNode = FocusNode();
   AutovalidateMode _validateMode = AutovalidateMode.disabled;
   bool hidePhoneNumber = false;
-  CatalogResponse? getOtpRes;
+  SingInOtpResponse? getOtpRes;
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +173,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         await userProvider.signUp(request, context);
 
                     if (singUpResult) {
-                      CatalogResponse? result = await userProvider
+                      SingInOtpResponse? result = await userProvider
                           .getOtpForSignIn(phoneNumber, context);
 
                       if (result != null) {

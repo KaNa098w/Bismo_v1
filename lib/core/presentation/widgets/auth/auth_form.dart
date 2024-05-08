@@ -28,7 +28,7 @@ class _AuthFormState extends State<AuthForm> {
   final otpFieldFocusNode = FocusNode();
   AutovalidateMode _validateMode = AutovalidateMode.disabled;
   bool hidePhoneNumber = false;
-  CatalogResponse? getOtpRes;
+  SingInOtpResponse? getOtpRes;
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +123,7 @@ class _AuthFormState extends State<AuthForm> {
                       await userProvider.signIn(phoneNumber, pass, context);
                     }
                   } else {
-                    CatalogResponse? result = await userProvider
+                    SingInOtpResponse? result = await userProvider
                         .getOtpForSignIn(phoneNumber, context);
 
                     if (result != null) {

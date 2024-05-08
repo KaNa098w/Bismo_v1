@@ -1,14 +1,14 @@
-class CategoryResponse {
+class AuthResponse {
   String? success;
   String? message;
   String? userName;
   String? storeName;
   String? type;
 
-  CategoryResponse(
+  AuthResponse(
       {this.success, this.message, this.userName, this.storeName, this.type});
 
-  CategoryResponse.fromJson(Map<String, dynamic> json) {
+  AuthResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
     userName = json['user_name'];

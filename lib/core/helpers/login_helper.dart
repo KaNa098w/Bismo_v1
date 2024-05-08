@@ -5,7 +5,7 @@ import 'package:bismo/core/models/user/get_profile_response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-void doAuth(BuildContext context, CategoryResponse authData) async {
+void doAuth(BuildContext context, AuthResponse authData) async {
   AppCache ac = AppCache();
   ac.doLogin(authData);
   if (await ac.isLogin()) {
@@ -15,7 +15,7 @@ void doAuth(BuildContext context, CategoryResponse authData) async {
   }
 }
 
-Future<CategoryResponse?> authData() async {
+Future<AuthResponse?> authData() async {
   AppCache ac = AppCache();
   return ac.auth();
 }

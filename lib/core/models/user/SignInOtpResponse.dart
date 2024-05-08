@@ -1,11 +1,11 @@
-class CatalogResponse {
+class SingInOtpResponse {
   String? success;
   String? dateLoading;
   String? smsPw;
 
-  CatalogResponse({this.success, this.dateLoading, this.smsPw});
+  SingInOtpResponse({this.success, this.dateLoading, this.smsPw});
 
-  CatalogResponse.fromJson(Map<String, dynamic> json) {
+  SingInOtpResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     dateLoading = json['date_loading'];
     smsPw = json['sms_pw'];

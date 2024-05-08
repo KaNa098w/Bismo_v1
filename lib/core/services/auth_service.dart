@@ -14,13 +14,13 @@ class AuthService {
     headers: {},
   );
 
-  Future<CatalogResponse?> getOtpForSignIn(String phoneNumber) async {
+  Future<SingInOtpResponse?> getOtpForSignIn(String phoneNumber) async {
     try {
       Response res = await _http.get(ApiEndpoint.getOtpForSignIn,
           params: {"phone_number": phoneNumber});
 
       if (res.statusCode == 200 || res.statusCode == 201) {
-        CatalogResponse response = CatalogResponse.fromJson(res.data);
+        SingInOtpResponse response = SingInOtpResponse.fromJson(res.data);
         return response;
       }
     } catch (e) {
@@ -45,9 +45,9 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        print(json.encode(response.data));
+        // print(json.encode(response.data));
       } else {
-        print(response.statusMessage);
+        // print(response.statusMessage);
       }
 
       Options options = Options(headers: {'User': phoneNumber});
@@ -64,7 +64,7 @@ class AuthService {
     return null;
   }
 
-  Future<CategoryResponse?> signIn(String phoneNumber, String otp) async {
+  Future<AuthResponse?> signIn(String phoneNumber, String otp) async {
     try {
       Map<String, dynamic> data = {
         'login': phoneNumber,
@@ -77,7 +77,7 @@ class AuthService {
       );
 
       if (res.statusCode == 200 || res.statusCode == 201) {
-        CategoryResponse response = CategoryResponse.fromJson(res.data);
+        AuthResponse response = AuthResponse.fromJson(res.data);
         return response;
       }
     } catch (e) {

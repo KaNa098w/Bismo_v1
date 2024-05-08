@@ -1,16 +1,8 @@
-import 'dart:convert';
 import 'dart:developer';
-import 'package:bismo/core/api_endpoints.dart';
-import 'package:bismo/core/app_http.dart';
-import 'package:bismo/core/colors.dart';
-import 'package:bismo/core/models/user/SignInOtpResponse.dart';
+import 'package:bismo/core/models/catalog/category.dart';
 import 'package:bismo/core/models/user/auth_response.dart';
-import 'package:bismo/core/models/user/get_profile_response.dart';
-import 'package:bismo/core/models/user/register_request.dart';
-import 'package:bismo/core/models/user/register_response.dart';
 import 'package:bismo/core/services/catalog_service.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bismo/core/presentation/widgets/category_tile.dart';
 
@@ -87,11 +79,12 @@ class _CatalogViewState extends State<CatalogView> {
     getCategories();
   }
 
-  Future<CatalogResponse?> getCategories() async {
+  Future<CategoryResponse?> getCategories() async {
     try {
       var res = await CatalogService().getCategories('');
 
-      print(res?.toJson());
+      log("HERE");
+      log(res?.toJson().toString() ?? "");
 
       return res;
     } on DioException catch (e) {
@@ -99,7 +92,6 @@ class _CatalogViewState extends State<CatalogView> {
 
       return null;
     }
-
   }
 
   @override
