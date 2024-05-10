@@ -1,11 +1,11 @@
-class CategoryResponse {
+class GoodsResponse {
   String? success;
   String? dateLoading;
   List<Body>? body;
 
-  CategoryResponse({this.success, this.dateLoading, this.body});
+  GoodsResponse({this.success, this.dateLoading, this.body});
 
-  CategoryResponse.fromJson(Map<String, dynamic> json) {
+  GoodsResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     dateLoading = json['date_loading'];
     if (json['body'] != null) {

@@ -3,10 +3,12 @@ import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/helpers/app_bar_back.dart';
 import 'package:bismo/core/helpers/app_bar_title.dart';
 import 'package:bismo/core/models/catalog/category.dart';
+import 'package:bismo/core/models/catalog/goods.dart';
 import 'package:bismo/core/presentation/widgets/category_tile.dart';
 import 'package:bismo/core/presentation/widgets/custom_empty_widget.dart';
 import 'package:bismo/core/presentation/widgets/custom_error_widget.dart';
 import 'package:bismo/core/services/catalog_service.dart';
+import 'package:bismo/core/services/goods_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -31,9 +33,9 @@ class _GoodsViewState extends State<GoodsView> {
     getCategories(widget.catId ?? "");
   }
 
-  Future<CategoryResponse?> getCategories(String catId) async {
+  Future<GoodsResponse?> getCategories(String catId) async {
     try {
-      var res = await CatalogService().getCategories(catId);
+      var res = await GoodsSerVice().getCategories(catId);
 
       // log(res?.toJson().toString() ?? "");
 

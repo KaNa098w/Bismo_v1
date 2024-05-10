@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/exceptions.dart';
 import 'package:bismo/core/helpers/login_helper.dart';
 import 'package:bismo/core/models/user/SignInOtpResponse.dart';
 import 'package:bismo/core/models/user/auth_response.dart';
-import 'package:bismo/core/models/user/get_profile_response.dart';
 import 'package:bismo/core/models/user/oauth2_token_info.dart';
 import 'package:bismo/core/models/user/register_request.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';

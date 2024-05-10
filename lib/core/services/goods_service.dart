@@ -1,9 +1,9 @@
 import 'package:bismo/core/api_endpoints.dart';
 import 'package:bismo/core/app_http.dart';
-import 'package:bismo/core/models/catalog/category.dart';
+import 'package:bismo/core/models/catalog/goods.dart';
 import 'package:dio/dio.dart';
 
-class CatalogService {
+class GoodsSerVice {
   final AppHttp _http = AppHttp(
     baseUrl: ApiEndpoint.baseUrl,
     headers: {},

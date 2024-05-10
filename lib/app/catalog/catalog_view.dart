@@ -20,7 +20,7 @@ class CatalogView extends StatefulWidget {
 class _CatalogViewState extends State<CatalogView> {
   late GlobalKey<NavigatorState> navigatorKey;
 
-  CategoryResponse? categoryResponse;
+  GoodsResponse? categoryResponse;
   bool isLoading = true;
 
   @override
@@ -29,7 +29,7 @@ class _CatalogViewState extends State<CatalogView> {
     getCategories();
   }
 
-  Future<CategoryResponse?> getCategories() async {
+  Future<GoodsResponse?> getCategories() async {
     try {
       var res = await CatalogService().getCategories('');
 

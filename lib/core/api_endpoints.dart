@@ -8,6 +8,7 @@ class ApiEndpoint {
   static const login = '$api/login';
   static const getProfile = '$api/getprofile';
   static const register = '$api/autorization';
+  static const getGoods = '$api/product/getfullprice';
 
   static const List<String> urlsWithoutAuthorization = [];
 }

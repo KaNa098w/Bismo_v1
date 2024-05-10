@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AppDefaults {
-  static const double radius = 1;
-  static const double margin = 15;
-  static const double padding = 15;
+  static const double radius = 12;
+  static const double margin = 12;
+  static const double padding = 10;
 
   /// Used For Border Radius
   static BorderRadius borderRadius = BorderRadius.circular(radius);
