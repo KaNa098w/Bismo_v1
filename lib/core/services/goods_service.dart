@@ -9,9 +9,9 @@ class GoodsSerVice {
     headers: {},
   );
 
-  Future<GoodsResponse?> getCategories(String catId) async {
+  Future<GoodsResponse?> getGoods(String catId) async {
     try {
-      Response res = await _http.get(ApiEndpoint.getCategories, params: {
+      Response res = await _http.get(ApiEndpoint.getGoods, params: {
         "User": '7757499452',
         'provider': '7757499451',
         "cat_id": catId

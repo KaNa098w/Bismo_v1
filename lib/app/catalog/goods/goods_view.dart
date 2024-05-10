@@ -24,23 +24,23 @@ class GoodsView extends StatefulWidget {
 class _GoodsViewState extends State<GoodsView> {
   late GlobalKey<NavigatorState> navigatorKey;
 
-  CategoryResponse? categoryResponse;
+  GoodsResponse? goodsResponse;
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    getCategories(widget.catId ?? "");
+    getGoods(widget.catId ?? "");
   }
 
-  Future<GoodsResponse?> getCategories(String catId) async {
+  Future<GoodsResponse?> getGoods(String catId) async {
     try {
-      var res = await GoodsSerVice().getCategories(catId);
+      var res = await GoodsSerVice().getGoods(catId);
 
       // log(res?.toJson().toString() ?? "");
 
       setState(() {
-        categoryResponse = res;
+        goodsResponse = res;
         isLoading = false;
       });
 
@@ -67,32 +67,45 @@ class _GoodsViewState extends State<GoodsView> {
         leading: appBarBack(context),
       ),
       body: !isLoading
-          ? categoryResponse != null
+          ? goodsResponse != null
               ? Container(
-                  child: (categoryResponse?.body ?? []).isNotEmpty
-                      ? GridView.count(
-                          crossAxisCount: 3,
-                          children: List.generate(
-                              ((categoryResponse?.body) ?? []).length, (index) {
-                            return CategoryTile(
-                              imageLink:
-                                  categoryResponse?.body?[index].photo ?? "",
-                              label:
-                                  categoryResponse?.body?[index].catName ?? "",
-                              onTap: () {},
-                            );
-                          }),
-                        )
-                      : const CustomEmpty())
-              : const SizedBox(child: CustomErrorWidget())
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListView.builder(
+                    itemCount: goodsResponse!.goods!.length,
+                    itemBuilder: (context, index) {
+                      Goods goods = goodsResponse!.goods![index];
+                      return ListTile(
+                        title: Text(goods.nomenklatura ?? ''),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Цена: ${goods.price.toString()}'),
+                            Text('Количество: ${goods.count.toString()}'),
+                            Text(
+                                'Производитель: ${goods.producer ?? "Неизвестно"}'),
+                            Text(
+                                'Контрагент: ${goods.kontragent ?? "Неизвестно"}'),
+                            Text('Шаг: ${goods.step ?? "Не указан"}'),
+                            Text(
+                                'Новый продукт: ${goods.newProduct == 1 ? "Да" : "Нет"}'),
+                            Text(
+                                'Старая цена: ${goods.oldPrice ?? "Не указана"}'),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                )
+              : const CustomEmpty()
           : const Center(
               child: SizedBox(
                 height: 50.0,
                 width: 50.0,
                 child: Center(
-                    child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
-                )),
+                  child: CircularProgressIndicator(
+                    color: AppColors.primaryColor,
+                  ),
+                ),
               ),
             ),
     );

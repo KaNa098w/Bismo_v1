@@ -9,7 +9,7 @@ class CatalogService {
     headers: {},
   );
 
-  Future<GoodsResponse?> getCategories(String catId) async {
+  Future<CategoryResponse?> getCategories(String catId) async {
     try {
       Response res = await _http.get(ApiEndpoint.getCategories, params: {
         "User": '7757499452',
@@ -18,7 +18,7 @@ class CatalogService {
       });
 
       if (res.statusCode == 200 || res.statusCode == 201) {
-        GoodsResponse response = GoodsResponse.fromJson(res.data);
+        CategoryResponse response = CategoryResponse.fromJson(res.data);
         return response;
       }
     } catch (e) {
