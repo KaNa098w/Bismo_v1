@@ -71,35 +71,36 @@ class _GoodsViewState extends State<GoodsView> {
           ? goodsResponse != null
               ? Container(
                   padding: const EdgeInsets.all(8.0),
-                  child: ListView.builder(
-                    itemCount: goodsResponse!.goods!.length,
-                    itemBuilder: (context, index) {
-                      Goods goods = goodsResponse!.goods![index];
-                      return Card(
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(goods.photo ??
-                                ""), // Используйте ссылку на фото товара, если доступно
-                          ),
-                          title: Text(goods.nomenklatura ?? ''),
-                          subtitle: Text('Цена: ${goods.price.toString()}'),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.add_shopping_cart),
-                            onPressed: () {
-                              // cart.addToCart(productId: goods.id, unitPrice: goods.price, quantity: 1);
-                            },
-                          ),
-                          onTap: () {
-                            // Подробная информация о товаре или действия с товаром
+                  child: (goodsResponse?.goods ?? []).isNotEmpty
+                      ? ListView.builder(
+                          itemCount: goodsResponse!.goods!.length,
+                          itemBuilder: (context, index) {
+                            Goods goods = goodsResponse!.goods![index];
+                            return Card(
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage: NetworkImage(goods.photo ??
+                                      ""), // Используйте ссылку на фото товара, если доступно
+                                ),
+                                title: Text(goods.nomenklatura ?? ''),
+                                subtitle:
+                                    Text('Цена: ${goods.price.toString()}'),
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.add_shopping_cart),
+                                  onPressed: () {
+                                    // cart.addToCart(productId: goods.id, unitPrice: goods.price, quantity: 1);
+                                  },
+                                ),
+                                onTap: () {
+                                  // Подробная информация о товаре или действия с товаром
+                                },
+                              ),
+                            );
                           },
-                        ),
-                      );
-                    },
-                  ),
+                        )
+                      : const CustomEmpty(),
                 )
-              : const Center(
-                  child: Text('Нет товаров'),
-                )
+              : const CustomEmpty()
           : const Center(
               child: CircularProgressIndicator(
                 color: AppColors.primaryColor,
