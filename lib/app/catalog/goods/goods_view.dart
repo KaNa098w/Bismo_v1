@@ -78,8 +78,7 @@ class _GoodsViewState extends State<GoodsView> {
                       return Card(
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundImage: NetworkImage(goods.photo ??
-                                ""), // Используйте ссылку на фото товара, если доступно
+                            backgroundImage: NetworkImage(goods.photo ?? ''),
                           ),
                           title: Text(goods.nomenklatura ?? ''),
                           subtitle: Text('Цена: ${goods.price.toString()}'),
