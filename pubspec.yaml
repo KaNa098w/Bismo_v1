@@ -42,6 +42,7 @@ dependencies:
   dio: ^5.4.3+1
   shared_preferences: ^2.2.3
   form_field_validator: ^1.1.0
+  flutter_cart: ^0.0.9
 
 dev_dependencies:
   flutter_test:

@@ -10,7 +10,7 @@ class CategoryTile extends StatelessWidget {
     required this.label,
     this.backgroundColor,
     required this.onTap,
-    this.iconSize = 44,
+    this.iconSize = 65,
   }) : super(key: key);
 
   final String imageLink;

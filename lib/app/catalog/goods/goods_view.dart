@@ -11,6 +11,7 @@ import 'package:bismo/core/services/catalog_service.dart';
 import 'package:bismo/core/services/goods_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cart/flutter_cart.dart';
 
 class GoodsView extends StatefulWidget {
   final String? title;
@@ -60,7 +61,7 @@ class _GoodsViewState extends State<GoodsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: appBarTitle(widget.title ?? ""),
+        title: appBarTitle(widget.title ?? "Товары"),
         elevation: 0,
         scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
@@ -74,40 +75,43 @@ class _GoodsViewState extends State<GoodsView> {
                     itemCount: goodsResponse!.goods!.length,
                     itemBuilder: (context, index) {
                       Goods goods = goodsResponse!.goods![index];
-                      return ListTile(
-                        title: Text(goods.nomenklatura ?? ''),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Цена: ${goods.price.toString()}'),
-                            Text('Количество: ${goods.count.toString()}'),
-                            Text(
-                                'Производитель: ${goods.producer ?? "Неизвестно"}'),
-                            Text(
-                                'Контрагент: ${goods.kontragent ?? "Неизвестно"}'),
-                            Text('Шаг: ${goods.step ?? "Не указан"}'),
-                            Text(
-                                'Новый продукт: ${goods.newProduct == 1 ? "Да" : "Нет"}'),
-                            Text(
-                                'Старая цена: ${goods.oldPrice ?? "Не указана"}'),
-                          ],
+                      return Card(
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: NetworkImage(goods.photo ??
+                                ""), // Используйте ссылку на фото товара, если доступно
+                          ),
+                          title: Text(goods.nomenklatura ?? ''),
+                          subtitle: Text('Цена: ${goods.price.toString()}'),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.add_shopping_cart),
+                            onPressed: () {
+                              // cart.addToCart(productId: goods.id, unitPrice: goods.price, quantity: 1);
+                            },
+                          ),
+                          onTap: () {
+                            // Подробная информация о товаре или действия с товаром
+                          },
                         ),
                       );
                     },
                   ),
                 )
-              : const CustomEmpty()
+              : const Center(
+                  child: Text('Нет товаров'),
+                )
           : const Center(
-              child: SizedBox(
-                height: 50.0,
-                width: 50.0,
-                child: Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                ),
+              child: CircularProgressIndicator(
+                color: AppColors.primaryColor,
               ),
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/cart'); // Переход к странице корзины
+        },
+        backgroundColor: AppColors.primaryColor,
+        child: const Icon(Icons.shopping_cart),
+      ),
     );
   }
 }

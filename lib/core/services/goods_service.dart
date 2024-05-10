@@ -13,8 +13,8 @@ class GoodsSerVice {
     try {
       Response res = await _http.get(ApiEndpoint.getGoods, params: {
         "User": '7757499452',
-        'provider': '7757499451',
-        "cat_id": catId
+        "cat_id": catId,
+        'login_provider': '7757499451'
       });
 
       if (res.statusCode == 200 || res.statusCode == 201) {
