@@ -19,7 +19,7 @@ class GoodsResponse {
   GoodsResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     dateLoading = json['date_loading'];
-    deliverySumm = json['delivery_summ'];
+    deliverySumm = (json['delivery_summ']);
     kontragent = json['kontragent'];
     showCount = json['show_count'];
     adressProvider = json['adress_provider'];
@@ -108,5 +108,14 @@ class Goods {
     data['old_price'] = oldPrice;
     data['news_photo'] = newsPhoto;
     return data;
+  }
+}
+
+double convertStringToDouble(dynamic str) {
+  try {
+    return double.parse(str ?? "0");
+  } catch (e) {
+    // В случае ошибки при парсинге возвращаем 0
+    return 0.0;
   }
 }
