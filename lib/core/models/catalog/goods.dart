@@ -50,15 +50,15 @@ class Goods {
   String? nomenklatura;
   String? nomenklaturaKod;
   int? count;
-  int? price;
-  int? optPrice;
+  double? price;
+  double? optPrice;
   String? producer;
   String? kontragent;
   int? step;
   int? newProduct;
   String? photo;
   String? catId;
-  int? oldPrice;
+  double? oldPrice;
   String? newsPhoto;
 
   Goods(
@@ -80,15 +80,15 @@ class Goods {
     nomenklatura = json['nomenklatura'];
     nomenklaturaKod = json['nomenklatura_kod'];
     count = json['count'];
-    price = json['price'];
-    optPrice = json['opt_price'];
+    price = convertStringToDouble(json['price']);
+    optPrice = convertStringToDouble(json['opt_price']);
     producer = json['producer'];
     kontragent = json['kontragent'];
     step = json['step'];
     newProduct = json['new_product'];
     photo = json['photo'];
     catId = json['cat_id'];
-    oldPrice = json['old_price'];
+    oldPrice = convertStringToDouble(json['old_price']);
     newsPhoto = json['news_photo'];
   }
 
