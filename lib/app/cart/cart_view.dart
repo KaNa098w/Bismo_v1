@@ -1,3 +1,5 @@
+import 'package:bismo/core/colors.dart';
+import 'package:bismo/core/presentation/widgets/custom_error_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
@@ -12,19 +14,30 @@ class CartView extends StatefulWidget {
 
 class _CartViewState extends State<CartView> {
   List<PersistentShoppingCartItem> cartItems = [];
+  List<TextEditingController?> _controllers = [];
+  bool isLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    _loadCartItems();
+    // _loadCartItems();
   }
 
-  Future<void> _loadCartItems() async {
+  Future<List<PersistentShoppingCartItem>> _loadCartItems() async {
     Map<String, dynamic> cartData = PersistentShoppingCart().getCartData();
-    setState(() {
-      cartItems =
-          (cartData['cartItems'] ?? []) as List<PersistentShoppingCartItem>;
+    cartItems =
+        (cartData['cartItems'] ?? []) as List<PersistentShoppingCartItem>;
+    _controllers = List.generate(cartItems.length, (index) {
+      var newController = TextEditingController();
+      newController.text = "${cartItems[index].quantity}";
+      return newController;
     });
+
+    setState(() {});
+
+    isLoaded = true;
+
+    return cartItems;
   }
 
   void removeFromCart(String productId) async {
@@ -65,119 +78,146 @@ class _CartViewState extends State<CartView> {
 
   @override
   Widget build(BuildContext context) {
-    if (cartItems.isEmpty) {
-      return const Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.remove_shopping_cart_outlined,
-                size: 120,
-                color: Colors.grey,
-              ),
-              SizedBox(height: 20),
-              Text(
-                'Нет товаров',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            ],
-          ),
-        ),
-      );
-    } else {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Корзина'),
-        ),
-        body: ListView.builder(
-          itemCount: cartItems.length,
-          itemBuilder: (context, index) {
-            PersistentShoppingCartItem cartItem = cartItems[index];
-            return ListTile(
-              leading: CircleAvatar(
-                backgroundImage: NetworkImage(cartItem.productThumbnail ?? ""),
-              ),
-              title: Text(cartItem.productName),
-              subtitle: Text('${cartItem.unitPrice}₸ x ${cartItem.quantity}'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (cartItem.quantity > 1)
-                    IconButton(
-                      color: Colors.red,
-                      iconSize: 30,
-                      icon: const Icon(Icons.remove),
-                      onPressed: () {
-                        setState(() {
-                          cartItem.quantity--;
-                        });
-                        PersistentShoppingCart()
-                            .removeFromCart(cartItem.productId);
-                        PersistentShoppingCart().addToCart(cartItem);
-                      },
-                    )
-                  else
-                    IconButton(
-                      iconSize: 30,
-                      color: Colors.red,
-                      icon: const Icon(Icons.delete_outline_rounded),
-                      onPressed: () {
-                        _showDeleteConfirmationDialog(
-                            context, cartItem.productName, cartItem.productId);
-                      },
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Корзина'),
+      ),
+      body: FutureBuilder<List<PersistentShoppingCartItem>>(
+          future: _loadCartItems(),
+          builder: (context,
+              AsyncSnapshot<List<PersistentShoppingCartItem>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting &&
+                !isLoaded) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                ),
+              );
+            }
+
+            if (snapshot.hasError) {
+              return const CustomErrorWidget();
+            }
+
+            if (snapshot.data == null || snapshot.data!.isEmpty) {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.remove_shopping_cart_outlined,
+                      size: 120,
+                      color: Colors.grey,
                     ),
-                  const SizedBox(width: 5),
-                  SizedBox(
-                    width: 40,
-                    child: TextFormField(
-                      initialValue: cartItem.quantity.toString(),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        setState(() {
-                          cartItem.quantity = int.parse(value);
-                        });
-                      },
+                    SizedBox(height: 20),
+                    Text(
+                      'Нет товаров',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
                     ),
+                  ],
+                ),
+              );
+            }
+
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                PersistentShoppingCartItem cartItem = snapshot.data![index];
+
+                try {
+                  if (_controllers[index] == null) return const SizedBox();
+                } catch (e) {
+                  return const SizedBox();
+                }
+
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage:
+                        NetworkImage(cartItem.productThumbnail ?? ""),
                   ),
-                  // IconButton(
-                  //   iconSize: 30,
-                  //   color: Colors.green,
-                  //   icon: const Icon(Icons.add),
-                  //   onPressed: () {
-                  //     setState(() {
-                  //       cartItem.quantity++;
-                  //     });
-                  //     PersistentShoppingCart()
-                  //         .removeFromCart(cartItem.productId);
-                  //     PersistentShoppingCart().addToCart(cartItem);
-                  //   },
-                  // ),
-                ],
-              ),
+                  title: Text(cartItem.productName),
+                  subtitle:
+                      Text('${cartItem.unitPrice}₸ x ${cartItem.quantity}'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (cartItem.quantity > 1)
+                        IconButton(
+                          color: Colors.red,
+                          iconSize: 20,
+                          icon: const Icon(Icons.remove),
+                          onPressed: () {
+                            setState(() {
+                              cartItem.quantity--;
+                            });
+                            PersistentShoppingCart()
+                                .removeFromCart(cartItem.productId);
+                            PersistentShoppingCart().addToCart(cartItem);
+                          },
+                        )
+                      else
+                        IconButton(
+                          iconSize: 20,
+                          color: Colors.red,
+                          icon: const Icon(Icons.delete_outline_rounded),
+                          onPressed: () {
+                            _showDeleteConfirmationDialog(context,
+                                cartItem.productName, cartItem.productId);
+                          },
+                        ),
+                      const SizedBox(width: 5),
+                      SizedBox(
+                        width: 30,
+                        child: TextFormField(
+                          // initialValue: cartItem.quantity.toString(),
+                          keyboardType: TextInputType.number,
+                          controller: _controllers[index],
+                          onChanged: (value) {
+                            setState(() {
+                              cartItem.quantity = int.parse(value);
+                            });
+                          },
+                        ),
+                      ),
+                      IconButton(
+                        iconSize: 20,
+                        color: Colors.green,
+                        icon: const Icon(Icons.add),
+                        onPressed: () {
+                          setState(() {
+                            cartItem.quantity++;
+                          });
+
+                          PersistentShoppingCart()
+                              .removeFromCart(cartItem.productId);
+                          PersistentShoppingCart().addToCart(cartItem);
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
             );
-          },
+          }),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              'Итого: ${(cartItems.fold<double>(0, (total, item) => total + (item.unitPrice * item.quantity))).toStringAsFixed(2)}₸',
+              style:
+                  const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            ),
+            TextButton(
+              onPressed: () {
+                // Добавьте логику оформления заказа
+              },
+              child: const Text('Оформить заказ'),
+            ),
+          ],
         ),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                'Итого: ${(cartItems.fold<double>(0, (total, item) => total + (item.unitPrice * item.quantity))).toStringAsFixed(2)}₸',
-                style: const TextStyle(
-                    fontSize: 18.0, fontWeight: FontWeight.bold),
-              ),
-              TextButton(
-                onPressed: () {
-                  // Добавьте логику оформления заказа
-                },
-                child: const Text('Оформить заказ'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+      ),
+    );
   }
 }
