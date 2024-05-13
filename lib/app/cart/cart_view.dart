@@ -32,6 +32,37 @@ class _CartViewState extends State<CartView> {
     _loadCartItems();
   }
 
+  void _showDeleteConfirmationDialog(
+      BuildContext context, String productName, String productId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Удалить товар?'),
+          content: Text(
+              'Вы уверены, что хотите удалить товар "$productName" из корзины?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Закрыть диалоговое окно
+              },
+              child: const Text('Отмена'),
+            ),
+            TextButton(
+              onPressed: () {
+                removeFromCart(productId); // Удалить товар из корзины
+                Navigator.of(context).pop(); // Закрыть диалоговое окно
+              },
+              child: const Text('Удалить'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+// В вашем виджете, замените вызов removeFromCart(productId) на вызов _showDeleteConfirmationDialog(context, cartItem.productName, cartItem.productId)
+
   @override
   Widget build(BuildContext context) {
     if (cartItems.isEmpty) {
@@ -90,7 +121,8 @@ class _CartViewState extends State<CartView> {
                       color: Colors.red,
                       icon: const Icon(Icons.delete_outline_rounded),
                       onPressed: () {
-                        removeFromCart(cartItem.productId);
+                        _showDeleteConfirmationDialog(
+                            context, cartItem.productName, cartItem.productId);
                       },
                     ),
                   const SizedBox(width: 5),
@@ -101,7 +133,7 @@ class _CartViewState extends State<CartView> {
                   //     setState(() {
                   //       cartItem.quantity = int.parse(value);
                   //     });
-                    // },
+                  // },
                   // ),
                   IconButton(
                     iconSize: 30,
