@@ -1,4 +1,4 @@
-import 'package:bismo/app/basket/basket_controller.dart';
+import 'package:bismo/app/cart/cart_controller.dart';
 import 'package:bismo/app/catalog/catalog_controller.dart';
 import 'package:bismo/app/config_screen/config_screen_controller.dart';
 import 'package:bismo/app/home/home_controller.dart';
@@ -42,7 +42,7 @@ class _RootState extends State<Root> {
         link: '/catalog',
         isProtected: false),
     ButtonData(
-        page: const BasketController(),
+        page: const CartController(),
         icon: Icons.shopping_cart_outlined,
         labelRu: 'Корзина',
         labelKk: 'Корзина',

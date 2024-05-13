@@ -43,6 +43,7 @@ dependencies:
   shared_preferences: ^2.2.3
   form_field_validator: ^1.1.0
   flutter_cart: ^0.0.9
+  persistent_shopping_cart: ^0.0.7
 
 dev_dependencies:
   flutter_test:

@@ -7,11 +7,11 @@ import 'package:bismo/core/models/catalog/goods.dart';
 import 'package:bismo/core/presentation/widgets/category_tile.dart';
 import 'package:bismo/core/presentation/widgets/custom_empty_widget.dart';
 import 'package:bismo/core/presentation/widgets/custom_error_widget.dart';
-import 'package:bismo/core/services/catalog_service.dart';
 import 'package:bismo/core/services/goods_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cart/flutter_cart.dart';
+import 'package:persistent_shopping_cart/model/cart_model.dart';
+import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 
 class GoodsView extends StatefulWidget {
   final String? title;
@@ -27,18 +27,26 @@ class _GoodsViewState extends State<GoodsView> {
 
   GoodsResponse? goodsResponse;
   bool isLoading = true;
+  List<PersistentShoppingCartItem> cartItems = [];
 
   @override
   void initState() {
     super.initState();
+    PersistentShoppingCart().init();
     getGoods(widget.catId ?? "");
+    _loadCartItems();
+  }
+
+  Future<void> _loadCartItems() async {
+    Map<String, dynamic> cartData = PersistentShoppingCart().getCartData();
+    setState(() {
+      cartItems = (cartData['cartItems'] ?? []) as List<PersistentShoppingCartItem>;
+    });
   }
 
   Future<GoodsResponse?> getGoods(String catId) async {
     try {
       var res = await GoodsSerVice().getGoods(catId);
-
-      // log(res?.toJson().toString() ?? "");
 
       setState(() {
         goodsResponse = res;
@@ -57,6 +65,26 @@ class _GoodsViewState extends State<GoodsView> {
     }
   }
 
+  void addToCart(Goods goods) async {
+    await PersistentShoppingCart().addToCart(PersistentShoppingCartItem(
+      productId: goods.nomenklaturaKod ?? "",
+      productName: goods.nomenklatura ?? "",
+      unitPrice: goods.price ?? 0.0,
+      quantity: 1,
+       // Начальное количество товара 1
+    ));
+    _loadCartItems();
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Товар добавлен в корзину'), backgroundColor: Colors.green, duration: Duration(milliseconds: 500),));
+  }
+
+  void removeFromCart(Goods goods) async {
+    await PersistentShoppingCart().removeFromCart(goods.nomenklaturaKod ?? "");
+    _loadCartItems();
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Товар удален из корзины'), backgroundColor: Colors.red,duration: Duration(milliseconds: 500), ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,34 +94,87 @@ class _GoodsViewState extends State<GoodsView> {
         scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
         leading: appBarBack(context),
+        actions: [
+          IconButton(
+            onPressed: () {
+              // Get total number of items in the cart
+              int itemCount = cartItems.length;
+              Navigator.pushNamed(
+                                context,
+                                "/cart");
+              // Navigate to cart screen or do something with cart
+            },
+            iconSize: 32,
+            icon: Stack(
+              children: [
+                const Icon(Icons.shopping_cart_outlined),
+                Positioned(
+                  top: -2,
+                  right: -1,
+                  child: CircleAvatar(
+                    radius: 8,
+                    backgroundColor: Colors.red,
+                    child: Text(
+                      cartItems.length.toString(),
+                      style: const TextStyle(fontSize: 11, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: !isLoading
           ? goodsResponse != null
               ? Container(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(1.0),
                   child: (goodsResponse?.goods ?? []).isNotEmpty
                       ? ListView.builder(
                           itemCount: goodsResponse!.goods!.length,
                           itemBuilder: (context, index) {
                             Goods goods = goodsResponse!.goods![index];
+                            bool isInCart = cartItems.any((item) => item.productId == goods.nomenklaturaKod);
                             return Card(
                               child: ListTile(
                                 leading: CircleAvatar(
-                                  backgroundImage: NetworkImage(goods.photo ??
-                                      ""), // Используйте ссылку на фото товара, если доступно
+                                  backgroundImage:
+                                      NetworkImage(goods.photo ?? ""),
                                 ),
                                 title: Text(goods.nomenklatura ?? ''),
-                                subtitle:
-                                    Text('Цена: ${goods.price.toString()}'),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.add_shopping_cart),
-                                  onPressed: () {
-                                    // cart.addToCart(productId: goods.id, unitPrice: goods.price, quantity: 1);
-                                  },
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                        'Поставщик: ${goods.kontragent ?? ""}'),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Цена: ${goods.price?.toInt()}₸/кг',
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ],
                                 ),
-                                onTap: () {
-                                  // Подробная информация о товаре или действия с товаром
-                                },
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (!isInCart)
+                                      IconButton(
+                                        icon: const Icon(Icons.add_shopping_cart),
+                                        onPressed: () {
+                                          addToCart(goods);
+                                        },
+                                      ),
+                                    if (isInCart)
+                                      IconButton(
+                                        icon: const Icon(Icons.delete_outline_rounded),
+                                        onPressed: () {
+                                          removeFromCart(goods);
+                                        },
+                                      ),
+                                  ],
+                                ),
                               ),
                             );
                           },
@@ -106,13 +187,6 @@ class _GoodsViewState extends State<GoodsView> {
                 color: AppColors.primaryColor,
               ),
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/cart'); // Переход к странице корзины
-        },
-        backgroundColor: AppColors.primaryColor,
-        child: const Icon(Icons.shopping_cart),
-      ),
     );
   }
 }

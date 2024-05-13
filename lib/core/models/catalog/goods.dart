@@ -111,11 +111,20 @@ class Goods {
   }
 }
 
-double convertStringToDouble(dynamic str) {
-  try {
-    return double.parse(str ?? "0");
-  } catch (e) {
-    // В случае ошибки при парсинге возвращаем 0
+double convertStringToDouble(dynamic value) {
+   if (value == null) {
     return 0.0;
+  } else if (value is int) {
+    return value.toDouble();
+  } else if (value is String) {
+    try {
+      return double.parse(value);
+    } catch (e) {
+      return 0.0;
+    }
+  } else {
+    return 0.0;
+
+
   }
 }

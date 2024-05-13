@@ -7,7 +7,7 @@ import 'package:flutter_svg/svg.dart';
 
 class SingleCartItemTile extends StatelessWidget {
   const SingleCartItemTile({
-    Key? key,
+    Key? key, required String productName, required double unitPrice, required int quantity,
   }) : super(key: key);
 
   @override
