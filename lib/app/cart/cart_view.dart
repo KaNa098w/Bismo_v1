@@ -128,28 +128,31 @@ class _CartViewState extends State<CartView> {
                       },
                     ),
                   const SizedBox(width: 5),
-                  // TextFormField(
-                  //   initialValue: cartItem.quantity.toString(),
-                  //   keyboardType: TextInputType.number,
-                  //   onChanged: (value) {
-                  //     setState(() {
-                  //       cartItem.quantity = int.parse(value);
-                  //     });
-                  // },
-                  // ),
-                  IconButton(
-                    iconSize: 30,
-                    color: Colors.green,
-                    icon: const Icon(Icons.add),
-                    onPressed: () {
-                      setState(() {
-                        cartItem.quantity++;
-                      });
-                      PersistentShoppingCart()
-                          .removeFromCart(cartItem.productId);
-                      PersistentShoppingCart().addToCart(cartItem);
-                    },
+                  SizedBox(
+                    width: 40,
+                    child: TextFormField(
+                      initialValue: cartItem.quantity.toString(),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        setState(() {
+                          cartItem.quantity = int.parse(value);
+                        });
+                      },
+                    ),
                   ),
+                  // IconButton(
+                  //   iconSize: 30,
+                  //   color: Colors.green,
+                  //   icon: const Icon(Icons.add),
+                  //   onPressed: () {
+                  //     setState(() {
+                  //       cartItem.quantity++;
+                  //     });
+                  //     PersistentShoppingCart()
+                  //         .removeFromCart(cartItem.productId);
+                  //     PersistentShoppingCart().addToCart(cartItem);
+                  //   },
+                  // ),
                 ],
               ),
             );
