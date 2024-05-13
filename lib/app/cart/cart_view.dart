@@ -95,7 +95,9 @@ class _CartViewState extends State<CartView> {
           itemBuilder: (context, index) {
             PersistentShoppingCartItem cartItem = cartItems[index];
             return ListTile(
-              leading: const CircleAvatar(),
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(cartItem.productThumbnail ?? ""),
+              ),
               title: Text(cartItem.productName),
               subtitle: Text('${cartItem.unitPrice}₸ x ${cartItem.quantity}'),
               trailing: Row(

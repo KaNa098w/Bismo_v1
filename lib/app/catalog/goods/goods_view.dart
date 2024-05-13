@@ -32,7 +32,7 @@ class _GoodsViewState extends State<GoodsView> {
   @override
   void initState() {
     super.initState();
-    PersistentShoppingCart().init();
+
     getGoods(widget.catId ?? "");
     _loadCartItems();
   }
@@ -40,7 +40,8 @@ class _GoodsViewState extends State<GoodsView> {
   Future<void> _loadCartItems() async {
     Map<String, dynamic> cartData = PersistentShoppingCart().getCartData();
     setState(() {
-      cartItems = (cartData['cartItems'] ?? []) as List<PersistentShoppingCartItem>;
+      cartItems =
+          (cartData['cartItems'] ?? []) as List<PersistentShoppingCartItem>;
     });
   }
 
@@ -67,22 +68,29 @@ class _GoodsViewState extends State<GoodsView> {
 
   void addToCart(Goods goods) async {
     await PersistentShoppingCart().addToCart(PersistentShoppingCartItem(
-      productId: goods.nomenklaturaKod ?? "",
-      productName: goods.nomenklatura ?? "",
-      unitPrice: goods.price ?? 0.0,
-      quantity: 1,
-       // Начальное количество товара 1
-    ));
+        productId: goods.nomenklaturaKod ?? "",
+        productName: goods.nomenklatura ?? "",
+        unitPrice: goods.price ?? 0.0,
+        quantity: 1,
+        productThumbnail: goods.photo
+        // Начальное количество товара 1
+        ));
     _loadCartItems();
-    ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Товар добавлен в корзину'), backgroundColor: Colors.green, duration: Duration(milliseconds: 500),));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('Товар добавлен в корзину'),
+      backgroundColor: Colors.green,
+      duration: Duration(milliseconds: 1500),
+    ));
   }
 
   void removeFromCart(Goods goods) async {
     await PersistentShoppingCart().removeFromCart(goods.nomenklaturaKod ?? "");
     _loadCartItems();
-    ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Товар удален из корзины'), backgroundColor: Colors.red,duration: Duration(milliseconds: 500), ));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('Товар удален из корзины'),
+      backgroundColor: Colors.red,
+      duration: Duration(milliseconds: 1500),
+    ));
   }
 
   @override
@@ -99,9 +107,7 @@ class _GoodsViewState extends State<GoodsView> {
             onPressed: () {
               // Get total number of items in the cart
               int itemCount = cartItems.length;
-              Navigator.pushNamed(
-                                context,
-                                "/cart");
+              Navigator.pushNamed(context, "/cart");
               // Navigate to cart screen or do something with cart
             },
             iconSize: 32,
@@ -134,7 +140,8 @@ class _GoodsViewState extends State<GoodsView> {
                           itemCount: goodsResponse!.goods!.length,
                           itemBuilder: (context, index) {
                             Goods goods = goodsResponse!.goods![index];
-                            bool isInCart = cartItems.any((item) => item.productId == goods.nomenklaturaKod);
+                            bool isInCart = cartItems.any((item) =>
+                                item.productId == goods.nomenklaturaKod);
                             return Card(
                               child: ListTile(
                                 leading: CircleAvatar(
@@ -161,14 +168,16 @@ class _GoodsViewState extends State<GoodsView> {
                                   children: [
                                     if (!isInCart)
                                       IconButton(
-                                        icon: const Icon(Icons.add_shopping_cart),
+                                        icon:
+                                            const Icon(Icons.add_shopping_cart),
                                         onPressed: () {
                                           addToCart(goods);
                                         },
                                       ),
                                     if (isInCart)
                                       IconButton(
-                                        icon: const Icon(Icons.delete_outline_rounded),
+                                        icon: const Icon(
+                                            Icons.delete_outline_rounded),
                                         onPressed: () {
                                           removeFromCart(goods);
                                         },

@@ -3,12 +3,15 @@ import 'package:bismo/core/app_routes.dart';
 import 'package:bismo/core/presentation/theme.dart';
 import 'package:bismo/core/providers/app_providers.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final providers = await getAppProviders();
+
+  PersistentShoppingCart().init();
 
   runApp(MultiProvider(
     providers: providers,
@@ -17,13 +20,11 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      
       title: 'Bismo',
       theme: AppTheme().lightTheme,
       darkTheme: AppTheme().darkTheme,

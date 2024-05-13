@@ -112,7 +112,7 @@ class Goods {
 }
 
 double convertStringToDouble(dynamic value) {
-   if (value == null) {
+  if (value == null) {
     return 0.0;
   } else if (value is int) {
     return value.toDouble();
@@ -124,7 +124,5 @@ double convertStringToDouble(dynamic value) {
     }
   } else {
     return 0.0;
-
-
   }
 }
