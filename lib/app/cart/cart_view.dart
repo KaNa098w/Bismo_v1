@@ -14,13 +14,21 @@ class CartView extends StatefulWidget {
 
 class _CartViewState extends State<CartView> {
   List<PersistentShoppingCartItem> cartItems = [];
-  List<TextEditingController?> _controllers = [];
+  List<TextEditingController> _controllers = [];
   bool isLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    // _loadCartItems();
+    _loadCartItems();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
   }
 
   Future<List<PersistentShoppingCartItem>> _loadCartItems() async {
@@ -74,13 +82,15 @@ class _CartViewState extends State<CartView> {
     );
   }
 
-// В вашем виджете, замените вызов removeFromCart(productId) на вызов _showDeleteConfirmationDialog(context, cartItem.productName, cartItem.productId)
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Корзина'),
+        title: Text(
+              'Выбрано: ${(cartItems.fold<int>(0, (total, item) => total + item.quantity))} товаров',
+              style:
+                  const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
+            ),
       ),
       body: FutureBuilder<List<PersistentShoppingCartItem>>(
           future: _loadCartItems(),
@@ -124,15 +134,11 @@ class _CartViewState extends State<CartView> {
               itemBuilder: (context, index) {
                 PersistentShoppingCartItem cartItem = snapshot.data![index];
 
-                try {
-                  if (_controllers[index] == null) return const SizedBox();
-                } catch (e) {
-                  return const SizedBox();
-                }
-
                 return ListTile(
                   leading: CircleAvatar(
+                    radius: 30,
                     backgroundImage:
+                        
                         NetworkImage(cartItem.productThumbnail ?? ""),
                   ),
                   title: Text(cartItem.productName),
@@ -144,11 +150,13 @@ class _CartViewState extends State<CartView> {
                       if (cartItem.quantity > 1)
                         IconButton(
                           color: Colors.red,
-                          iconSize: 20,
-                          icon: const Icon(Icons.remove),
+                          iconSize: 30,
+                          icon: const Icon(Icons.remove_circle),
                           onPressed: () {
                             setState(() {
                               cartItem.quantity--;
+                              _controllers[index].text =
+                                  cartItem.quantity.toString();
                             });
                             PersistentShoppingCart()
                                 .removeFromCart(cartItem.productId);
@@ -157,7 +165,7 @@ class _CartViewState extends State<CartView> {
                         )
                       else
                         IconButton(
-                          iconSize: 20,
+                          iconSize: 30,
                           color: Colors.red,
                           icon: const Icon(Icons.delete_outline_rounded),
                           onPressed: () {
@@ -168,10 +176,15 @@ class _CartViewState extends State<CartView> {
                       const SizedBox(width: 5),
                       SizedBox(
                         width: 30,
+                        height: 30,
                         child: TextFormField(
-                          // initialValue: cartItem.quantity.toString(),
                           keyboardType: TextInputType.number,
                           controller: _controllers[index],
+                          textAlign: TextAlign.center,
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.zero,
+                            border: OutlineInputBorder(),
+                          ),
                           onChanged: (value) {
                             setState(() {
                               cartItem.quantity = int.parse(value);
@@ -180,14 +193,15 @@ class _CartViewState extends State<CartView> {
                         ),
                       ),
                       IconButton(
-                        iconSize: 20,
+                        iconSize: 30,
                         color: Colors.green,
-                        icon: const Icon(Icons.add),
+                        icon: const Icon(Icons.add_box),
                         onPressed: () {
                           setState(() {
                             cartItem.quantity++;
+                            _controllers[index].text =
+                                cartItem.quantity.toString();
                           });
-
                           PersistentShoppingCart()
                               .removeFromCart(cartItem.productId);
                           PersistentShoppingCart().addToCart(cartItem);
@@ -200,7 +214,7 @@ class _CartViewState extends State<CartView> {
             );
           }),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(15.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -209,6 +223,7 @@ class _CartViewState extends State<CartView> {
               style:
                   const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
+            
             TextButton(
               onPressed: () {
                 // Добавьте логику оформления заказа
@@ -216,8 +231,11 @@ class _CartViewState extends State<CartView> {
               child: const Text('Оформить заказ'),
             ),
           ],
+          
         ),
+        
       ),
+      
     );
   }
 }

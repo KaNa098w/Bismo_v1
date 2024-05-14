@@ -28,7 +28,7 @@ class ProfileHeaderOptions extends StatelessWidget {
             label: 'Мои заказы',
             icon: AppIcons.truckIcon,
             onTap: () {
-              // Navigator.pushNamed(context, AppRoutes.myOrder);
+              Navigator.pushNamed(context, '/orders');
             },
           ),
          
