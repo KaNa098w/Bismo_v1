@@ -72,7 +72,14 @@ class _GoodsViewState extends State<GoodsView> {
         productName: goods.nomenklatura ?? "",
         unitPrice: goods.price ?? 0.0,
         quantity: 1,
-        productThumbnail: goods.photo
+        productThumbnail: goods.photo,
+        productDetails: {
+          "nomenklatura": goods.nomenklatura,
+          "nomenklaturaKod": goods.nomenklaturaKod,
+          "producer": goods.producer,
+          "step": goods.step,
+          "count": goods.count,
+        }
         // Начальное количество товара 1
         ));
     _loadCartItems();

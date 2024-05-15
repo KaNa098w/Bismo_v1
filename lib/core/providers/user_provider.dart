@@ -103,7 +103,7 @@ class UserProvider extends ChangeNotifier {
     try {
       var res = await AuthService().getOtpForSignIn(phoneNumber);
 
-      // print(res?.toJson());
+      log('${res?.toJson()}');
 
       if (res != null) {
         if ((res.success ?? false) == false) {
