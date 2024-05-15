@@ -16,6 +16,7 @@ class _CartViewState extends State<CartView> {
   List<PersistentShoppingCartItem> cartItems = [];
   List<TextEditingController> _controllers = [];
   bool isLoaded = false;
+  bool isDeliverySelected = false;
 
   @override
   void initState() {
@@ -86,11 +87,62 @@ class _CartViewState extends State<CartView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-              'Выбрано: ${(cartItems.fold<int>(0, (total, item) => total + item.quantity))} товаров',
-              style:
-                  const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
-            ),
+        title: Column(children: [
+          // Text(
+          //     'Выбрано: ${(cartItems.fold<int>(0, (total, item) => total + item.quantity))} товаров',
+          //     style:
+          //         const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    isDeliverySelected = true;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      isDeliverySelected ? Colors.green : Colors.grey,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isDeliverySelected = true;
+                    });
+                  },
+                  child: const Text(
+                    'Доставка',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 30),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    isDeliverySelected = false;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      isDeliverySelected ? Colors.grey : Colors.green,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isDeliverySelected = false;
+                    });
+                  },
+                  child: const Text(
+                    'Самовывоз',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ]),
       ),
       body: FutureBuilder<List<PersistentShoppingCartItem>>(
           future: _loadCartItems(),
@@ -138,7 +190,6 @@ class _CartViewState extends State<CartView> {
                   leading: CircleAvatar(
                     radius: 30,
                     backgroundImage:
-                        
                         NetworkImage(cartItem.productThumbnail ?? ""),
                   ),
                   title: Text(cartItem.productName),
@@ -223,7 +274,6 @@ class _CartViewState extends State<CartView> {
               style:
                   const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
-            
             TextButton(
               onPressed: () {
                 // Добавьте логику оформления заказа
@@ -231,11 +281,8 @@ class _CartViewState extends State<CartView> {
               child: const Text('Оформить заказ'),
             ),
           ],
-          
         ),
-        
       ),
-      
     );
   }
 }

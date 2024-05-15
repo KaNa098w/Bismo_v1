@@ -38,7 +38,9 @@ class ProfileMenuOptions extends StatelessWidget {
           ProfileListTile(
             title: 'Настройки',
             icon: AppIcons.profileSetting,
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, '/settings');
+            },
           ),
           const Divider(thickness: 0.1),
           ProfileListTile(

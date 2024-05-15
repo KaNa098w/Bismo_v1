@@ -2,7 +2,6 @@ import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:bismo/core/constants/dummy_data.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/constants.dart';
 import 'order_details_product_tile.dart';
 
 class TotalOrderProductDetails extends StatelessWidget {

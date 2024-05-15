@@ -36,7 +36,7 @@ class ProfileHeaderOptions extends StatelessWidget {
             label: 'Адрес',
             icon: AppIcons.homeProfile,
             onTap: () {
-              // Navigator.pushNamed(context, AppRoutes.deliveryAddress);
+              Navigator.pushNamed(context, '/address');
             },
             
           ),

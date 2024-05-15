@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 class SettingsView extends StatefulWidget {
   final String? title;
   const SettingsView({Key? key, this.title}) : super(key: key);
+  
+  
 
   @override
   State<SettingsView> createState() => _SettingsViewState();
@@ -18,10 +20,37 @@ class _SettingsViewState extends State<SettingsView> {
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
-    return   Container(
-   
+    
+   return Container(
+      color: Colors.transparent,
+      child: InkWell(
+      
+        borderRadius: AppDefaults.borderRadius,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Text(
+                   'KALAI',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Colors.black,
+                        ),
+                  ),
+              //     const Spacer(),
+              //     if (trailing != null) trailing!,
+                 ],
+               ),
+              // const Divider(thickness: 0.1),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
