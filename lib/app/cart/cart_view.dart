@@ -1,8 +1,21 @@
+import 'dart:developer';
+
 import 'package:bismo/core/colors.dart';
+import 'package:bismo/core/exceptions.dart';
+import 'package:bismo/core/models/cart/set_order_request.dart';
+import 'package:bismo/core/models/user/get_address_response.dart';
+import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
+import 'package:bismo/core/presentation/dialogs/loader_dialog.dart';
 import 'package:bismo/core/presentation/widgets/custom_error_widget.dart';
+import 'package:bismo/core/providers/user_provider.dart';
+import 'package:bismo/core/services/cart_service.dart';
+import 'package:bismo/core/services/user_service.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
+import 'package:provider/provider.dart';
 
 class CartView extends StatefulWidget {
   final String? title;
@@ -17,11 +30,19 @@ class _CartViewState extends State<CartView> {
   List<TextEditingController> _controllers = [];
   bool isLoaded = false;
   bool isDeliverySelected = false;
+  GetAddressResponse? userAddress;
 
   @override
   void initState() {
     super.initState();
     _loadCartItems();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      var res = await _getUserAddress("7777017100", context);
+      setState(() {
+        userAddress = res;
+      });
+    });
   }
 
   @override
@@ -81,6 +102,115 @@ class _CartViewState extends State<CartView> {
         );
       },
     );
+  }
+
+  Future<GetAddressResponse?> _getUserAddress(
+      String phoneNumber, BuildContext ctx) async {
+    try {
+      var res = await UserService().getUserAddress(phoneNumber);
+      return res;
+    } on DioException catch (e) {
+      log(e.toString());
+      if (ctx.mounted) {
+        hideLoader(ctx);
+        showAlertDialog(
+          context: ctx,
+          barrierDismissible: true,
+          title: "Ошибка",
+          content: "Не удалось получить адрес пользователя!",
+          actions: <Widget>[
+            CupertinoDialogAction(
+              onPressed: () => Navigator.of(ctx).pop(),
+              textStyle: const TextStyle(color: AppColors.primaryColor),
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      }
+      return null;
+    }
+  }
+
+  Future<void> _setOrder(String phoneNumber, BuildContext ctx) async {
+    showLoader(ctx);
+    try {
+      if (userAddress == null) {}
+
+      int totalPrice = cartItems
+          .fold<double>(
+              0, (total, item) => total + (item.unitPrice * item.quantity))
+          .toInt();
+
+      var goods = cartItems.map((item) {
+        return Goods(
+          nomenklaturaKod: item.productDetails?['nomenklaturaKod'],
+          producer: item.productDetails?['producer'] ?? "",
+          price: item.unitPrice.toInt(),
+          count: item.productDetails?['count'] ?? 0,
+          step: item.productDetails?['step'] ?? 1,
+          nomenklatura: item.productDetails?['nomenklatura'],
+          comment: item.productDetails?['comment'] ?? "Нет комментарии",
+          basketCount: item.quantity ?? 1,
+        );
+      }).toList();
+
+      SetOrderRequest setOrderRequest = SetOrderRequest(
+        provider: "7757499451",
+        orderSum: totalPrice,
+        providerName: "",
+        deliveryAddress: userAddress?.allAdress?.last.adres,
+        comment: "",
+        counterparty: "7757499451",
+        dolgota: userAddress?.allAdress?.last.dolgota,
+        type: "0",
+        providerPhoto:
+            "https://bismo-products.object.pscloud.io/Bismocounterparties/%D0%96%D0%B0%D1%81%D0%9D%D1%83%D1%80.png",
+        shirota: userAddress?.allAdress?.first.shirota,
+        user: phoneNumber,
+        goods: goods,
+      );
+
+      var res = await CartService().setOrder(setOrderRequest);
+
+      if (res != null) {
+        if (ctx.mounted) {
+          hideLoader(ctx);
+          showAlertDialog(
+            context: ctx,
+            barrierDismissible: true,
+            title: "Уведомление",
+            content: res.message ?? "",
+            actions: <Widget>[
+              CupertinoDialogAction(
+                onPressed: () => Navigator.of(ctx).pop(),
+                textStyle: const TextStyle(color: AppColors.primaryColor),
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        }
+      }
+    } on DioException catch (e) {
+      log(e.toString());
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+
+      if (ctx.mounted) {
+        hideLoader(ctx);
+        showAlertDialog(
+          context: ctx,
+          barrierDismissible: true,
+          title: "Ошибка",
+          content: errorMessage,
+          actions: <Widget>[
+            CupertinoDialogAction(
+              onPressed: () => Navigator.of(ctx).pop(),
+              textStyle: const TextStyle(color: AppColors.primaryColor),
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      }
+    }
   }
 
   @override
@@ -276,7 +406,9 @@ class _CartViewState extends State<CartView> {
             ),
             TextButton(
               onPressed: () {
-                // Добавьте логику оформления заказа
+                var userProvider = context.read<UserProvider>();
+
+                _setOrder("7777017100", context);
               },
               child: const Text('Оформить заказ'),
             ),
