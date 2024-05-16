@@ -229,57 +229,50 @@ class _CartViewState extends State<CartView> {
     return Scaffold(
       appBar: AppBar(
         title: Column(children: [
-          // Text(
-          //     'Выбрано: ${(cartItems.fold<int>(0, (total, item) => total + item.quantity))} товаров',
-          //     style:
-          //         const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500)),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    isDeliverySelected = true;
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      isDeliverySelected ? Colors.green : Colors.grey,
-                ),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isDeliverySelected = true;
-                    });
-                  },
-                  child: const Text(
-                    'Доставка',
-                    style: TextStyle(color: Colors.white),
+              Column(
+                children: [
+                  ToggleButtons(
+                    isSelected: [isDeliverySelected, !isDeliverySelected],
+                    onPressed: (int index) {
+                      setState(() {
+                        isDeliverySelected = index == 0;
+                      });
+                    },
+                    selectedColor: Colors.white,
+                    fillColor: Colors.blue, // Цвет фона кнопки при выборе
+                    borderRadius:
+                        BorderRadius.circular(15), // Задаем радиус скругления
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Доставка',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: isDeliverySelected
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Самовывоз',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: !isDeliverySelected
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ),
-              const SizedBox(width: 30),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    isDeliverySelected = false;
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      isDeliverySelected ? Colors.grey : Colors.green,
-                ),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isDeliverySelected = false;
-                    });
-                  },
-                  child: const Text(
-                    'Самовывоз',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
+                ],
               ),
             ],
           ),
@@ -410,17 +403,45 @@ class _CartViewState extends State<CartView> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(
-              'Итого: ${(cartItems.fold<double>(0, (total, item) => total + (item.unitPrice * item.quantity))).toStringAsFixed(2)}₸',
-              style:
-                  const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            ElevatedButton(
+              onPressed:
+                  () {}, // Для текста "Итого" нет необходимости в действии
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.green,
+                backgroundColor:
+                    Colors.transparent, // Устанавливаем цвет текста
+                elevation: 0, // Убираем тень кнопки
+                padding: const EdgeInsets.all(
+                    9), // Устанавливаем отступы вокруг текста
+                textStyle: const TextStyle(
+                    fontSize: 18.0,
+                    fontWeight:
+                        FontWeight.bold), // Устанавливаем размер и стиль текста
+              ),
+              child:
+                  // Text(
+                  // 'Выбрано: ${(cartItems.fold<int>(0, (total, item) => total + item.quantity))} товаров',
+                  // style:
+                  //     const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500)),
+                  Text(
+                'Итого: ${(cartItems.fold<double>(0, (total, item) => total + (item.unitPrice * item.quantity))).toStringAsFixed(2)}₸',
+              ),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () {
                 var userProvider = context.read<UserProvider>();
 
                 _setOrder("7777017100", context);
               },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.red, // Устанавливаем цвет текста кнопки
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12), // Устанавливаем отступы вокруг текста кнопки
+                textStyle: const TextStyle(
+                    fontSize: 16), // Устанавливаем размер текста кнопки
+              ),
               child: const Text('Оформить заказ'),
             ),
           ],
