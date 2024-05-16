@@ -1,4 +1,3 @@
-import 'package:bismo/app/config_screen/config_screen_controller.dart';
 import 'package:bismo/app/login/login_controller.dart';
 import 'package:bismo/app/root.dart';
 import 'package:bismo/core/app_cache.dart';

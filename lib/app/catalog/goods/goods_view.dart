@@ -2,11 +2,8 @@ import 'dart:developer';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/helpers/app_bar_back.dart';
 import 'package:bismo/core/helpers/app_bar_title.dart';
-import 'package:bismo/core/models/catalog/category.dart';
 import 'package:bismo/core/models/catalog/goods.dart';
-import 'package:bismo/core/presentation/widgets/category_tile.dart';
 import 'package:bismo/core/presentation/widgets/custom_empty_widget.dart';
-import 'package:bismo/core/presentation/widgets/custom_error_widget.dart';
 import 'package:bismo/core/services/goods_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +76,7 @@ class _GoodsViewState extends State<GoodsView> {
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Товар добавлен в корзину'),
       backgroundColor: Colors.green,
-      duration: Duration(milliseconds: 1500),
+      duration: Duration(milliseconds: 500),
     ));
   }
 
@@ -89,7 +86,7 @@ class _GoodsViewState extends State<GoodsView> {
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Товар удален из корзины'),
       backgroundColor: Colors.red,
-      duration: Duration(milliseconds: 1500),
+      duration: Duration(milliseconds: 500),
     ));
   }
 
@@ -106,7 +103,6 @@ class _GoodsViewState extends State<GoodsView> {
           IconButton(
             onPressed: () {
               // Get total number of items in the cart
-              int itemCount = cartItems.length;
               Navigator.pushNamed(context, "/cart");
               // Navigate to cart screen or do something with cart
             },
