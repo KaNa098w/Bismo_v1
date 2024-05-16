@@ -1,8 +1,5 @@
-import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/helpers/app_bar_back.dart';
 import 'package:bismo/core/helpers/app_bar_title.dart';
-import 'package:bismo/core/presentation/widgets/app_images.dart';
-import 'package:bismo/core/presentation/widgets/network_image.dart';
 import 'package:bismo/core/presentation/widgets/registr/register_form.dart';
 import 'package:flutter/material.dart';
 

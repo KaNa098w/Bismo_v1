@@ -182,7 +182,18 @@ class _CartViewState extends State<CartView> {
             content: res.message ?? "",
             actions: <Widget>[
               CupertinoDialogAction(
-                onPressed: () => Navigator.of(ctx).pop(),
+                onPressed: () {
+                  // Закрыть диалоговое окно
+                  Navigator.of(ctx).pop();
+
+                  // Очистить корзину
+                  PersistentShoppingCart().clearCart();
+                  setState(() {
+                    // Установить загрузку товаров в false
+                    isLoaded = false;
+                  });
+                  _loadCartItems();
+                },
                 textStyle: const TextStyle(color: AppColors.primaryColor),
                 child: const Text("OK"),
               ),

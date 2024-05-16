@@ -2,8 +2,6 @@ import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:bismo/core/constants/app_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:bismo/core/constants/app_colors.dart'; // Импорт нужных зависимостей
-import 'package:bismo/core/constants/app_icons.dart'; // Импорт нужных зависимостей
 
 // Ваш код здесь
 

@@ -1,11 +1,8 @@
 import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:bismo/core/constants/app_icons.dart';
 import 'package:bismo/core/constants/dummy_data.dart';
-import 'package:bismo/core/presentation/widgets/ad_space.dart';
 import 'package:bismo/core/presentation/widgets/app_back_button.dart';
 import 'package:bismo/core/presentation/widgets/bundle_tile_square.dart';
-import 'package:bismo/core/presentation/widgets/our_new_item.dart';
-import 'package:bismo/core/presentation/widgets/popular_packs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 

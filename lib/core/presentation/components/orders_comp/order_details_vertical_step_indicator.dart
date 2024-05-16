@@ -2,7 +2,6 @@ import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/constants.dart';
 
 class VerticalStepIndicator extends StatelessWidget {
   const VerticalStepIndicator({

@@ -1,8 +1,6 @@
 import 'package:bismo/app/cart/cart_controller.dart';
 import 'package:bismo/app/catalog/catalog_controller.dart';
-import 'package:bismo/app/config_screen/config_screen_controller.dart';
 import 'package:bismo/app/home/home_controller.dart';
-import 'package:bismo/app/login/login_controller.dart';
 import 'package:bismo/app/profile/profile_controller.dart';
 import 'package:bismo/core/models/bottom_nav_bar.dart';
 import 'package:bismo/core/models/button_data.dart';

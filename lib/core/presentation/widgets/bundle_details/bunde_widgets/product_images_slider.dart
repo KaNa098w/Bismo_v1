@@ -3,7 +3,6 @@ import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:bismo/core/presentation/widgets/bundle_details/bunde_widgets/animated_dots.dart';
 import 'package:bismo/core/presentation/widgets/network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 
 

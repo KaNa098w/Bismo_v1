@@ -2,7 +2,6 @@ import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:bismo/core/presentation/widgets/dotted_divider.dart';
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/constants.dart';
 import 'item_row.dart';
 
 class ItemTotalsAndPrice extends StatelessWidget {

@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'package:bismo/core/classes/cache_manager.dart';
 import 'package:bismo/core/models/user/auth_response.dart';
-import 'package:bismo/core/models/user/get_profile_response.dart';
 import 'package:bismo/core/models/user/oauth2_token_info.dart';
-import 'package:bismo/core/models/user/user_info.dart';
 
 class AppCache {
   Map<String, String>? udata;

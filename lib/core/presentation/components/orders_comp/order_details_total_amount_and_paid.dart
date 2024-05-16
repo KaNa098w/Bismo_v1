@@ -1,7 +1,6 @@
 import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/constants.dart';
 
 class TotalAmountAndPaidData extends StatelessWidget {
   const TotalAmountAndPaidData({

@@ -1,7 +1,6 @@
 import 'package:bismo/core/app_cache.dart';
 import 'package:bismo/core/classes/route_manager.dart';
 import 'package:bismo/core/models/user/auth_response.dart';
-import 'package:bismo/core/models/user/get_profile_response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 

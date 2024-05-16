@@ -1,4 +1,3 @@
-import 'package:bismo/app/catalog/catalog_view.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:bismo/core/constants/app_icons.dart';
 import 'package:bismo/core/helpers/login_helper.dart';

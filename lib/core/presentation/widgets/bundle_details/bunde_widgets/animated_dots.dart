@@ -1,7 +1,3 @@
-import 'package:bismo/core/colors.dart';
-import 'package:bismo/core/constants/app_defaults.dart';
-import 'package:flutter/material.dart';
-import 'package:bismo/core/constants/app_defaults.dart'; // Импорт нужных зависимостей
 import 'package:flutter/material.dart';
 
 // Ваш код здесь

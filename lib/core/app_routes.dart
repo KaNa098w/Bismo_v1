@@ -5,7 +5,6 @@ import 'package:bismo/app/login/login.dart';
 import 'package:bismo/app/product_details/product_details.dart';
 import 'package:bismo/app/profile/profile.dart';
 import 'package:bismo/core/classes/route_manager.dart';
-import 'package:bismo/core/models/user/user_info.dart';
 
 class Routes extends RouteManager {
   Routes() {

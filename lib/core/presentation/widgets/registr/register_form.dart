@@ -1,11 +1,9 @@
-import 'package:bismo/core/classes/route_manager.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/helpers/formatters.dart';
 import 'package:bismo/core/helpers/validation.dart';
 import 'package:bismo/core/models/user/SignInOtpResponse.dart';
 import 'package:bismo/core/models/user/register_request.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
-import 'package:bismo/core/presentation/dialogs/loader_dialog.dart';
 import 'package:bismo/core/presentation/widgets/auth/custom_text_input_field.dart';
 import 'package:bismo/core/providers/user_provider.dart';
 import 'package:flutter/cupertino.dart';
