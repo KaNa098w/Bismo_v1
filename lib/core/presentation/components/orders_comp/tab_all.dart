@@ -112,9 +112,11 @@ class _AllTabState extends State<AllTab> {
                         final item = items[index];
                         return OrderPreviewTile(
                           order: item,
-                          onTap: () {
-                            Navigator.pushNamed(context, "/order_item",
+                          onTap: () async {
+                            await Navigator.pushNamed(context, "/order_item",
                                 arguments: OrderItemArguments(item));
+
+                            refresh();
                           },
                           orderID: item.uIDOrder ?? "",
                           orderNumber: item.number ?? "",
