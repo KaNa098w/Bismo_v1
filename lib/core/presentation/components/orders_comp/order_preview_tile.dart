@@ -10,7 +10,7 @@ class OrderPreviewTile extends StatelessWidget {
     required this.orderID,
     required this.date,
     required this.status,
-    required this.onTap,
+    required this.onTap, required order,
   }) : super(key: key);
 
   final String orderID;

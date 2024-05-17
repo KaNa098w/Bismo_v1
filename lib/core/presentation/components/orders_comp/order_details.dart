@@ -1,5 +1,6 @@
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
+import 'package:bismo/core/models/order/order_model.dart';
 import 'package:bismo/core/presentation/components/orders_comp/app_back_button.dart';
 import 'package:bismo/core/presentation/components/orders_comp/order_details_statuses.dart';
 import 'package:bismo/core/presentation/components/orders_comp/order_details_total_amount_and_paid.dart';
@@ -8,7 +9,7 @@ import 'package:flutter/material.dart';
 
 
 class OrderDetailsPage extends StatelessWidget {
-  const OrderDetailsPage({Key? key}) : super(key: key);
+  const OrderDetailsPage({Key? key, required Order order}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
