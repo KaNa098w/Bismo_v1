@@ -50,7 +50,7 @@ class OrderDetailsProductTile extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '3x',
+              '${data.basketCount}x',
               style: Theme.of(context).textTheme.bodySmall,
             )
           ],

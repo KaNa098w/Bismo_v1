@@ -57,7 +57,7 @@ String formatDate(String? dateString, String? lang) {
 String formatDateWithTime(String? dateString, String? lang) {
   if (dateString == null) return "";
   final date = DateFormat('dd.MM.yyyy HH:mm:ss').parse(dateString);
-  final formattedDate = DateFormat('d MMMM yyyy HH:mm').format(date);
+  final formattedDate = DateFormat('d MMMM yyyy HH:mm', lang).format(date);
   return formattedDate;
 }
 
