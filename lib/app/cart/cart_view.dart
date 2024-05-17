@@ -38,7 +38,9 @@ class _CartViewState extends State<CartView> {
     _loadCartItems();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      var res = await _getUserAddress("7777017100", context);
+      var userProvider = context.read<UserProvider>();
+      var res =
+          await _getUserAddress(userProvider.user?.phoneNumber ?? "", context);
       setState(() {
         userAddress = res;
       });
@@ -431,7 +433,7 @@ class _CartViewState extends State<CartView> {
               onPressed: () {
                 var userProvider = context.read<UserProvider>();
 
-                _setOrder("7777017100", context);
+                _setOrder(userProvider.user?.phoneNumber ?? "", context);
               },
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,

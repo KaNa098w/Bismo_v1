@@ -1,13 +1,14 @@
 import 'package:bismo/core/constants/app_defaults.dart';
-import 'package:bismo/core/constants/dummy_data.dart';
+import 'package:bismo/core/models/order/detalization_order_response.dart';
 import 'package:flutter/material.dart';
 
 import 'order_details_product_tile.dart';
 
 class TotalOrderProductDetails extends StatelessWidget {
-  const TotalOrderProductDetails({
-    Key? key,
-  }) : super(key: key);
+  const TotalOrderProductDetails({Key? key, required this.order})
+      : super(key: key);
+
+  final DetalizationOrderResponse? order;
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +30,12 @@ class TotalOrderProductDetails extends StatelessWidget {
           const SizedBox(height: 8),
           ListView.separated(
             itemBuilder: (context, index) {
-              return OrderDetailsProductTile(data: Dummy.products[index]);
+              return OrderDetailsProductTile(data: order!.goods![index]);
             },
             separatorBuilder: (context, index) => const Divider(
               thickness: 0.2,
             ),
-            itemCount: 3,
+            itemCount: order!.goods!.length,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
           ),

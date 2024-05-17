@@ -4,7 +4,7 @@ import 'package:bismo/core/models/order/detalization_order_response.dart';
 import 'package:bismo/core/models/order/get_my_order_list_response.dart';
 import 'package:dio/dio.dart';
 
-class AuthService {
+class OrderService {
   final AppHttp _http = AppHttp(
     baseUrl: ApiEndpoint.baseUrl,
     headers: {},

@@ -206,6 +206,7 @@ class UserProvider extends ChangeNotifier {
         }
 
         if (ctx.mounted) {
+          res.phoneNumber = phoneNumber;
           _user = res;
           doAuth(ctx, res);
           hideLoader(ctx);

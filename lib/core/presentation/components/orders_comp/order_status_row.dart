@@ -94,7 +94,7 @@ class OrderStatusRow extends StatelessWidget {
   String _orderStatus() {
     switch (status) {
       case OrderStatus.confirmed:
-        return 'Заказ принять';
+        return 'Заказ принят';
       case OrderStatus.processing:
         return 'В процессе';
       case OrderStatus.shipped:

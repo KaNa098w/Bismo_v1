@@ -1,7 +1,6 @@
+import 'package:bismo/core/models/order/detalization_order_response.dart';
 import 'package:bismo/core/presentation/widgets/network_image.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../../core/models/dummy_product_model.dart';
 
 class OrderDetailsProductTile extends StatelessWidget {
   const OrderDetailsProductTile({
@@ -9,7 +8,7 @@ class OrderDetailsProductTile extends StatelessWidget {
     required this.data,
   }) : super(key: key);
 
-  final ProductModel data;
+  final OrderGoods data;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +19,7 @@ class OrderDetailsProductTile extends StatelessWidget {
           child: AspectRatio(
             aspectRatio: 1 / 1,
             child: NetworkImageWithLoader(
-              data.cover,
+              data.photo ?? "",
               fit: BoxFit.contain,
             ),
           ),
@@ -31,14 +30,14 @@ class OrderDetailsProductTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                data.name,
+                data.nomenklatura ?? "",
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       // fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
               ),
               const SizedBox(height: 8),
-              Text(data.weight)
+              // Text(data.)
             ],
           ),
         ),
@@ -46,7 +45,7 @@ class OrderDetailsProductTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${data.price.toInt()}₸',
+              '${data.price}₸',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),

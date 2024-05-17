@@ -1,8 +1,8 @@
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
+import 'package:bismo/core/helpers/other.dart';
 import 'package:bismo/core/presentation/components/orders_comp/dummy_order_status.dart';
 import 'package:flutter/material.dart';
-
 
 class OrderPreviewTile extends StatelessWidget {
   const OrderPreviewTile({
@@ -10,13 +10,16 @@ class OrderPreviewTile extends StatelessWidget {
     required this.orderID,
     required this.date,
     required this.status,
-    required this.onTap, required order,
+    required this.onTap,
+    required this.orderNumber,
+    required order,
   }) : super(key: key);
 
   final String orderID;
   final String date;
   final OrderStatus status;
   final void Function() onTap;
+  final String orderNumber;
 
   @override
   Widget build(BuildContext context) {
@@ -43,14 +46,14 @@ class OrderPreviewTile extends StatelessWidget {
                     const Text('Номер заказа:'),
                     const SizedBox(width: 5),
                     Text(
-                      '2324252627',
+                      orderNumber,
                       style: Theme.of(context)
                           .textTheme
                           .bodyLarge
                           ?.copyWith(color: Colors.black),
                     ),
                     const Spacer(),
-                    const Text('25 январь'),
+                    Text(formatDateWithTime(date, 'ru')),
                   ],
                 ),
                 Row(
@@ -77,7 +80,7 @@ class OrderPreviewTile extends StatelessWidget {
                           Opacity(
                             opacity: status == OrderStatus.confirmed ? 1 : 0,
                             child: Text(
-                              'Заказ принять',
+                              'Заказ принят',
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge

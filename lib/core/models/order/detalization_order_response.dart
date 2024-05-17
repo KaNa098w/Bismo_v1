@@ -14,7 +14,7 @@ class DetalizationOrderResponse {
   String? user;
   int? orderSum;
   int? factSum;
-  List<Goods>? goods;
+  List<OrderGoods>? goods;
 
   DetalizationOrderResponse(
       {this.success,
@@ -51,9 +51,9 @@ class DetalizationOrderResponse {
     orderSum = json['order_sum'];
     factSum = json['fact_sum'];
     if (json['goods'] != null) {
-      goods = <Goods>[];
+      goods = <OrderGoods>[];
       json['goods'].forEach((v) {
-        goods!.add(Goods.fromJson(v));
+        goods!.add(OrderGoods.fromJson(v));
       });
     }
   }
@@ -82,7 +82,7 @@ class DetalizationOrderResponse {
   }
 }
 
-class Goods {
+class OrderGoods {
   int? basketCount;
   int? factCount;
   String? kontragent;
@@ -94,7 +94,7 @@ class Goods {
   String? producer;
   String? comment;
 
-  Goods(
+  OrderGoods(
       {this.basketCount,
       this.factCount,
       this.kontragent,
@@ -106,7 +106,7 @@ class Goods {
       this.producer,
       this.comment});
 
-  Goods.fromJson(Map<String, dynamic> json) {
+  OrderGoods.fromJson(Map<String, dynamic> json) {
     basketCount = json['basket_count'];
     factCount = json['fact_count'];
     kontragent = json['kontragent'];

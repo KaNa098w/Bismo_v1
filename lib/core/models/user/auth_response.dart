@@ -4,9 +4,15 @@ class AuthResponse {
   String? userName;
   String? storeName;
   String? type;
+  String? phoneNumber;
 
   AuthResponse(
-      {this.success, this.message, this.userName, this.storeName, this.type});
+      {this.success,
+      this.message,
+      this.userName,
+      this.storeName,
+      this.type,
+      this.phoneNumber});
 
   AuthResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'];
@@ -14,6 +20,7 @@ class AuthResponse {
     userName = json['user_name'];
     storeName = json['store_name'];
     type = json['type'];
+    phoneNumber = json['phone_number'];
   }
 
   Map<String, dynamic> toJson() {
@@ -23,6 +30,7 @@ class AuthResponse {
     data['user_name'] = userName;
     data['store_name'] = storeName;
     data['type'] = type;
+    data['phone_number'] = phoneNumber;
     return data;
   }
 }
