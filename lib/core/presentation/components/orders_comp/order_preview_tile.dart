@@ -1,8 +1,19 @@
+import 'dart:developer';
+
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
+import 'package:bismo/core/exceptions.dart';
 import 'package:bismo/core/helpers/other.dart';
+import 'package:bismo/core/models/order/set_status_request.dart';
 import 'package:bismo/core/presentation/components/orders_comp/dummy_order_status.dart';
+import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
+import 'package:bismo/core/presentation/dialogs/loader_dialog.dart';
+import 'package:bismo/core/providers/user_provider.dart';
+import 'package:bismo/core/services/order.service.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class OrderPreviewTile extends StatelessWidget {
   const OrderPreviewTile({
@@ -71,8 +82,16 @@ class OrderPreviewTile extends StatelessWidget {
                     ),
                     if (status == OrderStatus.confirmed) // Добавляем кнопку только если статус заказа подтвержден
                       ElevatedButton(
-                        onPressed: () {
-                          // Ваша логика для отмены заказа
+                        onPressed: () async{
+                          var userProvider = context.read<UserProvider>();
+
+             
+                           SetStatusRequest setStatusRequest = SetStatusRequest(
+                             uIDOrder: orderID,
+                             user: userProvider.user?.phoneNumber ?? "",
+                             status: 9.toString(),
+                           );
+                          await setStatus(setStatusRequest, context);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white, // Устанавливаем красный цвет для кнопки
@@ -87,6 +106,87 @@ class OrderPreviewTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+   Future<bool> setStatus(SetStatusRequest setStatusRequest,  BuildContext ctx) async {
+    showLoader(ctx);
+
+    try {
+     
+      var res = await OrderService().setStatus(setStatusRequest);
+
+      if (res != null) {
+        if ((res.success ?? false) == false) {
+          if (ctx.mounted) {
+            
+            hideLoader(ctx);
+            showAlertDialog(
+              context: ctx,
+              barrierDismissible: true,
+              title: "Ошибка",
+              content: "Неудалось отменить заказ",
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  textStyle: const TextStyle(color: AppColors.primaryColor),
+                  child: const Text("OK"),
+                ),
+              ],
+            );
+          }
+
+          return false;
+        }
+
+       
+          hideLoader(ctx);
+       
+
+        return true;
+      }
+    } on DioException catch (e) {
+      log(e.toString());
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      if (e.response?.statusCode == 401) {
+        if (ctx.mounted) {
+          hideLoader(ctx);
+          showAlertDialog(
+            context: ctx,
+            barrierDismissible: true,
+            title: "Ошибка",
+            content: "Неправильный номер телефона или код из смс",
+            actions: <Widget>[
+              CupertinoDialogAction(
+                onPressed: () => Navigator.of(ctx).pop(),
+                textStyle: const TextStyle(color: AppColors.primaryColor),
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        }
+      } else {
+        if (ctx.mounted) {
+          hideLoader(ctx);
+          showAlertDialog(
+            context: ctx,
+            barrierDismissible: true,
+            title: "Ошибка",
+            content: errorMessage,
+            actions: <Widget>[
+              CupertinoDialogAction(
+                onPressed: () => Navigator.of(ctx).pop(),
+                textStyle: const TextStyle(color: AppColors.primaryColor),
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        }
+      }
+
+      return false;
+    }
+
+    return false;
   }
 
   String _getStatusText() {

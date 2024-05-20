@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:bismo/core/api_endpoints.dart';
 import 'package:bismo/core/app_http.dart';
 import 'package:bismo/core/models/order/detalization_order_response.dart';
 import 'package:bismo/core/models/order/get_my_order_list_response.dart';
+import 'package:bismo/core/models/order/set_status_request.dart';
+import 'package:bismo/core/models/order/set_status_response%20copy.dart';
 import 'package:dio/dio.dart';
 
 class OrderService {
@@ -43,4 +47,23 @@ class OrderService {
     }
     return null;
   }
+
+  Future<SetStatusResponse?> setStatus(SetStatusRequest setStatusRequest) async {
+    try {
+      Response res = await _http.post(
+        ApiEndpoint.setStatus,
+        data: jsonEncode(setStatusRequest),
+      );
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        SetStatusResponse response = SetStatusResponse.fromJson(res.data);
+        return response;
+      }
+    } catch (e) {
+      rethrow;
+    }
+    return null;
+  }
+  
 }
+
