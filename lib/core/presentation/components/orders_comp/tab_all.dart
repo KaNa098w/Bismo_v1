@@ -118,6 +118,7 @@ class _AllTabState extends State<AllTab> {
 
                             refresh();
                           },
+                          refresh: refresh,
                           orderID: item.uIDOrder ?? "",
                           orderNumber: item.number ?? "",
                           date: item.date ?? "",

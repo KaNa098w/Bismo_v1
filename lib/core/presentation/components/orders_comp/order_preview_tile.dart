@@ -16,21 +16,23 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class OrderPreviewTile extends StatelessWidget {
-  const OrderPreviewTile({
-    Key? key,
-    required this.orderID,
-    required this.date,
-    required this.status,
-    required this.onTap,
-    required this.orderNumber,
-    required order,
-  }) : super(key: key);
+  const OrderPreviewTile(
+      {Key? key,
+      required this.orderID,
+      required this.date,
+      required this.status,
+      required this.onTap,
+      required this.orderNumber,
+      required order,
+      required this.refresh})
+      : super(key: key);
 
   final String orderID;
   final String date;
   final OrderStatus status;
   final void Function() onTap;
   final String orderNumber;
+  final void Function() refresh;
 
   @override
   Widget build(BuildContext context) {
@@ -80,23 +82,28 @@ class OrderPreviewTile extends StatelessWidget {
                             ?.copyWith(color: _orderColor()),
                       ),
                     ),
-                    if (status == OrderStatus.confirmed) // Добавляем кнопку только если статус заказа подтвержден
+                    if (status ==
+                        OrderStatus
+                            .confirmed) // Добавляем кнопку только если статус заказа подтвержден
                       ElevatedButton(
-                        onPressed: () async{
+                        onPressed: () async {
                           var userProvider = context.read<UserProvider>();
 
-             
-                           SetStatusRequest setStatusRequest = SetStatusRequest(
-                             uIDOrder: orderID,
-                             user: userProvider.user?.phoneNumber ?? "",
-                             status: 9.toString(),
-                           );
+                          SetStatusRequest setStatusRequest = SetStatusRequest(
+                            uIDOrder: orderID,
+                            user: userProvider.user?.phoneNumber ?? "",
+                            status: 9.toString(),
+                          );
                           await setStatus(setStatusRequest, context);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white, // Устанавливаем красный цвет для кнопки
+                          backgroundColor: Colors
+                              .white, // Устанавливаем красный цвет для кнопки
                         ),
-                        child: const Text('Отменить заказ', style: TextStyle( color: Colors.red),),
+                        child: const Text(
+                          'Отменить заказ',
+                          style: TextStyle(color: Colors.red),
+                        ),
                       ),
                   ],
                 ),
@@ -108,17 +115,16 @@ class OrderPreviewTile extends StatelessWidget {
     );
   }
 
-   Future<bool> setStatus(SetStatusRequest setStatusRequest,  BuildContext ctx) async {
+  Future<bool> setStatus(
+      SetStatusRequest setStatusRequest, BuildContext ctx) async {
     showLoader(ctx);
 
     try {
-     
       var res = await OrderService().setStatus(setStatusRequest);
 
       if (res != null) {
         if ((res.success ?? false) == false) {
           if (ctx.mounted) {
-            
             hideLoader(ctx);
             showAlertDialog(
               context: ctx,
@@ -138,9 +144,10 @@ class OrderPreviewTile extends StatelessWidget {
           return false;
         }
 
-       
+        if (ctx.mounted) {
           hideLoader(ctx);
-       
+          refresh();
+        }
 
         return true;
       }
