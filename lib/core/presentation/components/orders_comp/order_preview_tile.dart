@@ -40,6 +40,7 @@ class OrderPreviewTile extends StatelessWidget {
               borderRadius: AppDefaults.borderRadius,
             ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
@@ -56,77 +57,30 @@ class OrderPreviewTile extends StatelessWidget {
                     Text(formatDateWithTime(date, 'ru')),
                   ],
                 ),
+                const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Text('Статус'),
                     Expanded(
-                      child: RangeSlider(
-                        values: RangeValues(0, _orderSliderValue()),
-                        max: 3,
-                        divisions: 3,
-                        onChanged: (v) {},
-                        activeColor: _orderColor(),
-                        inactiveColor: AppColors.placeholder.withOpacity(0.2),
+                      child: Text(
+                        _getStatusText(),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(color: _orderColor()),
                       ),
                     ),
+                    if (status == OrderStatus.confirmed) // Добавляем кнопку только если статус заказа подтвержден
+                      ElevatedButton(
+                        onPressed: () {
+                          // Ваша логика для отмены заказа
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white, // Устанавливаем красный цвет для кнопки
+                        ),
+                        child: const Text('Отменить заказ', style: TextStyle( color: Colors.red),),
+                      ),
                   ],
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Opacity(
-                            opacity: status == OrderStatus.confirmed ? 1 : 0,
-                            child: Text(
-                              'Заказ принят',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(color: _orderColor()),
-                            ),
-                          ),
-                          Opacity(
-                            opacity: status == OrderStatus.processing ? 1 : 0,
-                            child: Text(
-                              'В процессе',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(color: _orderColor()),
-                            ),
-                          ),
-                          Opacity(
-                            opacity: status == OrderStatus.shipped ? 1 : 0,
-                            child: Text(
-                              'В пути',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(color: _orderColor()),
-                            ),
-                          ),
-                          Opacity(
-                            opacity: status == OrderStatus.delivery ||
-                                    status == OrderStatus.cancelled
-                                ? 1
-                                : 0,
-                            child: Text(
-                              status == OrderStatus.delivery
-                                  ? 'Доставлен'
-                                  : 'Отменен',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(color: _orderColor()),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                )
               ],
             ),
           ),
@@ -135,21 +89,20 @@ class OrderPreviewTile extends StatelessWidget {
     );
   }
 
-  double _orderSliderValue() {
+  String _getStatusText() {
     switch (status) {
       case OrderStatus.confirmed:
-        return 0;
+        return 'Ожидает';
       case OrderStatus.processing:
-        return 1;
+        return 'В процессе';
       case OrderStatus.shipped:
-        return 2;
+        return 'В пути';
       case OrderStatus.delivery:
-        return 3;
+        return 'Доставлен';
       case OrderStatus.cancelled:
-        return 3;
-
+        return 'Отменен';
       default:
-        return 0;
+        return '';
     }
   }
 
@@ -165,7 +118,6 @@ class OrderPreviewTile extends StatelessWidget {
         return const Color(0xFF41AA55);
       case OrderStatus.cancelled:
         return const Color(0xFFFF1F1F);
-
       default:
         return Colors.red;
     }

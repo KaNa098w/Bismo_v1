@@ -134,71 +134,72 @@ class _GoodsViewState extends State<GoodsView> {
           ),
         ],
       ),
-      body: !isLoading
-          ? goodsResponse != null
-              ? Container(
-                  padding: const EdgeInsets.all(1.0),
-                  child: (goodsResponse?.goods ?? []).isNotEmpty
-                      ? ListView.builder(
-                          itemCount: goodsResponse!.goods!.length,
-                          itemBuilder: (context, index) {
-                            Goods goods = goodsResponse!.goods![index];
-                            bool isInCart = cartItems.any((item) =>
-                                item.productId == goods.nomenklaturaKod);
-                            return Card(
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(goods.photo ?? ""),
-                                ),
-                                title: Text(goods.nomenklatura ?? ''),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                        'Поставщик: ${goods.kontragent ?? ""}'),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Цена: ${goods.price?.toInt()}₸/кг',
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ],
-                                ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (!isInCart)
-                                      IconButton(
-                                        icon:
-                                            const Icon(Icons.add_shopping_cart),
-                                        onPressed: () {
-                                          addToCart(goods);
-                                        },
-                                      ),
-                                    if (isInCart)
-                                      IconButton(
-                                        icon: const Icon(
-                                            Icons.delete_outline_rounded),
-                                        onPressed: () {
-                                          removeFromCart(goods);
-                                        },
-                                      ),
-                                  ],
-                                ),
+    body: !isLoading
+    ? goodsResponse != null
+        ? Container(
+            color: Colors.white, // Устанавливаем белый фон для списка
+            padding: const EdgeInsets.all(1.0),
+            child: (goodsResponse?.goods ?? []).isNotEmpty
+                ? ListView.builder(
+                    itemCount: goodsResponse!.goods!.length,
+                    itemBuilder: (context, index) {
+                      Goods goods = goodsResponse!.goods![index];
+                      bool isInCart = cartItems.any(
+                          (item) => item.productId == goods.nomenklaturaKod);
+                      return Card(
+                        color: Colors.white, // Устанавливаем белый фон для карточки
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage:
+                                NetworkImage(goods.photo ?? ""),
+                          ),
+                          title: Text(goods.nomenklatura ?? ''),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Поставщик: ${goods.kontragent ?? ""}'),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Цена: ${goods.price?.toInt()}₸/кг',
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500),
                               ),
-                            );
-                          },
-                        )
-                      : const CustomEmpty(),
-                )
-              : const CustomEmpty()
-          : const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primaryColor,
-              ),
-            ),
+                            ],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (!isInCart)
+                                IconButton(
+                                  icon: const Icon(Icons.add_shopping_cart),
+                                  onPressed: () {
+                                    addToCart(goods);
+                                  },
+                                ),
+                              if (isInCart)
+                                IconButton(
+                                  icon: const Icon(
+                                      Icons.delete_outline_rounded),
+                                  onPressed: () {
+                                    removeFromCart(goods);
+                                  },
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : const CustomEmpty(),
+          )
+        : const CustomEmpty()
+    : const Center(
+        child: CircularProgressIndicator(
+          color: AppColors.primaryColor,
+        ),
+      ),
+
     );
   }
 }

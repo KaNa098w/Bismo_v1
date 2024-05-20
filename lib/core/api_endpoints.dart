@@ -13,6 +13,6 @@ class ApiEndpoint {
   static const getAddress = '$api/all/user_adress';
   static const detalizationsOrder = '$api/product/detalizationsorder';
   static const getmyordersList = '$api/product/getmyorderslist';
-
+  static const deleteOrder = '$api/product/deleteorder'; // Добавлено
   static const List<String> urlsWithoutAuthorization = [];
 }

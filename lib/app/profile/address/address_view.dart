@@ -42,13 +42,13 @@ class _AddressViewState extends State<AddressView> {
             ListView.separated(
               itemBuilder: (context, index) {
                 return AddressTile(
-                  label: 'Puraton Custom, Chhatak',
-                  address: '216/c East Road',
-                  number: '+88017100710000',
+                  label: 'Шымкент, мкр Нурсат',
+                  address: 'дом 129 кв 63',
+                  number: '+7777 701 7100',
                   isActive: index == 0,
                 );
               },
-              itemCount: 5,
+              itemCount: 2,
               separatorBuilder: (context, index) =>
                   const Divider(thickness: 0.2),
             ),
@@ -57,7 +57,7 @@ class _AddressViewState extends State<AddressView> {
               right: 16,
               child: FloatingActionButton(
                 onPressed: () {
-                  // Navigator.pushNamed(context, AppRoutes.newAddress);
+                  Navigator.pushNamed(context, '/location');
                 },
                 backgroundColor: AppColors.primary,
                 splashColor: AppColors.primary,

@@ -32,7 +32,7 @@ class CategoryTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppDefaults.padding * 1),
               decoration: BoxDecoration(
-                color: backgroundColor ?? AppColors.textInputBackground,
+                color: backgroundColor ?? Colors.white,
                 shape: BoxShape.circle,
               ),
               child: SizedBox(

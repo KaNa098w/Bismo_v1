@@ -22,11 +22,11 @@ class AppDefaults {
 
   /// Default Box Shadow used for containers
   static List<BoxShadow> boxShadow = [
-    BoxShadow(
-      blurRadius: 8,
+    const BoxShadow(
+      blurRadius: 0,
       spreadRadius: 0,
-      offset: const Offset(0, 2),
-      color: Colors.black.withOpacity(0.04),
+      offset: Offset(0, 0),
+      color: Colors.white,
     ),
   ];
 
