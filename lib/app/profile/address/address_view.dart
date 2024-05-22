@@ -227,7 +227,8 @@ class _AddressViewState extends State<AddressView> {
                               shirota: shirota ?? '',
                             );
 
-                            await addAddress(addAddressRequest, context);
+                            await addAddress(addAddressRequest,
+                                userProvider.user?.phoneNumber ?? "", context);
 
                             Navigator.of(context)
                                 .pop(); // Закрыть диалог после сохранения
@@ -258,12 +259,13 @@ class _AddressViewState extends State<AddressView> {
       ),
     );
   }
-  Future<bool> addAddress(
-      AddressRequest addressRequest, BuildContext ctx) async {
+
+  Future<bool> addAddress(AddressRequest addressRequest, String phoneNumber,
+      BuildContext ctx) async {
     showLoader(ctx);
 
     try {
-      var res = await AddressService().addAddress(addressRequest);
+      var res = await AddressService().addAddress(addressRequest, phoneNumber);
 
       if (res != null) {
         if ((res.success ?? false) == false) {
