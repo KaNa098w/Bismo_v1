@@ -25,6 +25,8 @@ class GetAddressResponse {
     }
     return data;
   }
+
+  getAddressResponse(String s) {}
 }
 
 class AllAdress {

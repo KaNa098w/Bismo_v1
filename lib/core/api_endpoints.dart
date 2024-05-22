@@ -15,6 +15,9 @@ class ApiEndpoint {
   static const detalizationsOrder = '$api/product/detalizationsorder';
   static const getmyordersList = '$api/product/getmyorderslist';
   static const deleteOrder = '$api/product/deleteorder';
-  static const setStatus = '$api/product/setstatus';// Добавлено
+  static const setStatus = '$api/product/setstatus';
+  static const getAddresses = '$api/all/user_adress';
+  static const addAddress = '$api/all/add_adress';
+
   static const List<String> urlsWithoutAuthorization = [];
 }

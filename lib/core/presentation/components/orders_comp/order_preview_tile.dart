@@ -92,7 +92,7 @@ class OrderPreviewTile extends StatelessWidget {
                           SetStatusRequest setStatusRequest = SetStatusRequest(
                             uIDOrder: orderID,
                             user: userProvider.user?.phoneNumber ?? "",
-                            status: 9.toString(),
+                            status: '09',
                           );
                           await setStatus(setStatusRequest, context);
                         },
@@ -199,7 +199,7 @@ class OrderPreviewTile extends StatelessWidget {
   String _getStatusText() {
     switch (status) {
       case OrderStatus.confirmed:
-        return 'Ожидает';
+        return 'В обработке';
       case OrderStatus.processing:
         return 'В процессе';
       case OrderStatus.shipped:
@@ -207,7 +207,7 @@ class OrderPreviewTile extends StatelessWidget {
       case OrderStatus.delivery:
         return 'Доставлен';
       case OrderStatus.cancelled:
-        return 'Отменен';
+        return 'Заказ отменен';
       default:
         return '';
     }

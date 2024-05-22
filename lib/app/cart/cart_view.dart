@@ -227,50 +227,59 @@ class _CartViewState extends State<CartView> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Column(children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Column(
           children: [
-            Column(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ToggleButtons(
-                  isSelected: [isDeliverySelected, !isDeliverySelected],
-                  onPressed: (int index) {
-                    setState(() {
-                      isDeliverySelected = index == 0;
-                    });
-                  },
-                  selectedColor: Colors.white,
-                  fillColor: Colors.blue, // Цвет фона кнопки при выборе
-                  borderRadius:
-                      BorderRadius.circular(15), // Задаем радиус скругления
+                Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Доставка',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: isDeliverySelected
-                              ? Colors.white
-                              : Colors.black,
+                    ToggleButtons(
+                      isSelected: [isDeliverySelected, !isDeliverySelected],
+                      onPressed: (int index) {
+                        setState(() {
+                          isDeliverySelected =
+                              index == 0; // Обновление существующей переменной
+                        });
+                      },
+                      selectedColor: Colors.white,
+                      fillColor: Colors.blue,
+                      borderRadius: BorderRadius.circular(12),
+                      children: [
+                        SizedBox(
+                          width: 100,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Доставка',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: isDeliverySelected
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Самовывоз',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: !isDeliverySelected
-                              ? Colors.white
-                              : Colors.black,
+                        SizedBox(
+                          width: 100,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Самовывоз',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: !isDeliverySelected
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
@@ -278,173 +287,171 @@ Widget build(BuildContext context) {
             ),
           ],
         ),
-      ]),
-    ),
-    body: FutureBuilder<List<PersistentShoppingCartItem>>(
-        future: _loadCartItems(),
-        builder: (context,
-            AsyncSnapshot<List<PersistentShoppingCartItem>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting &&
-              !isLoaded) {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primaryColor,
-              ),
-            );
-          }
+      ),
+      body: FutureBuilder<List<PersistentShoppingCartItem>>(
+          future: _loadCartItems(),
+          builder: (context,
+              AsyncSnapshot<List<PersistentShoppingCartItem>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting &&
+                !isLoaded) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                ),
+              );
+            }
 
-          if (snapshot.hasError) {
-            return const CustomErrorWidget();
-          }
+            if (snapshot.hasError) {
+              return const CustomErrorWidget();
+            }
 
-          if (snapshot.data == null || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.remove_shopping_cart_outlined,
-                    size: 120,
-                    color: Colors.grey,
+            if (snapshot.data == null || snapshot.data!.isEmpty) {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.remove_shopping_cart_outlined,
+                      size: 120,
+                      color: Colors.grey,
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      'Нет товаров',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return ListView.separated(
+              itemCount: snapshot.data!.length,
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(),
+              itemBuilder: (context, index) {
+                PersistentShoppingCartItem cartItem = snapshot.data![index];
+
+                return ListTile(
+                  leading: CircleAvatar(
+                    radius: 30,
+                    backgroundImage:
+                        NetworkImage(cartItem.productThumbnail ?? ""),
                   ),
-                  SizedBox(height: 20),
-                  Text(
-                    'Нет товаров',
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                  title: Text(cartItem.productName),
+                  subtitle:
+                      Text('${cartItem.unitPrice}₸ x ${cartItem.quantity}'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (cartItem.quantity > 1)
+                        IconButton(
+                          color: Colors.red,
+                          iconSize: 30,
+                          icon: const Icon(Icons.remove_circle),
+                          onPressed: () {
+                            setState(() {
+                              cartItem.quantity--;
+                              _controllers[index].text =
+                                  cartItem.quantity.toString();
+                            });
+                            PersistentShoppingCart()
+                                .removeFromCart(cartItem.productId);
+                            PersistentShoppingCart().addToCart(cartItem);
+                          },
+                        )
+                      else
+                        IconButton(
+                          iconSize: 30,
+                          color: Colors.red,
+                          icon: const Icon(Icons.delete_outline_rounded),
+                          onPressed: () {
+                            _showDeleteConfirmationDialog(context,
+                                cartItem.productName, cartItem.productId);
+                          },
+                        ),
+                      const SizedBox(width: 5),
+                      SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          controller: _controllers[index],
+                          textAlign: TextAlign.center,
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.zero,
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              cartItem.quantity = int.parse(value);
+                            });
+                          },
+                        ),
+                      ),
+                      IconButton(
+                        iconSize: 30,
+                        color: Colors.green,
+                        icon: const Icon(Icons.add_box),
+                        onPressed: () {
+                          setState(() {
+                            cartItem.quantity++;
+                            _controllers[index].text =
+                                cartItem.quantity.toString();
+                          });
+                          PersistentShoppingCart()
+                              .removeFromCart(cartItem.productId);
+                          PersistentShoppingCart().addToCart(cartItem);
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+
+            
+          }),
+          
+      bottomNavigationBar: cartItems.isNotEmpty
+          ? Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.green,
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      padding: const EdgeInsets.all(9),
+                      textStyle: const TextStyle(
+                          fontSize: 18.0, fontWeight: FontWeight.bold),
+                    ),
+                    child: Text(
+                      'Итого: ${(cartItems.fold<double>(0, (total, item) => total + (item.unitPrice * item.quantity))).toStringAsFixed(2)}₸',
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      var userProvider = context.read<UserProvider>();
+
+                      _setOrder(userProvider.user?.phoneNumber ?? "", context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.red,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
+                      textStyle: const TextStyle(fontSize: 16),
+                    ),
+                    child: const Text('Оформить заказ'),
                   ),
                 ],
               ),
-            );
-          }
-
-          return ListView.separated(
-  itemCount: snapshot.data!.length,
-  separatorBuilder: (BuildContext context, int index) => const Divider(), // Добавляем разделитель между товарами
-  itemBuilder: (context, index) {
-    PersistentShoppingCartItem cartItem = snapshot.data![index];
-
-    return ListTile(
-      leading: CircleAvatar(
-        radius: 30,
-        backgroundImage: NetworkImage(cartItem.productThumbnail ?? ""),
-      ),
-      title: Text(cartItem.productName),
-      subtitle: Text('${cartItem.unitPrice}₸ x ${cartItem.quantity}'),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (cartItem.quantity > 1)
-            IconButton(
-              color: Colors.red,
-              iconSize: 30,
-              icon: const Icon(Icons.remove_circle),
-              onPressed: () {
-                setState(() {
-                  cartItem.quantity--;
-                  _controllers[index].text =
-                      cartItem.quantity.toString();
-                });
-                PersistentShoppingCart()
-                    .removeFromCart(cartItem.productId);
-                PersistentShoppingCart().addToCart(cartItem);
-              },
             )
-          else
-            IconButton(
-              iconSize: 30,
-              color: Colors.red,
-              icon: const Icon(Icons.delete_outline_rounded),
-              onPressed: () {
-                _showDeleteConfirmationDialog(context,
-                    cartItem.productName, cartItem.productId);
-              },
-            ),
-          const SizedBox(width: 5),
-          SizedBox(
-            width: 30,
-            height: 30,
-            child: TextFormField(
-              keyboardType: TextInputType.number,
-              controller: _controllers[index],
-              textAlign: TextAlign.center,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.zero,
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  cartItem.quantity = int.parse(value);
-                });
-              },
-            ),
-          ),
-          IconButton(
-            iconSize: 30,
-            color: Colors.green,
-            icon: const Icon(Icons.add_box),
-            onPressed: () {
-              setState(() {
-                cartItem.quantity++;
-                _controllers[index].text =
-                    cartItem.quantity.toString();
-              });
-              PersistentShoppingCart()
-                  .removeFromCart(cartItem.productId);
-              PersistentShoppingCart().addToCart(cartItem);
-            },
-          ),
-        ],
-      ),
+          : null,
     );
-  },
-);
-
-        }),
-    bottomNavigationBar: cartItems.isNotEmpty ? Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          ElevatedButton(
-            onPressed:
-                () {}, // Для текста "Итого" нет необходимости в действии
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.green,
-              backgroundColor:
-                  Colors.transparent, // Устанавливаем цвет текста
-              elevation: 0, // Убираем тень кнопки
-              padding: const EdgeInsets.all(
-                  9), // Устанавливаем отступы вокруг текста
-              textStyle: const TextStyle(
-                  fontSize: 18.0,
-                  fontWeight:
-                      FontWeight.bold), // Устанавливаем размер и стиль текста
-            ),
-            child: Text(
-              'Итого: ${(cartItems.fold<double>(0, (total, item) => total + (item.unitPrice * item.quantity))).toStringAsFixed(2)}₸',
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              var userProvider = context.read<UserProvider>();
-
-              _setOrder(userProvider.user?.phoneNumber ?? "", context);
-            },
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.red, // Устанавливаем цвет текста кнопки
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12), // Устанавливаем отступы вокруг текста кнопки
-              textStyle: const TextStyle(
-                  fontSize: 16), // Устанавливаем размер текста кнопки
-            ),
-            child: const Text('Оформить заказ'),
-          ),
-        ],
-      ),
-    ) : null, // Если корзина пуста, возвращаем null
-  );
-}
-
+  }
 }
