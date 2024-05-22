@@ -54,9 +54,12 @@ class _AddressViewState extends State<AddressView> {
   }
 
   Future<void> fetchAdressWithDio() async {
+    var userProvider = context.read<UserProvider>();
+
     var headers = {'Authorization': 'Basic d2ViOjc3NTc0OTk0NTFkbA=='};
-    const bUrl =
-        'http://api.bismo.kz/server/hs/all/user_adress?phone_number=7777017100';
+
+    var bUrl =
+        'http://api.bismo.kz/server/hs/all/user_adress?phone_number=${userProvider.user?.phoneNumber}';
 
     try {
       final response = await dio.get(
