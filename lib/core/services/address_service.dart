@@ -38,7 +38,7 @@ class AddressService {
     try {
       Options options = Options(headers: {'User': phoneNumber});
       Response res = await _http.post(ApiEndpoint.addAddress,
-          data: jsonEncode(addressRequest), options: options);
+          data: addressRequest.toJson(), options: options);
 
       if (res.statusCode == 200 || res.statusCode == 201) {
         AddAddressResponse response = AddAddressResponse.fromJson(res.data);
