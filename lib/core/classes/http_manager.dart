@@ -15,6 +15,7 @@ class HttpManager {
   HttpManager([String baseUrl = '', Map<String, dynamic>? headers]) {
     _dio.options.baseUrl = baseUrl;
     _dio.options.headers = headers;
+    _dio.options.preserveHeaderCase = true;
 
     // how to solve flutter CERTIFICATE_VERIFY_FAILED error while performing a POST request?
     // if (kIsWeb) {

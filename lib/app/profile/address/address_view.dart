@@ -54,9 +54,12 @@ class _AddressViewState extends State<AddressView> {
   }
 
   Future<void> fetchAdressWithDio() async {
+    var userProvider = context.read<UserProvider>();
+
     var headers = {'Authorization': 'Basic d2ViOjc3NTc0OTk0NTFkbA=='};
-    const bUrl =
-        'http://api.bismo.kz/server/hs/all/user_adress?phone_number=7777017100';
+
+    var bUrl =
+        'http://api.bismo.kz/server/hs/all/user_adress?phone_number=${userProvider.user?.phoneNumber}';
 
     try {
       final response = await dio.get(
@@ -227,8 +230,8 @@ class _AddressViewState extends State<AddressView> {
                               shirota: shirota ?? '',
                             );
 
-                            await addAddress(addAddressRequest, context);
-                            print('$cityController');
+                            await addAddress(addAddressRequest,
+                                userProvider.user?.phoneNumber ?? "", context);
 
                             Navigator.of(context)
                                 .pop(); 
@@ -260,12 +263,13 @@ class _AddressViewState extends State<AddressView> {
       ),
     );
   }
-  Future<bool> addAddress(
-      AddressRequest addressRequest, BuildContext ctx) async {
+
+  Future<bool> addAddress(AddressRequest addressRequest, String phoneNumber,
+      BuildContext ctx) async {
     showLoader(ctx);
 
     try {
-      var res = await AddressService().addAddress(addressRequest);
+      var res = await AddressService().addAddress(addressRequest, phoneNumber);
 
       if (res != null) {
         if ((res.success ?? false) == false) {
