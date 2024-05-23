@@ -4,6 +4,7 @@ import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:bismo/core/exceptions.dart';
 import 'package:bismo/core/helpers/other.dart';
+import 'package:bismo/core/models/order/get_my_order_list_response.dart';
 import 'package:bismo/core/models/order/set_status_request.dart';
 import 'package:bismo/core/presentation/components/orders_comp/dummy_order_status.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
@@ -15,24 +16,30 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class OrderPreviewTile extends StatelessWidget {
-  const OrderPreviewTile(
-      {Key? key,
-      required this.orderID,
-      required this.date,
-      required this.status,
-      required this.onTap,
-      required this.orderNumber,
-      required order,
-      required this.refresh})
-      : super(key: key);
+class OrderPreviewTile extends StatefulWidget {
+  const OrderPreviewTile({
+    Key? key,
+    required this.orderID,
+    required this.date,
+    required this.status,
+    required this.onTap,
+    required this.orderNumber,
+    required this.refresh, required JSONBody order,
+  }) : super(key: key);
 
   final String orderID;
   final String date;
-  final OrderStatus status;
+  final OrderStatus? status;
   final void Function() onTap;
   final String orderNumber;
   final void Function() refresh;
+
+  @override
+  _OrderPreviewTileState createState() => _OrderPreviewTileState();
+}
+
+class _OrderPreviewTileState extends State<OrderPreviewTile> {
+  bool _isCancelled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +52,7 @@ class OrderPreviewTile extends StatelessWidget {
         color: Colors.white,
         borderRadius: AppDefaults.borderRadius,
         child: InkWell(
-          onTap: onTap,
+          onTap: widget.onTap,
           borderRadius: AppDefaults.borderRadius,
           child: Container(
             padding: const EdgeInsets.all(AppDefaults.padding),
@@ -60,14 +67,14 @@ class OrderPreviewTile extends StatelessWidget {
                     const Text('Номер заказа:'),
                     const SizedBox(width: 5),
                     Text(
-                      orderNumber,
+                      widget.orderNumber,
                       style: Theme.of(context)
                           .textTheme
                           .bodyLarge
                           ?.copyWith(color: Colors.black),
                     ),
                     const Spacer(),
-                    Text(formatDateWithTime(date, 'ru')),
+                    Text(formatDateWithTime(widget.date, 'ru')),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -82,23 +89,32 @@ class OrderPreviewTile extends StatelessWidget {
                             ?.copyWith(color: _orderColor()),
                       ),
                     ),
-                    if (status ==
-                        OrderStatus
-                            .confirmed) // Добавляем кнопку только если статус заказа подтвержден
+                    if (_isCancelled)
+                      const Text(
+                        'Заказ успешно отменен',
+                        style: TextStyle(color: Colors.red),
+                      )
+                    else if (widget.status == OrderStatus.confirmed)
                       ElevatedButton(
                         onPressed: () async {
                           var userProvider = context.read<UserProvider>();
 
                           SetStatusRequest setStatusRequest = SetStatusRequest(
-                            uIDOrder: orderID,
+                            uIDOrder: widget.orderID,
                             user: userProvider.user?.phoneNumber ?? "",
                             status: '09',
                           );
-                          await setStatus(setStatusRequest, context);
+                          bool success = await setStatus(setStatusRequest, context);
+                          if (success) {
+                            setState(() {
+                              _isCancelled = true;
+                              widget.refresh();
+                           
+                            });
+                          }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors
-                              .white, // Устанавливаем красный цвет для кнопки
+                          backgroundColor: Colors.white,
                         ),
                         child: const Text(
                           'Отменить заказ',
@@ -115,8 +131,7 @@ class OrderPreviewTile extends StatelessWidget {
     );
   }
 
-  Future<bool> setStatus(
-      SetStatusRequest setStatusRequest, BuildContext ctx) async {
+  Future<bool> setStatus(SetStatusRequest setStatusRequest, BuildContext ctx) async {
     showLoader(ctx);
 
     try {
@@ -130,7 +145,7 @@ class OrderPreviewTile extends StatelessWidget {
               context: ctx,
               barrierDismissible: true,
               title: "Ошибка",
-              content: "Неудалось отменить заказ",
+              content: "Не удалось отменить заказ",
               actions: <Widget>[
                 CupertinoDialogAction(
                   onPressed: () => Navigator.of(ctx).pop(),
@@ -146,7 +161,7 @@ class OrderPreviewTile extends StatelessWidget {
 
         if (ctx.mounted) {
           hideLoader(ctx);
-          refresh();
+          widget.refresh();
         }
 
         return true;
@@ -197,7 +212,7 @@ class OrderPreviewTile extends StatelessWidget {
   }
 
   String _getStatusText() {
-    switch (status) {
+    switch (widget.status) {
       case OrderStatus.confirmed:
         return 'В обработке';
       case OrderStatus.processing:
@@ -214,7 +229,7 @@ class OrderPreviewTile extends StatelessWidget {
   }
 
   Color _orderColor() {
-    switch (status) {
+    switch (widget.status) {
       case OrderStatus.confirmed:
         return const Color(0xFF4044AA);
       case OrderStatus.processing:
@@ -226,7 +241,8 @@ class OrderPreviewTile extends StatelessWidget {
       case OrderStatus.cancelled:
         return const Color(0xFFFF1F1F);
       default:
-        return Colors.red;
+               return Colors.red;
+      }
     }
   }
-}
+
