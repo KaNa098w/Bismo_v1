@@ -228,11 +228,13 @@ class _AddressViewState extends State<AddressView> {
                             );
 
                             await addAddress(addAddressRequest, context);
+                            print('$cityController');
 
                             Navigator.of(context)
-                                .pop(); // Закрыть диалог после сохранения
+                                .pop(); 
                           },
                           child: const Text('Сохранить'),
+                          
                         ),
                       ],
                     );
