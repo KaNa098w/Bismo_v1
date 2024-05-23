@@ -49,8 +49,8 @@ class _AddressViewState extends State<AddressView> {
   @override
   void initState() {
     super.initState();
-    dio = Dio(); // Создание экземпляра Dio
-    fetchAdressWithDio(); // Вызов метода для получения адресов
+    dio = Dio(); 
+    fetchAdressWithDio(); 
   }
 
   Future<void> fetchAdressWithDio() async {
@@ -75,9 +75,9 @@ class _AddressViewState extends State<AddressView> {
 
       setState(() {
         addresses = getAddressResponse.allAdress;
-        isLoading = false; // Остановка индикатора загрузки
+        isLoading = false; 
         checkedList = List<bool>.filled(addresses!.length,
-            false); // Заполняем список выбранных адресов false
+            false); 
       });
 
       print(getAddressResponse.success);
@@ -111,7 +111,7 @@ class _AddressViewState extends State<AddressView> {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: addresses?.length ?? 0,
                 separatorBuilder: (context, index) =>
-                    const Divider(), // Добавление линии-разделителя
+                    const Divider(), 
                 itemBuilder: (context, index) {
                   final adres = addresses?[index];
                   final dolgota = adres?.dolgota;
@@ -136,10 +136,10 @@ class _AddressViewState extends State<AddressView> {
                             checkedList[index] = newValue!;
                             if (newValue == true) {
                               selectedAddress =
-                                  adress; // Установить выбранный адрес
+                                  adress; 
                             } else {
                               selectedAddress =
-                                  ''; // Сбросить выбранный адрес, если снят выбор
+                                  ''; 
                             }
                           });
                         },
@@ -153,7 +153,7 @@ class _AddressViewState extends State<AddressView> {
                           var userProvider = context.read<UserProvider>();
                           var phoneNumber = userProvider.user?.phoneNumber ?? "";
 
-                          // Показать подтверждение перед удалением
+                        
                           bool? confirm = await showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -163,13 +163,13 @@ class _AddressViewState extends State<AddressView> {
                                 actions: [
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop(false); // Не подтверждено
+                                      Navigator.of(context).pop(false); 
                                     },
                                     child: const Text('Отмена'),
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop(true); // Подтверждено
+                                      Navigator.of(context).pop(true); 
                                     },
                                     child: const Text('Удалить'),
                                   ),
@@ -179,7 +179,6 @@ class _AddressViewState extends State<AddressView> {
                           );
 
                           if (confirm == true) {
-                            // Вызов функции удаления
                             await deleteAddress(adres?.adres ?? "", phoneNumber, context);
                           }
                         },
@@ -407,7 +406,7 @@ class _AddressViewState extends State<AddressView> {
           hideLoader(ctx);
         }
 
-        // Успешное удаление, обновляем список адресов
+       
         fetchAdressWithDio();
 
         return true;
