@@ -42,6 +42,8 @@ class AllAdress {
     shirota = json['shirota'];
   }
 
+  get id => null;
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['adres'] = adres;

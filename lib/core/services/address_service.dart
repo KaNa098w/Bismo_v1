@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:bismo/core/api_endpoints.dart';
 import 'package:bismo/core/app_http.dart';
 import 'package:bismo/core/models/user/SignInOtpResponse.dart';
 import 'package:bismo/core/models/user/add_address_response.dart';
 import 'package:bismo/core/models/user/address_request.dart';
 import 'package:bismo/core/models/user/auth_response.dart';
+import 'package:bismo/core/models/user/delete_address_response.dart';
 // import 'package:bismo/core/models/user/delete_address_response.dart';
 import 'package:bismo/core/models/user/get_address_response.dart';
 import 'package:bismo/core/models/user/get_profile_response.dart';
@@ -49,4 +51,24 @@ class AddressService {
     }
     return null;
   }
+
+  Future<DeleteAddressResponse?> deleteAddress(String addressId, String phoneNumber) async {
+    try {
+      log('Deleting address with ID: $addressId and phone number: $phoneNumber');
+      Response res = await _http.delete(
+        '${ApiEndpoint.deleteAddress}/$addressId',
+        params: {"phone_number": phoneNumber},
+      );
+
+      if (res.statusCode == 200 || res.statusCode == 204) {
+        DeleteAddressResponse response = DeleteAddressResponse.fromJson(res.data);
+        return response;
+      }
+    } catch (e) {
+      log('Error during deleteAddress: $e');
+      rethrow;
+    }
+    return null;
+  }
+
 }

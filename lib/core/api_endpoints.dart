@@ -18,6 +18,7 @@ class ApiEndpoint {
   static const setStatus = '$api/product/setstatus';
   static const getAddresses = '$api/all/user_adress';
   static const addAddress = '$api/all/add_adress';
+   static const deleteAddress = '$api/all/delete_adress';
 
   static const List<String> urlsWithoutAuthorization = [];
 }

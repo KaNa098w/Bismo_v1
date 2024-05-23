@@ -149,7 +149,40 @@ class _AddressViewState extends State<AddressView> {
                       trailing: IconButton(
                         icon: const Icon(Icons.delete_outline_rounded,
                             color: Colors.red),
-                        onPressed: () {},
+                        onPressed: () async {
+                          var userProvider = context.read<UserProvider>();
+                          var phoneNumber = userProvider.user?.phoneNumber ?? "";
+
+                          // Показать подтверждение перед удалением
+                          bool? confirm = await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Подтверждение удаления'),
+                                content: const Text('Вы уверены, что хотите удалить этот адрес?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(false); // Не подтверждено
+                                    },
+                                    child: const Text('Отмена'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(true); // Подтверждено
+                                    },
+                                    child: const Text('Удалить'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          if (confirm == true) {
+                            // Вызов функции удаления
+                            await deleteAddress(adres?.adres ?? "", phoneNumber, context);
+                          }
+                        },
                       ),
                     );
                   } else {
@@ -233,11 +266,9 @@ class _AddressViewState extends State<AddressView> {
                             await addAddress(addAddressRequest,
                                 userProvider.user?.phoneNumber ?? "", context);
 
-                            Navigator.of(context)
-                                .pop(); 
+                            Navigator.of(context).pop();
                           },
                           child: const Text('Сохранить'),
-                          
                         ),
                       ],
                     );
@@ -279,7 +310,7 @@ class _AddressViewState extends State<AddressView> {
               context: ctx,
               barrierDismissible: true,
               title: "Ошибка",
-              content: "Неудалось отменить заказ",
+              content: "Не удалось отменить заказ",
               actions: <Widget>[
                 CupertinoDialogAction(
                   onPressed: () => Navigator.of(ctx).pop(),
@@ -296,6 +327,88 @@ class _AddressViewState extends State<AddressView> {
         if (ctx.mounted) {
           hideLoader(ctx);
         }
+
+        return true;
+      }
+    } on DioException catch (e) {
+      log(e.toString());
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      if (e.response?.statusCode == 401) {
+        if (ctx.mounted) {
+          hideLoader(ctx);
+          showAlertDialog(
+            context: ctx,
+            barrierDismissible: true,
+            title: "Ошибка",
+            content: "Неправильный адрес",
+            actions: <Widget>[
+              CupertinoDialogAction(
+                onPressed: () => Navigator.of(ctx).pop(),
+                textStyle: const TextStyle(color: AppColors.primaryColor),
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        }
+      } else {
+        if (ctx.mounted) {
+          hideLoader(ctx);
+          showAlertDialog(
+            context: ctx,
+            barrierDismissible: true,
+            title: "Ошибка",
+            content: errorMessage,
+            actions: <Widget>[
+              CupertinoDialogAction(
+                onPressed: () => Navigator.of(ctx).pop(),
+                textStyle: const TextStyle(color: AppColors.primaryColor),
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        }
+      }
+
+      return false;
+    }
+
+    return false;
+  }
+
+  Future<bool> deleteAddress(String addressId, String phoneNumber, BuildContext ctx) async {
+    showLoader(ctx);
+
+    try {
+      var res = await AddressService().deleteAddress(addressId, phoneNumber);
+
+      if (res != null) {
+        if ((res.success ?? false) == false) {
+          if (ctx.mounted) {
+            hideLoader(ctx);
+            showAlertDialog(
+              context: ctx,
+              barrierDismissible: true,
+              title: "Ошибка",
+              content: "Не удалось удалить адрес",
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  textStyle: const TextStyle(color: AppColors.primaryColor),
+                  child: const Text("OK"),
+                ),
+              ],
+            );
+          }
+
+          return false;
+        }
+
+        if (ctx.mounted) {
+          hideLoader(ctx);
+        }
+
+        // Успешное удаление, обновляем список адресов
+        fetchAdressWithDio();
 
         return true;
       }
