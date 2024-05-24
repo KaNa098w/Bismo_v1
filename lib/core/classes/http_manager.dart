@@ -31,6 +31,8 @@ class HttpManager {
     // };
 
     // _dio.interceptors.clear();
+    _dio.interceptors
+        .add(LogInterceptor(requestBody: true, responseBody: true));
 
     _dio.interceptors
         .add(InterceptorsWrapper(onRequest: (options, handler) async {

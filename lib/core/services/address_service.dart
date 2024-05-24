@@ -52,16 +52,20 @@ class AddressService {
     return null;
   }
 
- Future<DeleteAddressResponse?> deleteAddress(String phoneNumber, String deliveryAddress) async {
+  Future<DeleteAddressResponse?> deleteAddress(
+      String phoneNumber, String deliveryAddress) async {
     try {
-      log('Deleting address with phone number: $phoneNumber and delivery address: $deliveryAddress');
       Response res = await _http.delete(
-        ApiEndpoint.deleteAddress,
-        params: {"user": phoneNumber, "Delivery_address": deliveryAddress},
+        '${ApiEndpoint.deleteAddress}?user=$phoneNumber&Delivery_address=$deliveryAddress',
+        // params: {
+        //   "user": phoneNumber,
+        //   "Delivery_address": Uri.encodeComponent(deliveryAddress)
+        // },
       );
 
       if (res.statusCode == 200 || res.statusCode == 204) {
-        DeleteAddressResponse response = DeleteAddressResponse.fromJson(res.data);
+        DeleteAddressResponse response =
+            DeleteAddressResponse.fromJson(res.data);
         return response;
       }
     } catch (e) {
@@ -70,6 +74,4 @@ class AddressService {
     }
     return null;
   }
-
-
 }

@@ -49,8 +49,8 @@ class _AddressViewState extends State<AddressView> {
   @override
   void initState() {
     super.initState();
-    dio = Dio(); 
-    fetchAdressWithDio(); 
+    dio = Dio();
+    fetchAdressWithDio();
   }
 
   Future<void> fetchAdressWithDio() async {
@@ -75,9 +75,8 @@ class _AddressViewState extends State<AddressView> {
 
       setState(() {
         addresses = getAddressResponse.allAdress;
-        isLoading = false; 
-        checkedList = List<bool>.filled(addresses!.length,
-            false); 
+        isLoading = false;
+        checkedList = List<bool>.filled(addresses!.length, false);
       });
 
       print(getAddressResponse.success);
@@ -110,8 +109,7 @@ class _AddressViewState extends State<AddressView> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: addresses?.length ?? 0,
-                separatorBuilder: (context, index) =>
-                    const Divider(), 
+                separatorBuilder: (context, index) => const Divider(),
                 itemBuilder: (context, index) {
                   final adres = addresses?[index];
                   final dolgota = adres?.dolgota;
@@ -135,11 +133,9 @@ class _AddressViewState extends State<AddressView> {
                             }
                             checkedList[index] = newValue!;
                             if (newValue == true) {
-                              selectedAddress =
-                                  adress; 
+                              selectedAddress = adress;
                             } else {
-                              selectedAddress =
-                                  ''; 
+                              selectedAddress = '';
                             }
                           });
                         },
@@ -151,25 +147,26 @@ class _AddressViewState extends State<AddressView> {
                             color: Colors.red),
                         onPressed: () async {
                           var userProvider = context.read<UserProvider>();
-                          var phoneNumber = userProvider.user?.phoneNumber ?? "";
+                          var phoneNumber =
+                              userProvider.user?.phoneNumber ?? "";
 
-                        
                           bool? confirm = await showDialog(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: const Text('Подтверждение удаления'),
-                                content: const Text('Вы уверены, что хотите удалить этот адрес?'),
+                                content: const Text(
+                                    'Вы уверены, что хотите удалить этот адрес?'),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop(false); 
+                                      Navigator.of(context).pop(false);
                                     },
                                     child: const Text('Отмена'),
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop(true); 
+                                      Navigator.of(context).pop(true);
                                     },
                                     child: const Text('Удалить'),
                                   ),
@@ -179,7 +176,8 @@ class _AddressViewState extends State<AddressView> {
                           );
 
                           if (confirm == true) {
-                            await deleteAddress(userProvider.user?.phoneNumber ?? "", adress , context);
+                            await deleteAddress(adress,
+                                userProvider.user?.phoneNumber ?? "", context);
                           }
                         },
                       ),
@@ -374,11 +372,13 @@ class _AddressViewState extends State<AddressView> {
     return false;
   }
 
-  Future<bool> deleteAddress(String deliveryAddress, String phoneNumber, BuildContext ctx) async {
+  Future<bool> deleteAddress(
+      String deliveryAddress, String phoneNumber, BuildContext ctx) async {
     showLoader(ctx);
 
     try {
-      var res = await AddressService().deleteAddress(phoneNumber, deliveryAddress);
+      var res =
+          await AddressService().deleteAddress(phoneNumber, deliveryAddress);
 
       if (res != null) {
         if ((res.success ?? false) == false) {
