@@ -1,6 +1,7 @@
 import 'package:bismo/app/profile/address/address_controller.dart';
 import 'package:bismo/app/profile/address/location/location_controller.dart';
 import 'package:bismo/app/profile/my_orders/orders_controller.dart';
+import 'package:bismo/app/profile/notification/notification_controller.dart';
 import 'package:bismo/app/profile/order_item/order_item_controller.dart';
 import 'package:bismo/app/profile/profile_controller.dart';
 import 'package:bismo/app/profile/settings/settings_controller.dart';
@@ -14,6 +15,7 @@ class Profile extends RouteManager {
   static const String settings = '${Profile.name}/settings';
   static const String orderItem = '${Profile.name}/order_item';
   static const String location = '${Profile.name}/location';
+  static const String notification = '${Profile.name}/notification';
 
   Profile() {
     addRoute(Profile.profile, (context) => const ProfileController());
@@ -22,5 +24,6 @@ class Profile extends RouteManager {
     addRoute(Profile.settings, (context) => const SettingsController());
     addRoute(Profile.orderItem, (context) => const OrderItemController());
     addRoute(Profile.location, (context) => const LocationController());
+    addRoute(Profile.notification, (context) => const NotificationController());
   }
 }

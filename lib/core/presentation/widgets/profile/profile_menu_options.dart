@@ -31,7 +31,9 @@ class ProfileMenuOptions extends StatelessWidget {
           ProfileListTile(
             title: 'Уведомления',
             icon: AppIcons.profileNotification,
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, '/notification');
+            },
           ),
           const Divider(thickness: 0.1),
           ProfileListTile(
@@ -43,20 +45,43 @@ class ProfileMenuOptions extends StatelessWidget {
           ),
           const Divider(thickness: 0.1),
           ProfileListTile(
-            title: 'Оплата',
-            icon: AppIcons.profilePayment,
-            onTap: () {},
-          ),
-          const Divider(thickness: 0.1),
-          ProfileListTile(
             title: 'Выйти',
             icon: AppIcons.profileLogout,
             onTap: () {
-              doLogout(context);
+              _showLogoutConfirmationDialog(context);
             },
           ),
         ],
       ),
     );
   }
+
+  void _showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Подтверждение', style: TextStyle(fontSize: 17),),
+          content: const Text('Вы уверены, что хотите выйти?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Отмена'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Выйти'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                doLogout(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
 }
