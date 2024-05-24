@@ -179,7 +179,7 @@ class _AddressViewState extends State<AddressView> {
                           );
 
                           if (confirm == true) {
-                            await deleteAddress(adres?.adres ?? "", phoneNumber, context);
+                            await deleteAddress(userProvider.user?.phoneNumber ?? "", adress , context);
                           }
                         },
                       ),
@@ -374,11 +374,11 @@ class _AddressViewState extends State<AddressView> {
     return false;
   }
 
-  Future<bool> deleteAddress(String addressId, String phoneNumber, BuildContext ctx) async {
+  Future<bool> deleteAddress(String deliveryAddress, String phoneNumber, BuildContext ctx) async {
     showLoader(ctx);
 
     try {
-      var res = await AddressService().deleteAddress(addressId, phoneNumber);
+      var res = await AddressService().deleteAddress(phoneNumber, deliveryAddress);
 
       if (res != null) {
         if ((res.success ?? false) == false) {
@@ -406,7 +406,6 @@ class _AddressViewState extends State<AddressView> {
           hideLoader(ctx);
         }
 
-       
         fetchAdressWithDio();
 
         return true;

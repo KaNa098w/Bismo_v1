@@ -61,7 +61,10 @@ class ProfileMenuOptions extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Подтверждение', style: TextStyle(fontSize: 17),),
+          title: const Text(
+            'Подтверждение',
+            style: TextStyle(fontSize: 17),
+          ),
           content: const Text('Вы уверены, что хотите выйти?'),
           actions: <Widget>[
             TextButton(
@@ -82,6 +85,4 @@ class ProfileMenuOptions extends StatelessWidget {
       },
     );
   }
-
-
 }
