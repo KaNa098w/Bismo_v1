@@ -62,24 +62,28 @@ class _AddressViewState extends State<AddressView> {
         'http://api.bismo.kz/server/hs/all/user_adress?phone_number=${userProvider.user?.phoneNumber}';
 
     try {
-      final response = await dio.get(
-        bUrl,
-        options: Options(
-          headers: headers,
-        ),
-      );
+      // final response = await dio.get(
+      //   bUrl,
+      //   options: Options(
+      //     headers: headers,
+      //   ),
+      // );
+      final response = await AddressService()
+          .getAddresses(userProvider.user?.phoneNumber ?? "");
 
-      final body = response.data;
+      getAddressResponse = response;
+      // final body = response.data;
 
-      GetAddressResponse getAddressResponse = GetAddressResponse.fromJson(body);
+      // GetAddressResponse getAddressResponse =
+      //     GetAddressResponse.fromJson(child);
 
       setState(() {
-        addresses = getAddressResponse.allAdress;
+        addresses = getAddressResponse?.allAdress;
         isLoading = false;
         checkedList = List<bool>.filled(addresses!.length, false);
       });
 
-      print(getAddressResponse.success);
+      print(getAddressResponse?.success);
     } on DioException catch (e) {
       log(e.toString());
       setState(() {
