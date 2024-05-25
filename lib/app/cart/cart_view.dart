@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:bismo/core/classes/route_manager.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/exceptions.dart';
 import 'package:bismo/core/models/cart/set_order_request.dart';
@@ -133,7 +134,8 @@ class _CartViewState extends State<CartView> {
     }
   }
 
-  Future<void> _setOrder(String phoneNumber, BuildContext ctx) async {
+  Future<void> _setOrder(BuildContext ctx) async {
+    var userProvider = context.read<UserProvider>();
     showLoader(ctx);
     try {
       if (userAddress == null) {}
@@ -160,15 +162,15 @@ class _CartViewState extends State<CartView> {
         provider: "7757499451",
         orderSum: totalPrice,
         providerName: "",
-        deliveryAddress: userAddress?.allAdress?.last.adres,
+        deliveryAddress: userProvider.userAddress?.deliveryAddress,
         comment: "",
         counterparty: "7757499451",
-        dolgota: userAddress?.allAdress?.last.dolgota,
+        dolgota: userProvider.userAddress?.dolgota,
         type: "0",
         providerPhoto:
             "https://bismo-products.object.pscloud.io/Bismocounterparties/%D0%96%D0%B0%D1%81%D0%9D%D1%83%D1%80.png",
-        shirota: userAddress?.allAdress?.first.shirota,
-        user: phoneNumber,
+        shirota: userProvider.userAddress?.shirota,
+        user: userProvider.user?.phoneNumber,
         goods: goods,
       );
 
@@ -179,25 +181,23 @@ class _CartViewState extends State<CartView> {
           hideLoader(ctx);
           showAlertDialog(
             context: ctx,
-            barrierDismissible: true,
+            barrierDismissible: false,
             title: "Уведомление",
             content: res.message ?? "",
             actions: <Widget>[
               CupertinoDialogAction(
                 onPressed: () {
-                  // Закрыть диалоговое окно
-                  Navigator.of(ctx).pop();
-
-                  // Очистить корзину
                   PersistentShoppingCart().clearCart();
                   setState(() {
-                    // Установить загрузку товаров в false
                     isLoaded = false;
                   });
                   _loadCartItems();
+                  Navigator.pop(ctx);
+                  Navigator.pop(ctx);
+                  Navigator.pushNamed(ctx, "/orders");
                 },
                 textStyle: const TextStyle(color: AppColors.primaryColor),
-                child: const Text("OK"),
+                child: const Text("Перейти в мои заказы"),
               ),
             ],
           );
@@ -409,10 +409,7 @@ class _CartViewState extends State<CartView> {
                 );
               },
             );
-
-            
           }),
-          
       bottomNavigationBar: cartItems.isNotEmpty
           ? Padding(
               padding: const EdgeInsets.all(15.0),
@@ -435,9 +432,11 @@ class _CartViewState extends State<CartView> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      var userProvider = context.read<UserProvider>();
+                      // var userProvider = context.read<UserProvider>();
 
-                      _setOrder(userProvider.user?.phoneNumber ?? "", context);
+                      // _setOrder(userProvider.user?.phoneNumber ?? "", context);
+
+                      _showBottomSheet(context);
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -452,6 +451,96 @@ class _CartViewState extends State<CartView> {
               ),
             )
           : null,
+    );
+  }
+
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFFF5F5F5),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter currentSetState) {
+          var userProvider = context.watch<UserProvider>();
+          return SizedBox(
+            height: 200,
+            width: double.infinity,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 22),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                // mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Адрес доставки',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  userProvider.userAddress?.deliveryAddress != null
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(userProvider.userAddress!.deliveryAddress!,
+                                style: const TextStyle(fontSize: 16)),
+                            InkWell(
+                              onTap: () async {
+                                await Navigator.pushNamed(context, "/address");
+                              },
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Выбрать адрес',
+                                  style: TextStyle(
+                                    color: AppColors.primary,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      : InkWell(
+                          onTap: () async {
+                            await Navigator.pushNamed(context, "/address");
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              'Выбрать адрес',
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                  const Spacer(),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _setOrder(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 12),
+                        textStyle: const TextStyle(fontSize: 16),
+                      ),
+                      child: const Text('Оформить заказ'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }); // Компонент с логикой нижнего листа
+      },
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/exceptions.dart';
 import 'package:bismo/core/helpers/login_helper.dart';
 import 'package:bismo/core/models/user/SignInOtpResponse.dart';
+import 'package:bismo/core/models/user/address_request.dart';
 import 'package:bismo/core/models/user/auth_response.dart';
 import 'package:bismo/core/models/user/oauth2_token_info.dart';
 import 'package:bismo/core/models/user/register_request.dart';
@@ -25,21 +26,29 @@ class UserProvider extends ChangeNotifier {
   bool get isButtonDisabled => _isButtonDisabled;
   Timer? _timer;
 
+  AddressRequest? _userAddress;
+  AddressRequest? get userAddress => _userAddress;
   AuthResponse? _user;
   AuthResponse? get user => _user;
 
   late Oauth2TokenInfo? _oauth2TokenInfo;
   Oauth2TokenInfo? get oauth2TokenInfo => _oauth2TokenInfo;
 
-  UserProvider(AuthResponse? authResponse) {
+  UserProvider(AuthResponse? authResponse, AddressRequest? address) {
     if (authResponse == null) return;
     _user = authResponse;
+    _userAddress = address;
   }
 
   @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
+  }
+
+  void setUserAddress(AddressRequest? value) async {
+    _userAddress = value;
+    notifyListeners();
   }
 
   void setLoading(bool value) {

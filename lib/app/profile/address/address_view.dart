@@ -1,8 +1,10 @@
 import 'dart:developer';
+import 'package:bismo/core/app_cache.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:bismo/core/constants/app_icons.dart';
 import 'package:bismo/core/exceptions.dart';
+import 'package:bismo/core/models/location/screens/current_location.dart';
 import 'package:bismo/core/models/user/add_address_response.dart';
 import 'package:bismo/core/models/user/address_request.dart';
 import 'package:bismo/core/models/user/get_address_response.dart';
@@ -38,6 +40,9 @@ class _AddressViewState extends State<AddressView> {
   final TextEditingController streetController = TextEditingController();
   String? dolgota;
   String? shirota;
+  bool showError = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void dispose() {
@@ -81,9 +86,11 @@ class _AddressViewState extends State<AddressView> {
         addresses = getAddressResponse?.allAdress;
         isLoading = false;
         checkedList = List<bool>.filled(addresses!.length, false);
+        checkedList = List<bool>.generate(addresses!.length, (index) {
+          return addresses?[index].adres ==
+              userProvider.userAddress?.deliveryAddress;
+        });
       });
-
-      print(getAddressResponse?.success);
     } on DioException catch (e) {
       log(e.toString());
       setState(() {
@@ -96,6 +103,7 @@ class _AddressViewState extends State<AddressView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.cardColor,
+      key: scaffoldKey,
       appBar: AppBar(
         leading: const AppBackButton(),
         title: const Text(
@@ -124,11 +132,12 @@ class _AddressViewState extends State<AddressView> {
                     return ListTile(
                       leading: Checkbox(
                         checkColor: Colors.white,
-                        activeColor: Colors.green,
-                        hoverColor: Colors.green,
-                        focusColor: Colors.green,
+                        activeColor: AppColors.primaryColor,
+                        hoverColor: AppColors.primaryColor,
+                        focusColor: AppColors.primaryColor,
                         value: checkedList[index],
                         onChanged: (newValue) {
+                          var userProvider = context.read<UserProvider>();
                           setState(() {
                             for (var i = 0; i < checkedList.length; i++) {
                               if (i != index) {
@@ -138,6 +147,15 @@ class _AddressViewState extends State<AddressView> {
                             checkedList[index] = newValue!;
                             if (newValue == true) {
                               selectedAddress = adress;
+
+                              var pickedAddress = AddressRequest(
+                                  deliveryAddress: adress,
+                                  dolgota: dolgota,
+                                  shirota: shirota);
+
+                              userProvider.setUserAddress(pickedAddress);
+
+                              AppCache().setUserAddress(pickedAddress);
                             } else {
                               selectedAddress = '';
                             }
@@ -151,8 +169,6 @@ class _AddressViewState extends State<AddressView> {
                             color: Colors.red),
                         onPressed: () async {
                           var userProvider = context.read<UserProvider>();
-                          var phoneNumber =
-                              userProvider.user?.phoneNumber ?? "";
 
                           bool? confirm = await showDialog(
                             context: context,
@@ -196,83 +212,138 @@ class _AddressViewState extends State<AddressView> {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (BuildContext context) {
-                    // Возвращаем виджет, представляющий ваше диалоговое окно
-                    return AlertDialog(
-                      title: const Text(
-                        'Добавить новый адрес',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500),
-                      ),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextFormField(
-                            controller: cityController,
-                            decoration:
-                                const InputDecoration(labelText: 'Город *'),
-                          ),
-                          TextFormField(
-                            controller: streetController,
-                            decoration: const InputDecoration(
-                                labelText: 'Улица и номер дома *'),
-                          ),
-                          Row(
+                  builder: (
+                    BuildContext context,
+                  ) {
+                    return StatefulBuilder(builder: (context, setDialogState) {
+                      return AlertDialog(
+                        title: const Text(
+                          'Добавить новый адрес',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                        ),
+                        content: Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(
-                                Icons.location_on_outlined,
-                                color: Colors.red,
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(context, '/location')
-                                      .then((location) {
-                                    // Предполагается, что `location` будет содержать `dolgota` и `shirota`
-                                    if (location != null &&
-                                        location is Map<String, String>) {
-                                      setState(() {
-                                        dolgota = location['dolgota'];
-                                        shirota = location['shirota'];
-                                      });
-                                    }
-                                  });
+                              TextFormField(
+                                controller: cityController,
+                                decoration:
+                                    const InputDecoration(labelText: 'Город *'),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Это поле обязательно для заполнения';
+                                  }
+                                  return null;
                                 },
-                                child: const Text(
-                                  'Указать геолокацию на карте *',
-                                  style: TextStyle(color: Colors.red),
-                                ),
                               ),
+                              TextFormField(
+                                controller: streetController,
+                                decoration: const InputDecoration(
+                                    labelText: 'Улица и номер дома *'),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Это поле обязательно для заполнения';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.location_on_outlined,
+                                    color: Colors.red,
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      var location = await Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                              builder: (BuildContext context) {
+                                        return const CurrentLocationScreen();
+                                      }));
+
+                                      if (location != null) {
+                                        setDialogState(() {
+                                          dolgota =
+                                              location['longitude'].toString();
+                                          shirota =
+                                              location['latitude'].toString();
+                                          showError = false;
+                                        });
+                                      }
+                                    },
+                                    child: Text(
+                                      dolgota == null
+                                          ? 'Указать геолокацию на карте *'
+                                          : "Изменить точку",
+                                      style: const TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (showError) // Показываем текст ошибки, если геолокация не выбрана
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 2),
+                                  child: Text(
+                                    'Геолокация обязательна',
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                        color: Colors.red, fontSize: 12),
+                                  ),
+                                ),
                             ],
-                          )
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                showError = false;
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Отмена'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate() &&
+                                  dolgota != null &&
+                                  shirota != null) {
+                                var userProvider = context.read<UserProvider>();
+
+                                AddressRequest addAddressRequest =
+                                    AddressRequest(
+                                  deliveryAddress:
+                                      '${cityController.text}, ${streetController.text}',
+                                  dolgota: dolgota ?? '',
+                                  shirota: shirota ?? '',
+                                );
+
+                                await addAddress(
+                                    addAddressRequest,
+                                    userProvider.user?.phoneNumber ?? "",
+                                    context);
+
+                                setDialogState(() {
+                                  cityController.clear();
+                                  streetController.clear();
+                                  dolgota = null;
+                                  shirota = null;
+                                });
+
+                                Navigator.of(context).pop();
+                              } else if (dolgota == null || shirota == null) {
+                                setDialogState(() {
+                                  showError = true;
+                                });
+                              }
+                            },
+                            child: const Text('Сохранить'),
+                          ),
                         ],
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Отмена'),
-                        ),
-                        TextButton(
-                          onPressed: () async {
-                            var userProvider = context.read<UserProvider>();
-
-                            AddressRequest addAddressRequest = AddressRequest(
-                              deliveryAddress:
-                                  '${cityController.text}, ${streetController.text}',
-                              dolgota: dolgota ?? '',
-                              shirota: shirota ?? '',
-                            );
-
-                            await addAddress(addAddressRequest,
-                                userProvider.user?.phoneNumber ?? "", context);
-
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Сохранить'),
-                        ),
-                      ],
-                    );
+                      );
+                    });
                   },
                 );
               },
@@ -382,6 +453,7 @@ class _AddressViewState extends State<AddressView> {
   Future<bool> deleteAddress(
       String deliveryAddress, String phoneNumber, BuildContext ctx) async {
     showLoader(ctx);
+    var userProvider = ctx.read<UserProvider>();
 
     try {
       var res =
@@ -411,6 +483,12 @@ class _AddressViewState extends State<AddressView> {
 
         if (ctx.mounted) {
           hideLoader(ctx);
+        }
+
+        if (userProvider.userAddress?.deliveryAddress == deliveryAddress) {
+          userProvider.setUserAddress(null);
+
+          AppCache().setUserAddress(null);
         }
 
         fetchAdressWithDio();
