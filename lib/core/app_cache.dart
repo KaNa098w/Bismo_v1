@@ -1,10 +1,28 @@
 import 'dart:convert';
 import 'package:bismo/core/classes/cache_manager.dart';
+import 'package:bismo/core/models/user/address_request.dart';
 import 'package:bismo/core/models/user/auth_response.dart';
 import 'package:bismo/core/models/user/oauth2_token_info.dart';
 
 class AppCache {
   Map<String, String>? udata;
+
+  void setUserAddress(AddressRequest? address) {
+    if (address == null) {
+      Cache.deleteData('address');
+    } else {
+      Cache.saveData('address', jsonEncode(address.toJson()));
+    }
+  }
+
+  Future<AddressRequest?> getUserAddress() async {
+    try {
+      var tokens = await Cache.readData('address');
+      return AddressRequest.fromJson(jsonDecode(tokens));
+    } catch (e) {
+      return null;
+    }
+  }
 
   void doLogin(AuthResponse response) {
     // Cache.saveData('auth_data', response.toJson());
