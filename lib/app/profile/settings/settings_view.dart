@@ -49,7 +49,7 @@ class _SettingsViewState extends State<SettingsView> {
               label: 'Уведомления',
               trailing: SvgPicture.asset(AppIcons.right),
               onTap: () {
-                // Navigator.pushNamed(context, AppRoutes.settingsNotifications);
+                Navigator.pushNamed(context, '/notification');
               },
             ),
             AppSettingsListTile(
@@ -70,16 +70,9 @@ class _SettingsViewState extends State<SettingsView> {
               label: 'Адрес',
               trailing: SvgPicture.asset(AppIcons.right),
               onTap: () {
-                // Navigator.pushNamed(context, AppRoutes.deliveryAddress);
+                Navigator.pushNamed(context, '/address');
               },
             ),
-            AppSettingsListTile(
-              label: 'Локация',
-              trailing: SvgPicture.asset(AppIcons.right),
-              onTap: () {},
-            ),
-           
-            
             AppSettingsListTile(
               label: 'Удалить аккаунт',
               trailing: SvgPicture.asset(AppIcons.right),

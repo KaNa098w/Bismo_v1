@@ -326,6 +326,9 @@ class _AddressViewState extends State<AddressView> {
         }
 
         if (ctx.mounted) {
+          setState(() {
+            fetchAdressWithDio();
+          });
           hideLoader(ctx);
         }
 

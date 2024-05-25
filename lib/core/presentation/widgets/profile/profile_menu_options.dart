@@ -25,7 +25,9 @@ class ProfileMenuOptions extends StatelessWidget {
           ProfileListTile(
             title: 'Мой профиль',
             icon: AppIcons.profilePerson,
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, '/my_profile');
+            },
           ),
           const Divider(thickness: 0.1),
           ProfileListTile(

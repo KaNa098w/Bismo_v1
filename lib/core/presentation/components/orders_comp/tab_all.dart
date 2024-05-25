@@ -147,7 +147,7 @@ class _AllTabState extends State<AllTab> {
         return OrderStatus.shipped;
       case 3:
         return OrderStatus.delivery;
-      case 4:
+      case 9:
         return OrderStatus.cancelled;
       default:
         return OrderStatus.unknown;
