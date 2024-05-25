@@ -166,7 +166,7 @@ class _CartViewState extends State<CartView> {
         comment: "",
         counterparty: "7757499451",
         dolgota: userProvider.userAddress?.dolgota,
-        type: "0",
+        type: isDeliverySelected ? "0" : "1",
         providerPhoto:
             "https://bismo-products.object.pscloud.io/Bismocounterparties/%D0%96%D0%B0%D1%81%D0%9D%D1%83%D1%80.png",
         shirota: userProvider.userAddress?.shirota,
@@ -193,7 +193,9 @@ class _CartViewState extends State<CartView> {
                   });
                   _loadCartItems();
                   Navigator.pop(ctx);
-                  Navigator.pop(ctx);
+                  if (isDeliverySelected) {
+                    Navigator.pop(ctx);
+                  }
                   Navigator.pushNamed(ctx, "/orders");
                 },
                 textStyle: const TextStyle(color: AppColors.primaryColor),
@@ -432,11 +434,11 @@ class _CartViewState extends State<CartView> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // var userProvider = context.read<UserProvider>();
-
-                      // _setOrder(userProvider.user?.phoneNumber ?? "", context);
-
-                      _showBottomSheet(context);
+                      if (isDeliverySelected) {
+                        _showBottomSheet(context);
+                      } else {
+                        _setOrder(context);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
