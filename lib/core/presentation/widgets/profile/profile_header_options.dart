@@ -69,7 +69,6 @@ class ProfileHeaderOptions extends StatelessWidget {
                   }
                 }
               } catch (e) {
-                print('object');
                 await launchUrl(Uri.parse(webUrl),
                     mode: LaunchMode.externalApplication);
               }
