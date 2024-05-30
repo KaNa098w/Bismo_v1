@@ -37,7 +37,7 @@ class AuthService {
       };
       var dio = Dio();
       var response = await dio.request(
-        'http://api.bismo.kz/server/hs/all/getprofile',
+        'http://188.95.95.122:2223/server/hs/all/getprofile',
         options: Options(
           method: 'GET',
           headers: headers,

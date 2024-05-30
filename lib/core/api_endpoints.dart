@@ -1,5 +1,6 @@
 class ApiEndpoint {
-  static const baseUrl = 'http://api.bismo.kz/';
+  static const baseUrl = 'http://188.95.95.122:2223/';
+  
 
   static const api = '${baseUrl}server/hs';
 

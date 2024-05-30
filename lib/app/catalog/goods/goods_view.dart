@@ -21,10 +21,12 @@ class GoodsView extends StatefulWidget {
 
 class _GoodsViewState extends State<GoodsView> {
   late GlobalKey<NavigatorState> navigatorKey;
+  TextEditingController searchController = TextEditingController();
 
   GoodsResponse? goodsResponse;
   bool isLoading = true;
   List<PersistentShoppingCartItem> cartItems = [];
+  List<Goods> filteredGoods = [];
   int currentQuantity = 0;
 
   @override
@@ -32,6 +34,14 @@ class _GoodsViewState extends State<GoodsView> {
     super.initState();
     getGoods(widget.catId ?? "");
     _loadCartItems();
+    searchController.addListener(_filterGoods);
+  }
+
+  @override
+  void dispose() {
+    searchController.removeListener(_filterGoods);
+    searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadCartItems() async {
@@ -42,12 +52,24 @@ class _GoodsViewState extends State<GoodsView> {
     });
   }
 
+  void _filterGoods() {
+    if (goodsResponse == null) return;
+
+    String query = searchController.text.toLowerCase();
+    setState(() {
+      filteredGoods = goodsResponse!.goods!.where((goods) {
+        return goods.nomenklatura?.toLowerCase().contains(query) ?? false;
+      }).toList();
+    });
+  }
+
   Future<GoodsResponse?> getGoods(String catId) async {
     try {
       var res = await GoodsSerVice().getGoods(catId);
 
       setState(() {
         goodsResponse = res;
+        filteredGoods = res?.goods ?? [];
         isLoading = false;
       });
 
@@ -77,7 +99,6 @@ class _GoodsViewState extends State<GoodsView> {
         "step": goods.step,
         "count": goods.count,
       },
-      // Начальное количество товара 1
     ));
     _loadCartItems();
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -120,7 +141,6 @@ class _GoodsViewState extends State<GoodsView> {
         return AlertDialog(
           backgroundColor: const Color.fromARGB(255, 255, 255, 255),
           content: StatefulBuilder(
-            // Use StatefulBuilder to manage state
             builder: (BuildContext context, StateSetter setState) {
               return SingleChildScrollView(
                 child: ConstrainedBox(
@@ -300,8 +320,8 @@ class _GoodsViewState extends State<GoodsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //title: appBarTitle(widget.title ?? "Товары"),
         title: TextField(
+          controller: searchController,
           decoration: InputDecoration(
             hintText: 'Поиск товаров',
             fillColor: Colors.white,
@@ -317,47 +337,17 @@ class _GoodsViewState extends State<GoodsView> {
         scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
         leading: appBarBack(context),
-        // actions: [
-        //   IconButton(
-        //     onPressed: () {
-        //       // Get total number of items in the cart
-        //       Navigator.pushNamed(context, "/cart");
-        //       // Navigate to cart screen or do something with cart
-        //     },
-        //     iconSize: 32,
-        //     icon: Stack(
-        //       children: [
-        //         const Icon(
-        //           Icons.shopping_cart_outlined,
-        //           color: Colors.green,
-        //         ),
-        //         Positioned(
-        //           top: -2,
-        //           right: -1,
-        //           child: CircleAvatar(
-        //             radius: 8,
-        //             backgroundColor: Colors.red,
-        //             child: Text(
-        //               cartItems.length.toString(),
-        //               style: const TextStyle(fontSize: 11, color: Colors.white),
-        //             ),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //   ),
-        // ],
       ),
       body: !isLoading
           ? goodsResponse != null
               ? Container(
-                  color: Colors.white, // Устанавливаем белый фон для списка
+                  color: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: (goodsResponse?.goods ?? []).isNotEmpty
+                  child: filteredGoods.isNotEmpty
                       ? ListView.builder(
-                          itemCount: goodsResponse!.goods!.length,
+                          itemCount: filteredGoods.length,
                           itemBuilder: (context, index) {
-                            Goods goods = goodsResponse!.goods![index];
+                            Goods goods = filteredGoods[index];
                             bool isInCart = cartItems.any((item) =>
                                 item.productId == goods.nomenklaturaKod);
                             return Card(
@@ -375,17 +365,12 @@ class _GoodsViewState extends State<GoodsView> {
                                     ),
                                   ),
                                 ),
-                                // leading: CircleAvatar(
-                                //   backgroundImage:
-                                //       NetworkImage(goods.photo ?? ""),
-                                // ),
                                 title: Text(
                                   goods.nomenklatura ?? '',
                                   style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500),
                                 ),
-
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -417,8 +402,6 @@ class _GoodsViewState extends State<GoodsView> {
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    //Text('$currentQuantity', style: TextStyle(fontSize: 16),),
-
                                     if (!isInCart)
                                       IconButton(
                                         icon: const Icon(

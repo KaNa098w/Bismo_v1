@@ -1,6 +1,7 @@
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:bismo/core/constants/app_icons.dart';
+import 'package:bismo/core/helpers/login_helper.dart';
 import 'package:bismo/core/presentation/components/app_settings_tile.dart';
 import 'package:bismo/core/presentation/components/orders_comp/app_back_button.dart';
 import 'package:flutter/material.dart';
@@ -39,13 +40,6 @@ class _SettingsViewState extends State<SettingsView> {
         child: Column(
           children: [
             AppSettingsListTile(
-              label: 'Язык',
-              trailing: SvgPicture.asset(AppIcons.right),
-              onTap: () {
-                // Navigator.pushNamed(context, AppRoutes.settingsLanguage);
-              },
-            ),
-            AppSettingsListTile(
               label: 'Уведомления',
               trailing: SvgPicture.asset(AppIcons.right),
               onTap: () {
@@ -76,11 +70,43 @@ class _SettingsViewState extends State<SettingsView> {
             AppSettingsListTile(
               label: 'Удалить аккаунт',
               trailing: SvgPicture.asset(AppIcons.right),
-              // onTap: () => Navigator.pushNamed(context, AppRoutes.introLogin),
+              onTap: () {
+                Navigator.of(context).pop();
+                _showLogoutConfirmationDialog(context);
+              },
             ),
           ],
         ),
       ),
+    );
+  }
+  void _showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Подтверждение',
+            style: TextStyle(fontSize: 17),
+          ),
+          content: const Text('Вы уверены, что хотите удалить свой аккаунт?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Отмена'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Выйти'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                doLogout(context);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

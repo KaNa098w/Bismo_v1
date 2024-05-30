@@ -40,14 +40,14 @@ class _LoginViewState extends State<LoginView> {
             ),
           ),
           Text(
-            'Добро пожаловать в ',
+            'Добро пожаловать ',
             style: Theme.of(context)
                 .textTheme
                 .titleLarge
                 ?.copyWith(fontWeight: FontWeight.bold),
           ),
           Text(
-            'Bismo',
+            '',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,

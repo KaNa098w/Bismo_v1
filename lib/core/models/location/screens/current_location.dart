@@ -25,7 +25,7 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("User current location"),
+        title: const Text("Карта"),
         centerTitle: true,
       ),
       body: Stack(

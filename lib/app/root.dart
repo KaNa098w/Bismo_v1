@@ -2,6 +2,7 @@ import 'package:bismo/app/cart/cart_controller.dart';
 import 'package:bismo/app/catalog/catalog_controller.dart';
 import 'package:bismo/app/home/home_controller.dart';
 import 'package:bismo/app/profile/profile_controller.dart';
+import 'package:bismo/app/reels/reels_controller.dart';
 import 'package:bismo/core/models/bottom_nav_bar.dart';
 import 'package:bismo/core/models/button_data.dart';
 import 'package:bismo/core/providers/theme_provider.dart';
@@ -38,6 +39,14 @@ class _RootState extends State<Root> {
         labelKk: 'Каталог',
         labelEn: 'Каталог',
         link: '/catalog',
+        isProtected: false),
+    ButtonData(
+        page: const ReelsController(),
+        icon: Icons.play_circle_outlined, 
+        labelRu: 'Reels',
+        labelKk: 'Reels',
+        labelEn: 'Reels',
+        link: '/reels',
         isProtected: false),
     ButtonData(
         page: const CartController(),

@@ -20,7 +20,7 @@ class BundleTileSquare extends StatelessWidget {
       borderRadius: AppDefaults.borderRadius,
       child: InkWell(
         onTap: () {
-          // Navigator.pushNamed(context, AppRoutes.bundleProduct);
+          Navigator.pushNamed(context, '/product');
         },
         borderRadius: AppDefaults.borderRadius,
         child: Container(

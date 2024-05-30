@@ -4,7 +4,6 @@ import 'package:bismo/core/constants/constants.dart';
 import 'package:bismo/core/models/location/screens/current_location.dart';
 import 'package:bismo/core/models/location/screens/nearby_places.dart';
 import 'package:bismo/core/models/location/screens/polyline_screen.dart';
-import 'package:bismo/core/models/location/screens/search_places.dart';
 import 'package:bismo/core/models/location/screens/simple_map.dart';
 import 'package:bismo/core/presentation/components/order_traking_page.dart';
 import 'package:flutter/material.dart';

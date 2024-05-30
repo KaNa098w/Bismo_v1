@@ -21,7 +21,6 @@ class ProfileHeader extends StatelessWidget {
         Column(
           children: [
             AppBar(
-              title: const Text('Профиль'),
               elevation: 0,
               backgroundColor: Colors.transparent,
               titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -61,7 +60,7 @@ class _UserData extends StatelessWidget {
               child: AspectRatio(
                   aspectRatio: 1 / 1,
                   child: NetworkImageWithLoader(
-                      'https://images.unsplash.com/photo-1628157588553-5eeea00af15c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80')),
+                      'https://w7.pngwing.com/pngs/244/76/png-transparent-avatar-male-man-person-profile-user-website-website-internet-icon.png')),
             ),
           ),
           const SizedBox(width: AppDefaults.padding),

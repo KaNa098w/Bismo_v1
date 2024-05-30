@@ -56,5 +56,6 @@ class AppIcons {
   static const contactMap = 'assets/icons/contact_map.svg';
 
   static const cardAdd = 'assets/icons/card_add.svg';
-  static const support = 'assets/icons/support_icon.svg';
+  static const support = 'assets/icons/whatsapp_icon3.svg';
+  
 }

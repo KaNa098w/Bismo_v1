@@ -4,6 +4,7 @@ import 'package:bismo/app/home/home.dart';
 import 'package:bismo/app/login/login.dart';
 import 'package:bismo/app/product_details/product_details.dart';
 import 'package:bismo/app/profile/profile.dart';
+import 'package:bismo/app/reels/reels.dart';
 import 'package:bismo/core/classes/route_manager.dart';
 
 class Routes extends RouteManager {
@@ -14,5 +15,6 @@ class Routes extends RouteManager {
     addAll(Login().routes);
     addAll(ProductDetails().routes);
     addAll(Cart().routes);
+    addAll(Reels().routes);
   }
 }
