@@ -82,7 +82,8 @@ class _CatalogViewState extends State<CatalogView> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: AppColors.primaryColor, width: 2),
+              borderSide:
+                  const BorderSide(color: AppColors.primaryColor, width: 2),
             ),
             prefixIcon: const Icon(Icons.search),
           ),
@@ -102,14 +103,17 @@ class _CatalogViewState extends State<CatalogView> {
                             return CategoryTile(
                               imageLink:
                                   categoryResponse?.body?[index].photo ?? "",
-                              label: categoryResponse?.body?[index].catName ?? "",
+                              label:
+                                  categoryResponse?.body?[index].catName ?? "",
                               onTap: () {
                                 Navigator.pushNamed(
                                   context,
                                   "/goods",
                                   arguments: GoodsArguments(
-                                      categoryResponse?.body?[index].catName ?? "",
-                                      categoryResponse?.body?[index].catId ?? ""),
+                                      categoryResponse?.body?[index].catName ??
+                                          "",
+                                      categoryResponse?.body?[index].catId ??
+                                          ""),
                                 );
                               },
                             );
