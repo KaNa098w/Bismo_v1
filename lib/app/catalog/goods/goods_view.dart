@@ -57,7 +57,7 @@ class _GoodsViewState extends State<GoodsView> {
 
     String query = searchController.text.toLowerCase();
     setState(() {
-      filteredGoods = goodsResponse!.body!.where((goods) {
+      filteredGoods = goodsResponse!.goods!.where((goods) {
         return goods.nomenklatura?.toLowerCase().contains(query) ?? false;
       }).toList();
     });
@@ -72,7 +72,7 @@ class _GoodsViewState extends State<GoodsView> {
       GoodsResponse? res = await getGoods(catId);
       setState(() {
         goodsResponse = res;
-        filteredGoods = res?.body ?? [];
+        filteredGoods = res?.goods ?? [];
         isLoading = false;
       });
     } catch (e) {
@@ -172,7 +172,7 @@ class _GoodsViewState extends State<GoodsView> {
                                   currentQuantity = quantity;
                                 },
                               );
-
+                             
                               Navigator.pop(context);
                             },
                             child: const Text(
