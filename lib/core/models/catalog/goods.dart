@@ -5,7 +5,7 @@ class GoodsResponse {
   String? kontragent;
   String? showCount;
   String? adressProvider;
-  List<Goods>? goods;
+  List<Goods>? body;
 
   GoodsResponse(
       {this.success,
@@ -14,7 +14,7 @@ class GoodsResponse {
       this.kontragent,
       this.showCount,
       this.adressProvider,
-      this.goods});
+      this.body});
 
   GoodsResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'].toString();
@@ -23,10 +23,10 @@ class GoodsResponse {
     kontragent = json['kontragent'];
     showCount = json['show_count'];
     adressProvider = json['adress_provider'];
-    if (json['goods'] != null) {
-      goods = <Goods>[];
-      json['goods'].forEach((v) {
-        goods!.add(Goods.fromJson(v));
+    if (json['body'] != null) {
+      body = <Goods>[];
+      json['body'].forEach((v) {
+        body!.add(Goods.fromJson(v));
       });
     }
   }
@@ -39,8 +39,8 @@ class GoodsResponse {
     data['kontragent'] = kontragent;
     data['show_count'] = showCount;
     data['adress_provider'] = adressProvider;
-    if (goods != null) {
-      data['goods'] = goods!.map((v) => v.toJson()).toList();
+    if (body != null) {
+      data['body'] = body!.map((v) => v.toJson()).toList();
     }
     return data;
   }

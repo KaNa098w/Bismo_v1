@@ -92,44 +92,41 @@ class _CatalogViewState extends State<CatalogView> {
         backgroundColor: Colors.transparent,
       ),
       body: !isLoading
-    ? categoryResponse != null
-        ? Container(
-            child: (categoryResponse?.body ?? []).isNotEmpty
-                ? ListView.builder(
-                    itemCount: (categoryResponse?.body ?? []).length,
-                    itemBuilder: (context, index) {
-                      final category = categoryResponse?.body![index];
-                      return CategoryTile(
-                        imageLink: category?.photo ?? "",
-                        label: category?.catName ?? "",
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            "/goods",
-                            arguments: GoodsArguments(
-                              category?.catName ?? "",
-                              category?.catId ?? "",
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  )
-                : const CustomEmpty(),
-          )
-        : const SizedBox(child: CustomErrorWidget())
-    : const Center(
-        child: SizedBox(
-          height: 50.0,
-          width: 50.0,
-          child: Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primaryColor,
+          ? categoryResponse != null
+              ? Container(
+                  child: (categoryResponse?.body ?? []).isNotEmpty
+                      ? GridView.count(
+                          crossAxisCount: 3,
+                          children: List.generate(
+                              ((categoryResponse?.body) ?? []).length, (index) {
+                            return CategoryTile(
+                              imageLink:
+                                  categoryResponse?.body?[index].photo ?? "",
+                              label: categoryResponse?.body?[index].catName ?? "",
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  "/goods",
+                                  arguments: GoodsArguments(
+                                      categoryResponse?.body?[index].catName ?? "",
+                                      categoryResponse?.body?[index].catId ?? ""),
+                                );
+                              },
+                            );
+                          }),
+                        )
+                      : const CustomEmpty())
+              : const SizedBox(child: CustomErrorWidget())
+          : const Center(
+              child: SizedBox(
+                height: 50.0,
+                width: 50.0,
+                child: Center(
+                    child: CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                )),
+              ),
             ),
-          ),
-        ),
-      ),
-
     );
   }
 }
