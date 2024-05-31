@@ -17,7 +17,7 @@ class GoodsResponse {
       this.goods});
 
   GoodsResponse.fromJson(Map<String, dynamic> json) {
-    success = json['success'];
+    success = json['success'].toString();
     dateLoading = json['date_loading'];
     deliverySumm = (json['delivery_summ']);
     kontragent = json['kontragent'];

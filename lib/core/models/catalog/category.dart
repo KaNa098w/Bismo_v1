@@ -1,12 +1,12 @@
 class CategoryResponse {
-  String? success;
+  String? success; // <-- Измените тип с bool на String
   String? dateLoading;
   List<Body>? body;
 
   CategoryResponse({this.success, this.dateLoading, this.body});
 
   CategoryResponse.fromJson(Map<String, dynamic> json) {
-    success = json['success'];
+    success = json['success'].toString(); // <-- Преобразуйте в строку
     dateLoading = json['date_loading'];
     if (json['body'] != null) {
       body = <Body>[];

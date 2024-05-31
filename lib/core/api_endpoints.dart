@@ -10,7 +10,7 @@ class ApiEndpoint {
   static const login = '$api/all/login';
   static const getProfile = '$api/all/getprofile';
   static const register = '$api/all/autorization';
-  static const getGoods = '$api/product/getfullprice';
+  static const getGoods = '$api/provider/getskygroup';
   static const setOrder = '$api/product/setorder';
   static const getAddress = '$api/all/user_adress';
   static const detalizationsOrder = '$api/product/detalizationsorder';

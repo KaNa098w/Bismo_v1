@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:bismo/core/api_endpoints.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 
 class Http extends HttpManager {
   Http({String? baseUrl, Map<String, dynamic>? headers})
@@ -23,12 +25,12 @@ class HttpManager {
     //   _dio.options.headers['Access-Control-Allow-Methods'] = '*';
     // }
 
-    // (_dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
-    //     (HttpClient client) {
-    //   client.badCertificateCallback =
-    //       (X509Certificate cert, String host, int port) => true;
-    //   return client;
-    // };
+    (_dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
+        (HttpClient client) {
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      return client;
+    };
 
     // _dio.interceptors.clear();
     _dio.interceptors

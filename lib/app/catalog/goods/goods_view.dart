@@ -32,7 +32,7 @@ class _GoodsViewState extends State<GoodsView> {
   @override
   void initState() {
     super.initState();
-    getGoods(widget.catId ?? "");
+    _fetchGoods(widget.catId ?? "");
     _loadCartItems();
     searchController.addListener(_filterGoods);
   }
@@ -63,24 +63,32 @@ class _GoodsViewState extends State<GoodsView> {
     });
   }
 
-  Future<GoodsResponse?> getGoods(String catId) async {
-    try {
-      var res = await GoodsSerVice().getGoods(catId);
+  Future<void> _fetchGoods(String catId) async {
+    setState(() {
+      isLoading = true;
+    });
 
+    try {
+      GoodsResponse? res = await getGoods(catId);
       setState(() {
         goodsResponse = res;
         filteredGoods = res?.goods ?? [];
         isLoading = false;
       });
-
-      return res;
-    } on DioException catch (e) {
-      log(e.toString());
-
+    } catch (e) {
       setState(() {
         isLoading = false;
       });
+      print("Error fetching goods: $e");
+    }
+  }
 
+  Future<GoodsResponse?> getGoods(String catId) async {
+    try {
+      var res = await GoodsService().getGoods(catId);
+      return res;
+    } on DioException catch (e) {
+      log(e.toString());
       return null;
     }
   }

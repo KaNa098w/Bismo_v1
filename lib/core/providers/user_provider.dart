@@ -389,7 +389,7 @@ class UserProvider extends ChangeNotifier {
     } on DioException catch (e) {
       log(e.toString());
       final errorMessage = DioExceptions.fromDioError(e).toString();
-      if (e.response?.statusCode == 401) {
+      if (e.response?.statusCode != 401) {
         if (ctx.mounted) {
           hideLoader(ctx);
           showAlertDialog(
