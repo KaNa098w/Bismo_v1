@@ -39,9 +39,12 @@ class CategoryTile extends StatelessWidget {
                 width: iconSize,
                 child: AspectRatio(
                   aspectRatio: 1 / 1,
-                  child: NetworkImageWithLoader(
-                    imageLink,
-                    fit: BoxFit.contain,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(iconSize / 2), // делаем круглое изображение
+                    child: NetworkImageWithLoader(
+                      imageLink,
+                      fit: BoxFit.cover, // устанавливаем BoxFit.cover, чтобы изображение вмещалось в контейнер
+                    ),
                   ),
                 ),
               ),
@@ -51,9 +54,9 @@ class CategoryTile extends StatelessWidget {
               label,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w500,
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
-              maxLines: 2,
+              maxLines: 3,
               textAlign: TextAlign.center,
             ),
           ],

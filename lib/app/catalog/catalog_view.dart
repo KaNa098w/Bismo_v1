@@ -1,4 +1,3 @@
-// lib/catalog_view.dart
 import 'dart:developer';
 import 'package:bismo/app/catalog/goods/goods_arguments.dart';
 import 'package:bismo/app/catalog/search_catalog/search_view.dart';
@@ -14,7 +13,9 @@ import 'package:bismo/core/presentation/widgets/category_tile.dart';
 
 class CatalogView extends StatefulWidget {
   final String? title;
-  const CatalogView({Key? key, this.title}) : super(key: key);
+  final String? catId;
+
+  const CatalogView({Key? key, this.title, this.catId}) : super(key: key);
 
   @override
   State<CatalogView> createState() => _CatalogViewState();
@@ -29,14 +30,12 @@ class _CatalogViewState extends State<CatalogView> {
   @override
   void initState() {
     super.initState();
-    getCategories();
+    getCategories(widget.catId);
   }
 
-  Future<CategoryResponse?> getCategories() async {
+  Future<CategoryResponse?> getCategories(String? catId) async {
     try {
-      var res = await CatalogService().getCategories('');
-
-      // log(res?.toJson().toString() ?? "");
+      var res = await CatalogService().getCategories(catId ?? '');
 
       setState(() {
         categoryResponse = res;
@@ -52,6 +51,28 @@ class _CatalogViewState extends State<CatalogView> {
       });
 
       return null;
+    }
+  }
+
+  void onCategorySelected(String catId) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    var res = await getCategories(catId);
+
+    if (res?.body?.isEmpty ?? true) {
+      Navigator.pushNamed(
+        context,
+        "/goods",
+        arguments: GoodsArguments(categoryResponse?.body?[0].catName ?? "",
+            categoryResponse?.body?[0].catId ?? ""),
+      );
+    } else {
+      setState(() {
+        categoryResponse = res;
+        isLoading = false;
+      });
     }
   }
 
@@ -82,7 +103,8 @@ class _CatalogViewState extends State<CatalogView> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: AppColors.primaryColor, width: 2),
+              borderSide:
+                  const BorderSide(color: AppColors.primaryColor, width: 2),
             ),
             prefixIcon: const Icon(Icons.search),
           ),
@@ -98,22 +120,25 @@ class _CatalogViewState extends State<CatalogView> {
                       ? GridView.count(
                           crossAxisCount: 3,
                           children: List.generate(
-                              ((categoryResponse?.body) ?? []).length, (index) {
-                            return CategoryTile(
-                              imageLink:
-                                  categoryResponse?.body?[index].photo ?? "",
-                              label: categoryResponse?.body?[index].catName ?? "",
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  "/goods",
-                                  arguments: GoodsArguments(
-                                      categoryResponse?.body?[index].catName ?? "",
-                                      categoryResponse?.body?[index].catId ?? ""),
-                                );
-                              },
-                            );
-                          }),
+                            ((categoryResponse?.body) ?? []).length,
+                            (index) {
+                              return Expanded(
+                                child: CategoryTile(
+                                  imageLink:
+                                      categoryResponse?.body?[index].photo ??
+                                          "",
+                                  label:
+                                      categoryResponse?.body?[index].catName ??
+                                          "",
+                                  onTap: () {
+                                    onCategorySelected(
+                                        categoryResponse?.body?[index].catId ??
+                                            "");
+                                  },
+                                ),
+                              );
+                            },
+                          ),
                         )
                       : const CustomEmpty())
               : const SizedBox(child: CustomErrorWidget())
@@ -122,9 +147,10 @@ class _CatalogViewState extends State<CatalogView> {
                 height: 50.0,
                 width: 50.0,
                 child: Center(
-                    child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
-                )),
+                  child: CircularProgressIndicator(
+                    color: AppColors.primaryColor,
+                  ),
+                ),
               ),
             ),
     );

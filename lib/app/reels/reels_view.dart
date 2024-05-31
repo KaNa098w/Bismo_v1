@@ -14,16 +14,30 @@ class _ReelsViewState extends State<ReelsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: PageView(
+        child: PageView.builder(
           scrollDirection: Axis.vertical,
-          children: const <Widget>[
-            VideoPlayerWidget(url: 'https://dulat.object.pscloud.io/7757499451/reels/video_1.MOV'),
-            VideoPlayerWidget(url: 'https://dulat.object.pscloud.io/7757499451/reelsmp4/video_2.mp4'),
-            VideoPlayerWidget(url: 'https://dulat.object.pscloud.io/7757499451/reelsmp4/video_3.mp4'),
-            VideoPlayerWidget(url: 'https://dulat.object.pscloud.io/7757499451/reelsmp4/video_4.mp4'),
-          ],
+          itemCount: 4, // Заменяем children на itemCount
+          itemBuilder: (context, index) {
+            return VideoPlayerWidget(url: _getVideoUrl(index));
+          },
         ),
       ),
     );
+  }
+
+  String _getVideoUrl(int index) {
+    // Здесь вам нужно вернуть URL видео в зависимости от индекса
+    switch(index) {
+      case 0:
+        return 'https://dulat.object.pscloud.io/7757499451/reels/video_1.MOV';
+      case 1:
+        return 'https://dulat.object.pscloud.io/7757499451/reelsmp4/video_2.mp4';
+      case 2:
+        return 'https://dulat.object.pscloud.io/7757499451/reelsmp4/video_3.mp4';
+      case 3:
+        return 'https://dulat.object.pscloud.io/7757499451/reelsmp4/video_4.mp4';
+      default:
+        return ''; // Здесь нужно вернуть URL вашего видео по умолчанию или пустую строку
+    }
   }
 }
