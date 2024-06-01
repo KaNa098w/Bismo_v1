@@ -12,7 +12,9 @@ class GoodsService {
   Future<GoodsResponse?> getGoods(String catId) async {
     try {
       var res = await _http.get(ApiEndpoint.getGoods, params: {
-        "cat_id": catId,
+
+        "cat_id": catId,  
+        'login_provider': '7757499451',
       });
 
       if (res.statusCode == 200 || res.statusCode == 201) {

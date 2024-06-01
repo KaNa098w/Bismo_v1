@@ -210,7 +210,7 @@ class _GoodsViewState extends State<GoodsView> {
                         children: [
                           Center(
                             child: InkWell(
-                              onTap: () {
+                              onTap: () { 
                                 if (quantity > 0) {
                                   setState(() {
                                     quantity--;
