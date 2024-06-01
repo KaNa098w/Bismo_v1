@@ -55,7 +55,7 @@ class _CatalogViewState extends State<CatalogView> {
     }
   }
 
-  void onCategorySelected(String catId, bool haveCategory) async {
+  void onCategorySelected(String name, String catId, bool haveCategory) async {
     setState(() {
       isLoading = true;
     });
@@ -66,15 +66,13 @@ class _CatalogViewState extends State<CatalogView> {
       Navigator.pushNamed(
         context,
         "/goods",
-        arguments: GoodsArguments(categoryResponse?.body?[0].catName ?? "",
-            categoryResponse?.body?[0].catId ?? ""),
+        arguments: GoodsArguments(name, catId),
       );
     } else {
       Navigator.pushNamed(
         context,
         "/catalog",
-        arguments: CatalogArguments(categoryResponse?.body?[0].catName ?? "",
-            categoryResponse?.body?[0].catId ?? ""),
+        arguments: CatalogArguments(name, catId),
       );
     }
   }
@@ -135,6 +133,9 @@ class _CatalogViewState extends State<CatalogView> {
                                           "",
                                   onTap: () {
                                     onCategorySelected(
+                                        categoryResponse
+                                                ?.body?[index].catName ??
+                                            "",
                                         categoryResponse?.body?[index].catId ??
                                             "",
                                         categoryResponse
