@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:bismo/app/catalog/catalog_arguments.dart';
 import 'package:bismo/app/catalog/goods/goods_arguments.dart';
 import 'package:bismo/app/catalog/search_catalog/search_view.dart';
 import 'package:bismo/core/colors.dart';
@@ -54,14 +55,14 @@ class _CatalogViewState extends State<CatalogView> {
     }
   }
 
-  void onCategorySelected(String catId) async {
+  void onCategorySelected(String catId, bool haveCategory) async {
     setState(() {
       isLoading = true;
     });
 
-    var res = await getCategories(catId);
+    // var res = await getCategories(catId);
 
-    if (res?.body?.isEmpty ?? true) {
+    if (!haveCategory) {
       Navigator.pushNamed(
         context,
         "/goods",
@@ -69,10 +70,12 @@ class _CatalogViewState extends State<CatalogView> {
             categoryResponse?.body?[0].catId ?? ""),
       );
     } else {
-      setState(() {
-        categoryResponse = res;
-        isLoading = false;
-      });
+      Navigator.pushNamed(
+        context,
+        "/catalog",
+        arguments: CatalogArguments(categoryResponse?.body?[0].catName ?? "",
+            categoryResponse?.body?[0].catId ?? ""),
+      );
     }
   }
 
@@ -133,7 +136,10 @@ class _CatalogViewState extends State<CatalogView> {
                                   onTap: () {
                                     onCategorySelected(
                                         categoryResponse?.body?[index].catId ??
-                                            "");
+                                            "",
+                                        categoryResponse
+                                                ?.body?[index].haveCategory ??
+                                            false);
                                   },
                                 ),
                               );
