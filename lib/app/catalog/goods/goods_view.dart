@@ -172,7 +172,7 @@ class _GoodsViewState extends State<GoodsView> {
                                   currentQuantity = quantity;
                                 },
                               );
-                             
+
                               Navigator.pop(context);
                             },
                             child: const Text(
