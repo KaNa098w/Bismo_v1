@@ -27,9 +27,8 @@ class _HomeViewState extends State<HomeView> {
           SliverToBoxAdapter(
            child: AdSpace(),
           ),
-          const SliverToBoxAdapter(
-            child: PopularPacks(),
-          ),
+        
+          
           const SliverPadding(
             padding: EdgeInsets.symmetric(vertical: AppDefaults.padding),
             sliver: SliverToBoxAdapter(

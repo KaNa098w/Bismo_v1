@@ -1,9 +1,7 @@
 class ApiEndpoint {
   static const baseUrl = 'http://188.95.95.122:2223/';
-  
 
   static const api = '${baseUrl}server/hs';
-
 
   static const getOtpForSignIn = '$api/all/smsdetail';
   static const getCategories = '$api/provider/getskygroup';
@@ -19,7 +17,8 @@ class ApiEndpoint {
   static const setStatus = '$api/product/setstatus';
   static const getAddresses = '$api/all/user_adress';
   static const addAddress = '$api/all/add_adress';
-   static const deleteAddress = '$api/all/delete_adress';
+  static const deleteAddress = '$api/all/delete_adress';
+  static const search = '$api/product/searching'; // Обновленный эндпоинт для поиска
 
   static const List<String> urlsWithoutAuthorization = [];
 }

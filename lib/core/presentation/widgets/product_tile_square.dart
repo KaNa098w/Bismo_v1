@@ -23,11 +23,10 @@ class ProductTileSquare extends StatelessWidget {
         child: InkWell(
           borderRadius: AppDefaults.borderRadius,
           onTap: () {
-           Navigator.pushNamed(context, '/product');
+            Navigator.pushNamed(context, '/product');
           },
           child: Container(
             width: 176,
-            height: 296,
             padding: const EdgeInsets.all(AppDefaults.padding),
             decoration: BoxDecoration(
               border: Border.all(width: 0.1, color: AppColors.placeholder),

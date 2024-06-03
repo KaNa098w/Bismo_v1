@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 
 class CatalogController extends StatelessController {
   final String _title = 'Каталог';
-  const CatalogController({Key? key}) : super(key: key);
+  final bool isRoot; // Новый параметр для указания, является ли экран корневым
+
+  const CatalogController({Key? key, this.isRoot = false}) : super(key: key);
 
   @override
   bool get auth => false;
@@ -18,7 +20,10 @@ class CatalogController extends StatelessController {
         : CatalogArguments("Каталог", "");
     return Display(
       title: _title,
-      mobile: mobile.CatalogView(title: args.title, catId: args.catId),
+      mobile: mobile.CatalogView(
+        title: args.title,
+        catId: args.catId,
+      ),
     );
   }
 }

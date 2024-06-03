@@ -35,7 +35,9 @@ class TitleAndActionButton extends StatelessWidget {
                     ?.copyWith(color: Colors.black),
           ),
           TextButton(
-            onPressed: onTap,
+            onPressed: (){
+              Navigator.pushNamed(context, '/all_view');
+            },
             child: Text(actionLabel ?? 'показать всё', style: const TextStyle(fontSize: 13),),
           ),
         ],

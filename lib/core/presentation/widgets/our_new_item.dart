@@ -16,16 +16,19 @@ class OurNewItem extends StatelessWidget {
         TitleAndActionButton(
           title: 'Новинки',
           onTap: () {
-             Navigator.pushNamed(context, '/product');
+            Navigator.pushNamed(context, '/product');
           },
         ),
-        SingleChildScrollView(
-          padding: const EdgeInsets.only(left: AppDefaults.padding),
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: List.generate(
-              Dummy.products.length,
-              (index) => ProductTileSquare(data: Dummy.products[index]),
+        SizedBox(
+          height: 300, // Ограничиваем высоту SingleChildScrollView
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.only(left: AppDefaults.padding),
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: List.generate(
+                Dummy.products.length,
+                (index) => ProductTileSquare(data: Dummy.products[index]),
+              ),
             ),
           ),
         ),

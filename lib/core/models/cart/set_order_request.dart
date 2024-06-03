@@ -67,46 +67,100 @@ class SetOrderRequest {
 }
 
 class Goods {
-  String? nomenklaturaKod;
-  String? producer;
-  int? price;
-  int? count;
-  int? step;
   String? nomenklatura;
-  String? comment;
-  int? basketCount;
+  String? nomenklaturaKod;
+  int? count;
+  double? price;
+  double? optPrice;
+  String? producer;
+  String? kontragent;
+  int? step;
+  int? newProduct;
+  String? photo;
+  String? catId;
+  double? oldPrice;
+  String? newsPhoto;
 
-  Goods(
-      {this.nomenklaturaKod,
-      this.producer,
-      this.price,
-      this.count,
-      this.step,
-      this.nomenklatura,
-      this.comment,
-      this.basketCount});
+  Goods({
+    this.nomenklatura,
+    this.nomenklaturaKod,
+    this.count,
+    this.price,
+    this.optPrice,
+    this.producer,
+    this.kontragent,
+    this.step,
+    this.newProduct,
+    this.photo,
+    this.catId,
+    this.oldPrice,
+    this.newsPhoto, required comment, required int basketCount,
+  });
 
   Goods.fromJson(Map<String, dynamic> json) {
-    nomenklaturaKod = json['nomenklatura_kod'];
-    producer = json['producer'];
-    price = json['price'];
-    count = json['count'];
-    step = json['step'];
     nomenklatura = json['nomenklatura'];
-    comment = json['comment'];
-    basketCount = json['basket_count'];
+    nomenklaturaKod = json['nomenklatura_kod'];
+    count = convertStringToInt(json['count']);
+    price = convertStringToDouble(json['price']);
+    optPrice = convertStringToDouble(json['opt_price']);
+    producer = json['producer'];
+    kontragent = json['kontragent'];
+    step = convertStringToInt(json['step']);
+    newProduct = convertStringToInt(json['new_product']);
+    photo = json['photo'];
+    catId = json['cat_id'];
+    oldPrice = convertStringToDouble(json['old_price']);
+    newsPhoto = json['news_photo'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['nomenklatura_kod'] = nomenklaturaKod;
-    data['producer'] = producer;
-    data['price'] = price;
-    data['count'] = count;
-    data['step'] = step;
     data['nomenklatura'] = nomenklatura;
-    data['comment'] = comment;
-    data['basket_count'] = basketCount;
+    data['nomenklatura_kod'] = nomenklaturaKod;
+    data['count'] = count;
+    data['price'] = price;
+    data['opt_price'] = optPrice;
+    data['producer'] = producer;
+    data['kontragent'] = kontragent;
+    data['step'] = step;
+    data['new_product'] = newProduct;
+    data['photo'] = photo;
+    data['cat_id'] = catId;
+    data['old_price'] = oldPrice;
+    data['news_photo'] = newsPhoto;
     return data;
   }
 }
+
+double convertStringToDouble(dynamic value) {
+  if (value == null) {
+    return 0.0;
+  } else if (value is int) {
+    return value.toDouble();
+  } else if (value is String) {
+    try {
+      return double.parse(value);
+    } catch (e) {
+      return 0.0;
+    }
+  } else {
+    return 0.0;
+  }
+}
+
+int convertStringToInt(dynamic value) {
+  if (value == null) {
+    return 0;
+  } else if (value is int) {
+    return value;
+  } else if (value is String) {
+    try {
+      return int.parse(value);
+    } catch (e) {
+      return 0;
+    }
+  } else {
+    return 0;
+  }
+}
+

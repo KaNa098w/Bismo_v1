@@ -1,5 +1,7 @@
-import 'package:bismo/core/presentation/widgets/video_player.dart';
+import 'package:bismo/core/presentation/widgets/results.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/presentation/widgets/video_player copy.dart';
 
 class ReelsView extends StatefulWidget {
   final String? title;

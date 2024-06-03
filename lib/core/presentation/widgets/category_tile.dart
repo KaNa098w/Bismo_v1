@@ -30,7 +30,7 @@ class CategoryTile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(AppDefaults.padding * 1),
+              padding: const EdgeInsets.all(AppDefaults.padding),
               decoration: BoxDecoration(
                 color: backgroundColor ?? Colors.white,
                 shape: BoxShape.circle,
@@ -40,24 +40,28 @@ class CategoryTile extends StatelessWidget {
                 child: AspectRatio(
                   aspectRatio: 1 / 1,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(iconSize / 2), // делаем круглое изображение
+                    borderRadius: BorderRadius.circular(iconSize / 2),
                     child: NetworkImageWithLoader(
                       imageLink,
-                      fit: BoxFit.cover, // устанавливаем BoxFit.cover, чтобы изображение вмещалось в контейнер
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 12,
-                  ),
-              maxLines: 3,
-              textAlign: TextAlign.center,
+            SizedBox(
+              width: iconSize * 2, // Увеличиваем ширину контейнера для текста
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                    ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ),

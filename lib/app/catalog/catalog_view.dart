@@ -1,16 +1,18 @@
 import 'dart:developer';
 import 'package:bismo/app/catalog/catalog_arguments.dart';
-import 'package:bismo/app/catalog/goods/goods_arguments.dart';
 import 'package:bismo/app/catalog/search_catalog/search_view.dart';
 import 'package:bismo/core/colors.dart';
-import 'package:bismo/core/helpers/app_bar_back.dart';
 import 'package:bismo/core/models/catalog/category.dart';
+import 'package:bismo/core/models/catalog/search.dart';
 import 'package:bismo/core/presentation/widgets/custom_empty_widget.dart';
 import 'package:bismo/core/presentation/widgets/custom_error_widget.dart';
 import 'package:bismo/core/services/catalog_service.dart';
+import 'package:bismo/core/services/search_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:bismo/core/presentation/widgets/category_tile.dart';
+import 'package:bismo/app/catalog/goods/goods_arguments.dart';
+import 'package:bismo/app/catalog/goods/goods_view.dart' as mobile;
 
 class CatalogView extends StatefulWidget {
   final String? title;
@@ -23,57 +25,53 @@ class CatalogView extends StatefulWidget {
 }
 
 class _CatalogViewState extends State<CatalogView> {
-  late GlobalKey<NavigatorState> navigatorKey;
-
   CategoryResponse? categoryResponse;
   bool isLoading = true;
+
+  final SearchService _searchService = SearchService();
 
   @override
   void initState() {
     super.initState();
-    getCategories(widget.catId);
-  }
-
-  Future<CategoryResponse?> getCategories(String? catId) async {
-    try {
-      var res = await CatalogService().getCategories(catId ?? '');
-
-      setState(() {
-        categoryResponse = res;
-        isLoading = false;
-      });
-
-      return res;
-    } on DioException catch (e) {
-      log(e.toString());
-
-      setState(() {
-        isLoading = false;
-      });
-
-      return null;
+    if (widget.catId != null) {
+      _loadCategories(widget.catId!);
     }
   }
 
-  void onCategorySelected(String name, String catId, bool haveCategory) async {
+  Future<void> _loadCategories(String catId) async {
     setState(() {
       isLoading = true;
     });
 
-    // var res = await getCategories(catId);
+    try {
+      var response = await CatalogService().getCategories(catId);
+      setState(() {
+        categoryResponse = response;
+        isLoading = false;
+      });
+    } catch (e) {
+      log(e.toString());
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
-    if (!haveCategory) {
-      Navigator.pushNamed(
-        context,
-        "/goods",
-        arguments: GoodsArguments(name, catId),
-      );
-    } else {
-      Navigator.pushNamed(
-        context,
-        "/catalog",
-        arguments: CatalogArguments(name, catId),
-      );
+  void _onCategorySelected(String name, String catId, bool haveCategory) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CatalogView(
+          title: name,
+          catId: catId,
+        ),
+      ),
+    );
+  }
+
+  void _onSearchSubmitted(String query) async {
+    if (query.isNotEmpty) {
+      Navigator.pushNamed(context, '/search');
     }
   }
 
@@ -81,31 +79,23 @@ class _CatalogViewState extends State<CatalogView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
-          onSubmitted: (query) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SearchCatalogView(initialQuery: query),
+        leading: widget.catId == null
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
-            );
-          },
+        title: TextField(
+          onSubmitted: _onSearchSubmitted,
           decoration: InputDecoration(
             hintText: 'Поиск товаров',
             fillColor: Colors.white,
             filled: true,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide:
-                  const BorderSide(color: AppColors.primaryColor, width: 2),
             ),
             prefixIcon: const Icon(Icons.search),
           ),
@@ -114,52 +104,39 @@ class _CatalogViewState extends State<CatalogView> {
         scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
       ),
-      body: !isLoading
-          ? categoryResponse != null
-              ? Container(
-                  child: (categoryResponse?.body ?? []).isNotEmpty
-                      ? GridView.count(
-                          crossAxisCount: 3,
-                          children: List.generate(
-                            ((categoryResponse?.body) ?? []).length,
-                            (index) {
-                              return Expanded(
-                                child: CategoryTile(
-                                  imageLink:
-                                      categoryResponse?.body?[index].photo ??
-                                          "",
-                                  label:
-                                      categoryResponse?.body?[index].catName ??
-                                          "",
-                                  onTap: () {
-                                    onCategorySelected(
-                                        categoryResponse
-                                                ?.body?[index].catName ??
-                                            "",
-                                        categoryResponse?.body?[index].catId ??
-                                            "",
-                                        categoryResponse
-                                                ?.body?[index].haveCategory ??
-                                            false);
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : const CustomEmpty())
-              : const SizedBox(child: CustomErrorWidget())
-          : const Center(
-              child: SizedBox(
-                height: 50.0,
-                width: 50.0,
-                child: Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                ),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primaryColor,
               ),
-            ),
+            )
+          : categoryResponse != null
+              ? categoryResponse!.body!.isNotEmpty
+                  ? GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        childAspectRatio:
+                            0.7, // Изменяем аспектное соотношение для лучшей адаптивности
+                      ),
+                      itemCount: categoryResponse!.body!.length,
+                      itemBuilder: (context, index) {
+                        return CategoryTile(
+                          imageLink: categoryResponse!.body![index].photo ?? "",
+                          label: categoryResponse!.body![index].catName ?? "",
+                          onTap: () {
+                            _onCategorySelected(
+                              categoryResponse!.body![index].catName ?? "",
+                              categoryResponse!.body![index].catId ?? "",
+                              categoryResponse!.body![index].haveCategory ??
+                                  false,
+                            );
+                          },
+                        );
+                      },
+                    )
+                  : const CustomEmpty()
+              : const CustomErrorWidget(),
     );
   }
 }

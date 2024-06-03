@@ -143,7 +143,7 @@ class _CartViewState extends State<CartView> {
         return Goods(
           nomenklaturaKod: item.productDetails?['nomenklaturaKod'],
           producer: item.productDetails?['producer'] ?? "",
-          price: item.unitPrice.toInt(),
+          price: item.unitPrice,
           count: item.productDetails?['count'] ?? 0,
           step: item.productDetails?['step'] ?? 1,
           nomenklatura: item.productDetails?['nomenklatura'],
