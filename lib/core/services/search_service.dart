@@ -8,15 +8,21 @@ import '../presentation/widgets/results.dart';
 class SearchService {
   final AppHttp _http = AppHttp(
     baseUrl: ApiEndpoint.baseUrl,
-    headers: {},
+    headers: {
+      'Content-Type': 'application/json',
+    },
   );
 
   Future<List<SearchResults>?> getGoods(String name) async {
     try {
-      // Формируем URL вручную, чтобы исключить кодирование
-      final url = '${ApiEndpoint.search}?name=$name';
-      print('Request URL: $url'); // Отладочное сообщение для проверки
-      var res = await _http.get(url);
+      final url = '${ApiEndpoint.search}?name=${Uri.encodeComponent(name)}';
+      print('*** Request ***');
+      print('uri: $url');
+      print('method: POST');
+
+      var res = await _http.post(url);
+
+   
 
       if (res.statusCode == 200 || res.statusCode == 201) {
         SearchCatalogResponse response = SearchCatalogResponse.fromJson(res.data);
@@ -27,8 +33,8 @@ class SearchService {
         throw Exception('Failed to load data. Status code: ${res.statusCode}');
       }
     } on DioException catch (e) {
-      if (e.response?.statusCode == 500) {
-        throw Exception('Server error: ${e.response?.data}');
+      if (e.response?.statusCode == 405) {
+        throw Exception('Method Not Allowed: The server does not support the requested method.');
       }
       rethrow;
     } catch (e) {
