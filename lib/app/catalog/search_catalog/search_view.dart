@@ -13,7 +13,7 @@ class SearchCatalogView extends StatefulWidget {
 
 class _SearchCatalogViewState extends State<SearchCatalogView> {
   final SearchService _searchService = SearchService();
-  List<Results>? _searchResults;
+  List<SearchResults>? _searchResults;
   bool _isLoadingResults = true;
   String? _errorMessage;
 

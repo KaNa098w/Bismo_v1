@@ -58,15 +58,27 @@ class _CatalogViewState extends State<CatalogView> {
   }
 
   void _onCategorySelected(String name, String catId, bool haveCategory) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CatalogView(
-          title: name,
-          catId: catId,
+    if (haveCategory) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CatalogView(
+            title: name,
+            catId: catId,
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => mobile.GoodsView(
+            title: name,
+            catId: catId,
+          ),
+        ),
+      );
+    }
   }
 
   void _onSearchSubmitted(String query) async {

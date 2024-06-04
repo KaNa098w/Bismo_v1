@@ -1,6 +1,6 @@
 class DetalizationOrderResponse {
   String? success;
-  String? dateLoading;
+  int? dateLoading;
   String? deliveryAddress;
   String? counterparty;
   String? dolgota;
@@ -10,7 +10,6 @@ class DetalizationOrderResponse {
   int? status;
   String? clientName;
   String? loginProvider;
-  String? comment;
   String? user;
   int? orderSum;
   int? factSum;
@@ -28,7 +27,6 @@ class DetalizationOrderResponse {
       this.status,
       this.clientName,
       this.loginProvider,
-      this.comment,
       this.user,
       this.orderSum,
       this.factSum,
@@ -46,7 +44,6 @@ class DetalizationOrderResponse {
     status = json['status'];
     clientName = json['client_name'];
     loginProvider = json['login_provider'];
-    comment = json['comment'];
     user = json['user'];
     orderSum = json['order_sum'];
     factSum = json['fact_sum'];
@@ -71,7 +68,6 @@ class DetalizationOrderResponse {
     data['status'] = status;
     data['client_name'] = clientName;
     data['login_provider'] = loginProvider;
-    data['comment'] = comment;
     data['user'] = user;
     data['order_sum'] = orderSum;
     data['fact_sum'] = factSum;
@@ -91,8 +87,6 @@ class OrderGoods {
   int? step;
   int? price;
   String? photo;
-  String? producer;
-  String? comment;
 
   OrderGoods(
       {this.basketCount,
@@ -102,9 +96,7 @@ class OrderGoods {
       this.nomenklaturaKod,
       this.step,
       this.price,
-      this.photo,
-      this.producer,
-      this.comment});
+      this.photo});
 
   OrderGoods.fromJson(Map<String, dynamic> json) {
     basketCount = json['basket_count'];
@@ -115,8 +107,6 @@ class OrderGoods {
     step = json['step'];
     price = json['price'];
     photo = json['photo'];
-    producer = json['producer'];
-    comment = json['comment'];
   }
 
   Map<String, dynamic> toJson() {
@@ -129,8 +119,6 @@ class OrderGoods {
     data['step'] = step;
     data['price'] = price;
     data['photo'] = photo;
-    data['producer'] = producer;
-    data['comment'] = comment;
     return data;
   }
 }

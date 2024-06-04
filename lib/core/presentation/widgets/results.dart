@@ -1,12 +1,12 @@
-class Results {
+class SearchResults {
   final String? name;
   final String? cateName;
   final int? quantity;
 
-  Results({this.name, this.cateName, this.quantity});
+  SearchResults({this.name, this.cateName, this.quantity});
 
-  factory Results.fromJson(Map<String, dynamic> json) {
-    return Results(
+  factory SearchResults.fromJson(Map<String, dynamic> json) {
+    return SearchResults(
       name: json['name'],
       cateName: json['cate_name'],
       quantity: json['quantity'],

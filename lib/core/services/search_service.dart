@@ -1,8 +1,9 @@
 import 'package:bismo/core/api_endpoints.dart';
 import 'package:bismo/core/app_http.dart';
 import 'package:bismo/core/models/catalog/search.dart';
-import 'package:bismo/core/presentation/widgets/results.dart';
 import 'package:dio/dio.dart';
+
+import '../presentation/widgets/results.dart';
 
 class SearchService {
   final AppHttp _http = AppHttp(
@@ -10,15 +11,17 @@ class SearchService {
     headers: {},
   );
 
-  Future<List<Results>?> getGoods(String name) async {
+  Future<List<SearchResults>?> getGoods(String name) async {
     try {
-      var encodedName = Uri.encodeQueryComponent(name); // Кодируем параметр запроса
-      var res = await _http.get(ApiEndpoint.search, params: {'name': encodedName});
+      // Формируем URL вручную, чтобы исключить кодирование
+      final url = '${ApiEndpoint.search}?name=$name';
+      print('Request URL: $url'); // Отладочное сообщение для проверки
+      var res = await _http.get(url);
 
       if (res.statusCode == 200 || res.statusCode == 201) {
         SearchCatalogResponse response = SearchCatalogResponse.fromJson(res.data);
         return response.jSONBody
-            ?.map((jsonBody) => Results.fromJson(jsonBody as Map<String, dynamic>))
+            ?.map((jsonBody) => SearchResults.fromJson(jsonBody as Map<String, dynamic>))
             .toList();
       } else {
         throw Exception('Failed to load data. Status code: ${res.statusCode}');
