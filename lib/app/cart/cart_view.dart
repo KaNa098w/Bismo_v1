@@ -16,6 +16,7 @@ import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class CartView extends StatefulWidget {
   final String? title;
@@ -39,7 +40,8 @@ class _CartViewState extends State<CartView> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       var userProvider = context.read<UserProvider>();
-      var res = await _getUserAddress(userProvider.user?.phoneNumber ?? "", context);
+      var res =
+          await _getUserAddress(userProvider.user?.phoneNumber ?? "", context);
       setState(() {
         userAddress = res;
       });
@@ -56,7 +58,8 @@ class _CartViewState extends State<CartView> {
 
   Future<List<PersistentShoppingCartItem>> _loadCartItems() async {
     Map<String, dynamic> cartData = PersistentShoppingCart().getCartData();
-    cartItems = (cartData['cartItems'] ?? []) as List<PersistentShoppingCartItem>;
+    cartItems =
+        (cartData['cartItems'] ?? []) as List<PersistentShoppingCartItem>;
     _controllers = List.generate(cartItems.length, (index) {
       var newController = TextEditingController();
       newController.text = "${cartItems[index].quantity}";
@@ -75,13 +78,15 @@ class _CartViewState extends State<CartView> {
     _loadCartItems();
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, String productName, String productId) {
+  void _showDeleteConfirmationDialog(
+      BuildContext context, String productName, String productId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Удалить товар?'),
-          content: Text('Вы уверены, что хотите удалить товар "$productName" из корзины?'),
+          content: Text(
+              'Вы уверены, что хотите удалить товар "$productName" из корзины?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -102,7 +107,8 @@ class _CartViewState extends State<CartView> {
     );
   }
 
-  Future<GetAddressResponse?> _getUserAddress(String phoneNumber, BuildContext ctx) async {
+  Future<GetAddressResponse?> _getUserAddress(
+      String phoneNumber, BuildContext ctx) async {
     try {
       var res = await UserService().getUserAddress(phoneNumber);
       return res;
@@ -237,7 +243,8 @@ class _CartViewState extends State<CartView> {
                       isSelected: [isDeliverySelected, !isDeliverySelected],
                       onPressed: (int index) {
                         setState(() {
-                          isDeliverySelected = index == 0; // Обновление существующей переменной
+                          isDeliverySelected =
+                              index == 0; // Обновление существующей переменной
                         });
                       },
                       selectedColor: Colors.white,
@@ -252,7 +259,9 @@ class _CartViewState extends State<CartView> {
                               'Доставка',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: isDeliverySelected ? Colors.white : Colors.black,
+                                color: isDeliverySelected
+                                    ? Colors.white
+                                    : Colors.black,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -266,7 +275,9 @@ class _CartViewState extends State<CartView> {
                               'Самовывоз',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: !isDeliverySelected ? Colors.white : Colors.black,
+                                color: !isDeliverySelected
+                                    ? Colors.white
+                                    : Colors.black,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -283,8 +294,10 @@ class _CartViewState extends State<CartView> {
       ),
       body: FutureBuilder<List<PersistentShoppingCartItem>>(
         future: _loadCartItems(),
-        builder: (context, AsyncSnapshot<List<PersistentShoppingCartItem>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting && !isLoaded) {
+        builder: (context,
+            AsyncSnapshot<List<PersistentShoppingCartItem>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting &&
+              !isLoaded) {
             return const Center(
               child: CircularProgressIndicator(
                 color: AppColors.primaryColor,
@@ -318,14 +331,24 @@ class _CartViewState extends State<CartView> {
 
           return ListView.separated(
             itemCount: snapshot.data!.length,
-            separatorBuilder: (BuildContext context, int index) => const Divider(),
+            separatorBuilder: (BuildContext context, int index) =>
+                const Divider(),
             itemBuilder: (context, index) {
               PersistentShoppingCartItem cartItem = snapshot.data![index];
 
               return ListTile(
                 leading: CircleAvatar(
                   radius: 30,
-                  backgroundImage: NetworkImage(cartItem.productThumbnail ?? ""),
+                  backgroundColor: Colors.transparent,
+                  child: CachedNetworkImage(
+                    imageUrl: cartItem.productThumbnail ?? "",
+                    placeholder: (context, url) => const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => Image.network(
+                      'https://images.satu.kz/197787004_w200_h200_pomада-для-губ.jpg',
+                      fit: BoxFit.cover,
+                    ),
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 title: Text(cartItem.productName),
                 subtitle: Text('${cartItem.unitPrice}₸ x ${cartItem.quantity}'),
@@ -340,9 +363,11 @@ class _CartViewState extends State<CartView> {
                         onPressed: () {
                           setState(() {
                             cartItem.quantity--;
-                            _controllers[index].text = cartItem.quantity.toString();
+                            _controllers[index].text =
+                                cartItem.quantity.toString();
                           });
-                          PersistentShoppingCart().removeFromCart(cartItem.productId);
+                          PersistentShoppingCart()
+                              .removeFromCart(cartItem.productId);
                           PersistentShoppingCart().addToCart(cartItem);
                         },
                       )
@@ -352,7 +377,8 @@ class _CartViewState extends State<CartView> {
                         color: Colors.red,
                         icon: const Icon(Icons.delete_outline_rounded),
                         onPressed: () {
-                          _showDeleteConfirmationDialog(context, cartItem.productName, cartItem.productId);
+                          _showDeleteConfirmationDialog(context,
+                              cartItem.productName, cartItem.productId);
                         },
                       ),
                     const SizedBox(width: 5),
@@ -381,9 +407,11 @@ class _CartViewState extends State<CartView> {
                       onPressed: () {
                         setState(() {
                           cartItem.quantity++;
-                          _controllers[index].text = cartItem.quantity.toString();
+                          _controllers[index].text =
+                              cartItem.quantity.toString();
                         });
-                        PersistentShoppingCart().removeFromCart(cartItem.productId);
+                        PersistentShoppingCart()
+                            .removeFromCart(cartItem.productId);
                         PersistentShoppingCart().addToCart(cartItem);
                       },
                     ),
@@ -403,11 +431,12 @@ class _CartViewState extends State<CartView> {
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      foregroundColor:  Colors.green,
+                      foregroundColor: Colors.green,
                       backgroundColor: Colors.transparent,
                       elevation: 0,
                       padding: const EdgeInsets.all(9),
-                      textStyle: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                      textStyle: const TextStyle(
+                          fontSize: 18.0, fontWeight: FontWeight.bold),
                     ),
                     child: Text(
                       'Итого: ${NumberFormat.currency(locale: 'ru', symbol: '₸').format(cartItems.fold<double>(0, (total, item) => total + (item.unitPrice * item.quantity)))}',
@@ -424,7 +453,8 @@ class _CartViewState extends State<CartView> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
                       textStyle: const TextStyle(fontSize: 16),
                     ),
                     child: const Text('Оформить заказ'),
@@ -442,7 +472,8 @@ class _CartViewState extends State<CartView> {
       isScrollControlled: true,
       backgroundColor: const Color(0xFFF5F5F5),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(15), topRight: Radius.circular(15)),
       ),
       builder: (context) {
         return StatefulBuilder(
@@ -456,13 +487,16 @@ class _CartViewState extends State<CartView> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Адрес доставки', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  const Text('Адрес доставки',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   userProvider.userAddress?.deliveryAddress != null
                       ? Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(userProvider.userAddress!.deliveryAddress!, style: const TextStyle(fontSize: 16)),
+                            Text(userProvider.userAddress!.deliveryAddress!,
+                                style: const TextStyle(fontSize: 16)),
                             InkWell(
                               onTap: () async {
                                 await Navigator.pushNamed(context, "/address");
@@ -505,7 +539,8 @@ class _CartViewState extends State<CartView> {
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: Colors.red,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 12),
                         textStyle: const TextStyle(fontSize: 16),
                       ),
                       child: const Text('Оформить заказ'),

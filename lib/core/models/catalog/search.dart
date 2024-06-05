@@ -1,15 +1,15 @@
 class SearchCatalogResponse {
   bool? success;
-  List<JSONBody>? jSONBody;
+  List<SearchResultItems>? jSONBody;
 
   SearchCatalogResponse({this.success, this.jSONBody});
 
   SearchCatalogResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     if (json['JSON_Body'] != null) {
-      jSONBody = <JSONBody>[];
+      jSONBody = <SearchResultItems>[];
       json['JSON_Body'].forEach((v) {
-        jSONBody!.add(JSONBody.fromJson(v));
+        jSONBody!.add(SearchResultItems.fromJson(v));
       });
     }
   }
@@ -24,7 +24,7 @@ class SearchCatalogResponse {
   }
 }
 
-class JSONBody {
+class SearchResultItems {
   String? name;
   String? code;
   String? cateName;
@@ -32,7 +32,7 @@ class JSONBody {
   int? quantity;
   bool? group;
 
-  JSONBody(
+  SearchResultItems(
       {this.name,
       this.code,
       this.cateName,
@@ -40,14 +40,16 @@ class JSONBody {
       this.quantity,
       this.group});
 
-  JSONBody.fromJson(Map<String, dynamic> json) {
+  SearchResultItems.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     code = json['code'];
     cateName = json['cate_name'];
     cateId = json['cate_id'];
-    quantity = json['quantity'];
+    quantity = json['quantity'] is int ? json['quantity'] : int.tryParse(json['quantity']);
     group = json['group'];
   }
+
+  get catId => null;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};

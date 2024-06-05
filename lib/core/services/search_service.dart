@@ -13,22 +13,19 @@ class SearchService {
     },
   );
 
-  Future<List<SearchResults>?> getGoods(String name) async {
+  Future<List<SearchResultItems>?> getGoods(String name) async {
     try {
-      final url = '${ApiEndpoint.search}?name=${Uri.encodeComponent(name)}';
+      const url = ApiEndpoint.search;
       print('*** Request ***');
       print('uri: $url');
       print('method: POST');
+      print('body: {"name": "$name"}');
 
-      var res = await _http.post(url);
-
-   
+      var res = await _http.post(url, data: {"name": name});
 
       if (res.statusCode == 200 || res.statusCode == 201) {
         SearchCatalogResponse response = SearchCatalogResponse.fromJson(res.data);
-        return response.jSONBody
-            ?.map((jsonBody) => SearchResults.fromJson(jsonBody as Map<String, dynamic>))
-            .toList();
+        return response.jSONBody;
       } else {
         throw Exception('Failed to load data. Status code: ${res.statusCode}');
       }

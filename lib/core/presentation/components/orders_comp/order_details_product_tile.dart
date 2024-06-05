@@ -1,5 +1,5 @@
 import 'package:bismo/core/models/order/detalization_order_response.dart';
-import 'package:bismo/core/presentation/widgets/network_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class OrderDetailsProductTile extends StatelessWidget {
@@ -18,8 +18,13 @@ class OrderDetailsProductTile extends StatelessWidget {
           height: 80,
           child: AspectRatio(
             aspectRatio: 1 / 1,
-            child: NetworkImageWithLoader(
-              data.photo ?? "",
+            child: CachedNetworkImage(
+              imageUrl: data.photo ?? "",
+              placeholder: (context, url) => const CircularProgressIndicator(),
+              errorWidget: (context, url, error) => Image.network(
+                'https://images.satu.kz/197787004_w200_h200_pomada-dlya-gub.jpg',
+                fit: BoxFit.contain,
+              ),
               fit: BoxFit.contain,
             ),
           ),
@@ -32,12 +37,10 @@ class OrderDetailsProductTile extends StatelessWidget {
               Text(
                 data.nomenklatura ?? "",
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      // fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
               ),
               const SizedBox(height: 8),
-              // Text(data.)
             ],
           ),
         ),
@@ -52,9 +55,9 @@ class OrderDetailsProductTile extends StatelessWidget {
             Text(
               '${data.basketCount}x',
               style: Theme.of(context).textTheme.bodySmall,
-            )
+            ),
           ],
-        )
+        ),
       ],
     );
   }

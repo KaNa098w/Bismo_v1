@@ -9,7 +9,7 @@ class SearchResults {
     return SearchResults(
       name: json['name'],
       cateName: json['cate_name'],
-      quantity: json['quantity'],
+     quantity: json['quantity'] is int ? json['quantity'] : int.tryParse(json['quantity']),
     );
   }
 

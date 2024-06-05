@@ -10,6 +10,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class GoodsView extends StatefulWidget {
   final String? title;
@@ -192,8 +193,14 @@ class _GoodsViewState extends State<GoodsView> {
                           padding: const EdgeInsets.only(right: 0.0),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(20),
-                            child: Image.network(
-                              goods.photo!,
+                            child: CachedNetworkImage(
+                              imageUrl: goods.photo!,
+                              placeholder: (context, url) =>
+                                  const CircularProgressIndicator(),
+                              errorWidget: (context, url, error) =>
+                                  Image.network(
+                                'https://images.satu.kz/197787004_w200_h200_pomада-dlya-gub.jpg',
+                              ),
                               width: 180,
                               height: 160,
                               fit: BoxFit.cover,
@@ -211,7 +218,7 @@ class _GoodsViewState extends State<GoodsView> {
                         children: [
                           Center(
                             child: InkWell(
-                              onTap: () { 
+                              onTap: () {
                                 if (quantity > 0) {
                                   setState(() {
                                     quantity--;
@@ -368,10 +375,16 @@ class _GoodsViewState extends State<GoodsView> {
                                   height: 50,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                      image: NetworkImage(goods.photo ?? ""),
-                                      fit: BoxFit.cover,
+                                  ),
+                                  child: CachedNetworkImage(
+                                    imageUrl: goods.photo ?? "",
+                                    placeholder: (context, url) =>
+                                        const CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) =>
+                                        Image.network(
+                                      'https://images.satu.kz/197787004_w200_h200_pomада-dlya-gub.jpg',
                                     ),
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                                 title: Text(

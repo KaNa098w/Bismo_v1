@@ -19,7 +19,7 @@ class SearchCatalogController extends StatelessController {
 
     return Display(
       title: _title,
-      mobile: mobile.SearchCatalogView(title: _title),
+      mobile: mobile.SearchCatalogView(title: _title, query: '',),
     );
   }
 }

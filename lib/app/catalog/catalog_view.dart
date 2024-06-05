@@ -81,11 +81,16 @@ class _CatalogViewState extends State<CatalogView> {
     }
   }
 
-  void _onSearchSubmitted(String query) async {
-    if (query.isNotEmpty) {
-      Navigator.pushNamed(context, '/search');
-    }
+void _onSearchSubmitted(String query) async {
+  if (query.isNotEmpty) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SearchCatalogView(query: query), // Передача поискового запроса
+      ),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
