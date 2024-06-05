@@ -2,6 +2,7 @@
 
     <!-- Добавляем разрешение INTERNET -->
     <uses-permission android:name="android.permission.INTERNET"/>
+  
 
     <application
         android:label="bismo"

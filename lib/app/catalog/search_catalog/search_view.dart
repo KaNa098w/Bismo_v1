@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:bismo/core/models/catalog/search.dart';
 import 'package:bismo/core/services/search_service.dart';
-import 'package:bismo/app/catalog/catalog_view.dart';
 import 'package:bismo/app/catalog/goods/goods_view.dart' as mobile;
-import 'package:dio/dio.dart';
 
 class SearchCatalogView extends StatefulWidget {
   final String? title;
-  final String query; // Добавляем параметр для запроса поиска
+  final String query;
 
   const SearchCatalogView({Key? key, this.title, required this.query}) : super(key: key);
 
@@ -24,7 +22,7 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
   @override
   void initState() {
     super.initState();
-    _fetchSearchResults(widget.query); // Используем переданный поисковый запрос
+    _fetchSearchResults(widget.query);
   }
 
   Future<void> _fetchSearchResults(String query) async {
@@ -34,6 +32,14 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
         _searchResults = results;
         _isLoadingResults = false;
       });
+
+      // Логирование данных для диагностики
+      if (results != null) {
+        for (var item in results) {
+          print('Item: ${item.name}, cateId: ${item.cateId}, group: ${item.group}');
+        }
+      }
+
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
@@ -43,14 +49,18 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
   }
 
   Future<void> _fetchGroupDetails(String catId) async {
-    final Dio dio = Dio();
-    final String url = 'http://188.95.95.122:2223/server/hs/provider/getskygroup?User=7757499452&provider=7757499451&cat_id=$catId';
-
     try {
-      final response = await dio.get(url);
-      if (response.statusCode == 200) {
-        print(response.data); // Обработка данных ответа
-        // Добавьте здесь код для отображения данных категории
+      final response = await _searchService.getFullPrice(catId);
+      if (response != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => mobile.GoodsView(
+              title: response.goods?.first.nomenklatura ?? '',
+              catId: catId,
+            ),
+          ),
+        );
       }
     } catch (e) {
       print('Error fetching group details: $e');
@@ -58,27 +68,26 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
   }
 
   void _onSearchResultTap(SearchResultItems item) {
-    if (item.group == false) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => mobile.GoodsView(
-            title: item.name ?? '',
-            catId: item.catId ?? '',
+    final cateId = item.cateId ?? ''; // Использование cateId вместо catId
+    print('Tapped item: ${item.name}, cateId: $cateId');
+    print('Item details: $item'); // Логирование всего объекта для диагностики
+
+    if (cateId.isNotEmpty) {
+      if (item.group == false) {
+        _fetchGroupDetails(cateId); // Выполняем запрос с cateId и переходим в GoodsView
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => mobile.GoodsView(
+              title: item.name ?? '',
+              catId: cateId, // Использование cateId вместо catId
+            ),
           ),
-        ),
-      );
+        );
+      }
     } else {
-      _fetchGroupDetails(item.catId ?? ''); // Выполняем запрос с cat_id
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => CatalogView(
-            title: item.name ?? '',
-            catId: item.catId ?? '',
-          ),
-        ),
-      );
+      print('Error: cateId is empty');
     }
   }
 
@@ -114,7 +123,7 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
-                          onPressed: () => _fetchSearchResults(widget.query), // Повторный запрос с использованием переданного параметра
+                          onPressed: () => _fetchSearchResults(widget.query),
                           child: const Text('Retry'),
                         ),
                       ],
@@ -138,10 +147,10 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
                                   ],
                                 )
                               : const Icon(Icons.arrow_forward),
-                          onTap: () => _onSearchResultTap(item), // Добавляем обработчик нажатия
+                          onTap: () => _onSearchResultTap(item),
                         );
                       },
-                      separatorBuilder: (context, index) => const Divider(), // Добавляем разделитель между элементами
+                      separatorBuilder: (context, index) => const Divider(),
                     ),
     );
   }

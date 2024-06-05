@@ -28,7 +28,7 @@ class SearchResultItems {
   String? name;
   String? code;
   String? cateName;
-  String? cateId;
+  String? cateId; // Изменение catId на cateId
   int? quantity;
   bool? group;
 
@@ -36,7 +36,7 @@ class SearchResultItems {
       {this.name,
       this.code,
       this.cateName,
-      this.cateId,
+      this.cateId, // Изменение catId на cateId
       this.quantity,
       this.group});
 
@@ -44,19 +44,17 @@ class SearchResultItems {
     name = json['name'];
     code = json['code'];
     cateName = json['cate_name'];
-    cateId = json['cate_id'];
+    cateId = json['cate_id']; // Изменение catId на cateId
     quantity = json['quantity'] is int ? json['quantity'] : int.tryParse(json['quantity']);
     group = json['group'];
   }
-
-  get catId => null;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['name'] = name;
     data['code'] = code;
     data['cate_name'] = cateName;
-    data['cate_id'] = cateId;
+    data['cate_id'] = cateId; // Изменение catId на cateId
     data['quantity'] = quantity;
     data['group'] = group;
     return data;

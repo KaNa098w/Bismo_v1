@@ -300,7 +300,7 @@ class _GoodsViewState extends State<GoodsView> {
                           Icon(Icons.star, color: Colors.amber, size: 18),
                           Icon(Icons.star, color: Colors.amber, size: 18),
                           Icon(Icons.star, color: Colors.amber, size: 18),
-                          Icon(Icons.star, color: Colors.amber, size: 18),
+                          Icon(Icons.star, color: Color.fromARGB(255, 94, 94, 93), size: 18),
                         ],
                       ),
                       const SizedBox(height: 20),

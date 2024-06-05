@@ -11,19 +11,22 @@ class GoodsService {
 
   Future<GoodsResponse?> getGoods(String catId) async {
     try {
-      var res = await _http.get(ApiEndpoint.getGoods, params: {
+      final url = '${ApiEndpoint.getGoods}?login_provider=7757499451&cat_id=$catId';
+      print('*** Request ***');
+      print('uri: $url');
+      print('method: GET');
 
-        "cat_id": catId,  
-        'login_provider': '7757499451',
-      });
+      final response = await _http.get(url);
 
-      if (res.statusCode == 200 || res.statusCode == 201) {
-        GoodsResponse response = GoodsResponse.fromJson(res.data);
-        return response;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        GoodsResponse goodsResponse = GoodsResponse.fromJson(response.data);
+        return goodsResponse;
+      } else {
+        throw Exception('Failed to load goods. Status code: ${response.statusCode}');
       }
     } on DioException catch (e) {
+      print('Error fetching goods: $e');
       rethrow;
     }
-    return null;
   }
 }
