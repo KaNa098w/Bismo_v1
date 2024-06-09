@@ -7,8 +7,8 @@ import 'package:bismo/core/models/bottom_nav_bar.dart';
 import 'package:bismo/core/models/button_data.dart';
 import 'package:bismo/core/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
+import 'catalog/goods/media/video_upload_helper.dart'; // Импортируем наш новый файл
 
 class Root extends StatefulWidget {
   const Root({Key? key}) : super(key: key);
@@ -42,7 +42,7 @@ class _RootState extends State<Root> {
         isProtected: false),
     ButtonData(
         page: const ReelsController(),
-        icon: Icons.play_circle_outlined, 
+        icon: Icons.play_circle_outlined,
         labelRu: 'Reels',
         labelKk: 'Reels',
         labelEn: 'Reels',
@@ -111,6 +111,9 @@ class _RootState extends State<Root> {
             color: Color(0xFF19191B),
           ),
         ),
+        actions: index == 2 ? [ 
+          
+        ] : null,
       ),
       body: buttonData[index].page,
       bottomNavigationBar: BottomNavigationBar(

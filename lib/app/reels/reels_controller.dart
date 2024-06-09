@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ReelsController extends StatelessController {
-  final String _title = 'Reels Page';
+  final String _title = '';
   const ReelsController({Key? key}) : super(key: key);
 
   @override

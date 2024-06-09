@@ -16,7 +16,7 @@ class BundleMetaData extends StatelessWidget {
           Column(
             children: [
               Text(
-                '13 кг',
+                '130г',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.black,

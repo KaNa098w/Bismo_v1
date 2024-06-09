@@ -6,55 +6,52 @@ import 'package:flutter/widgets.dart';
 
 class AdSpace extends StatelessWidget {
   List<String> imagePaths = [
-  'https://hi-news.ru/wp-content/uploads/2009/02/gadjeti.jpg',
-  'https://tradepak.ru/wp-content/uploads/2021/01/%D0%BF%D0%B0%D0%BA1.jpg',
-  'https://st3.depositphotos.com/9747634/32010/i/450/depositphotos_320104748-stock-photo-hangers-with-different-clothes-in.jpg',
-  'https://kartinki.pics/uploads/posts/2021-07/thumbs/1625277121_3-kartinkin-com-p-lekarstva-fon-krasivie-foni-3.jpg'
- 
-];
-   AdSpace({
+    'https://ros-test.info/images/article/5b0d49bf643f1.jpg',
+    'https://img.eurointegration.com.ua/images/doc/8/a/8abcd77-photo-2020-11-19-12-52-17.jpg',
+    'https://ros-test.info/images/article/5e021fbe9b2c3.jpg',
+    'https://cdn.nur.kz/images/1120x630/3e7752811d7442c9.jpeg'
+  ];
+  AdSpace({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppDefaults.padding),
-      child: CarouselSlider(
-  options: CarouselOptions(height: 190.0),
-  items: imagePaths.map((path ) {
-    return Builder(
-      builder: (BuildContext context) {
-        return Container(
-          width: MediaQuery.of(context).size.width,
-          margin: const EdgeInsets.symmetric(horizontal: 5.0),
-          decoration: const BoxDecoration(
-          
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child:  AspectRatio(
-              aspectRatio: 16 / 9,
-              child: NetworkImageWithLoader(
-                path,
-                fit: BoxFit.cover,
-              ),
+        padding: const EdgeInsets.symmetric(horizontal: AppDefaults.padding),
+        child: CarouselSlider(
+          options: CarouselOptions(height: 190.0),
+          items: imagePaths.map((path) {
+            return Builder(
+              builder: (BuildContext context) {
+                return Container(
+                  width: MediaQuery.of(context).size.width,
+                  margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                  decoration: const BoxDecoration(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: NetworkImageWithLoader(
+                            path,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
-                    ),
-                    
-                     Text('13-19 июля',style: TextStyle(color: Colors.black.withOpacity(0.5)),)
-            ],  
-          ),
-        );
-      },
-    );
-  }).toList(),
-)
-    );
+                      Text(
+                        '13-19 июля',
+                        style: TextStyle(color: Colors.black.withOpacity(0.5)),
+                      )
+                    ],
+                  ),
+                );
+              },
+            );
+          }).toList(),
+        ));
   }
 }
 

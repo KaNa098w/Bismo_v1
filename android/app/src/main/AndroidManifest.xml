@@ -2,12 +2,16 @@
 
     <!-- Добавляем разрешение INTERNET -->
     <uses-permission android:name="android.permission.INTERNET"/>
-  
+    
+    <!-- Добавляем разрешения для доступа к хранилищу -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:label="bismo"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:requestLegacyExternalStorage="true">
 
         <!-- Your other application settings -->
 

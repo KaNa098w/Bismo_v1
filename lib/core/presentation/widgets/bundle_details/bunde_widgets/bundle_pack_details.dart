@@ -31,11 +31,11 @@ class PackDetails extends StatelessWidget {
               leading: const AspectRatio(
                 aspectRatio: 1 / 1,
                 child:
-                    NetworkImageWithLoader('https://i.imgur.com/Y0IFT2g.png'),
+                    NetworkImageWithLoader('https://lipstick.by/image/cache/catalog/products/boxes/2020/red/p2_2-800x800.jpg'),
               ),
-              title: const Text('Капуста'),
+              title: const Text('Помада'),
               trailing: Text(
-                '2 кг',
+                '2 шт',
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall

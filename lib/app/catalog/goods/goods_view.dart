@@ -1,4 +1,7 @@
 import 'dart:developer';
+import 'package:bismo/app/catalog/goods/goods_arguments.dart';
+import 'package:bismo/app/catalog/goods/media/photo_upload_helped.dart';
+import 'package:bismo/app/catalog/goods/media/video_upload_helper.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/helpers/app_bar_back.dart';
 import 'package:bismo/core/helpers/app_bar_title.dart';
@@ -8,6 +11,7 @@ import 'package:bismo/core/presentation/widgets/custom_empty_widget.dart';
 import 'package:bismo/core/services/goods_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -145,6 +149,20 @@ class _GoodsViewState extends State<GoodsView> {
       }
     }
 
+    Future<void> requestStoragePermission(Function onPermissionGranted) async {
+      if (await Permission.storage.request().isGranted) {
+        onPermissionGranted();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Доступ к хранилищу не предоставлен'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -155,7 +173,7 @@ class _GoodsViewState extends State<GoodsView> {
               return SingleChildScrollView(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                    maxHeight: 450,
+                    maxHeight: 550,
                   ),
                   child: Column(
                     children: [
@@ -168,17 +186,28 @@ class _GoodsViewState extends State<GoodsView> {
                           ),
                           InkWell(
                             onTap: () {
-                              addToCart(goods, quantity);
-                              setState(
-                                () {
-                                  currentQuantity = quantity;
-                                },
-                              );
+                              if (quantity > 0) {
+                                addToCart(goods, quantity);
+                                setState(
+                                  () {
+                                    currentQuantity = quantity;
+                                  },
+                                );
 
-                              Navigator.pop(context);
+                                Navigator.pop(context);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Количество должно быть больше нуля'),
+                                    backgroundColor: Colors.red,
+                                    duration: Duration(milliseconds: 500),
+                                  ),
+                                );
+                              }
                             },
                             child: const Text(
-                              'Готова',
+                              'Готово',
                               style: TextStyle(
                                   color: Colors.blue,
                                   fontSize: 16,
@@ -199,7 +228,7 @@ class _GoodsViewState extends State<GoodsView> {
                                   const CircularProgressIndicator(),
                               errorWidget: (context, url, error) =>
                                   Image.network(
-                                'https://images.satu.kz/197787004_w200_h200_pomада-dlya-gub.jpg',
+                                'https://images.satu.kz/197787004_w200_h200_pomада-для-губ.jpg',
                               ),
                               width: 180,
                               height: 160,
@@ -300,7 +329,8 @@ class _GoodsViewState extends State<GoodsView> {
                           Icon(Icons.star, color: Colors.amber, size: 18),
                           Icon(Icons.star, color: Colors.amber, size: 18),
                           Icon(Icons.star, color: Colors.amber, size: 18),
-                          Icon(Icons.star, color: Color.fromARGB(255, 94, 94, 93), size: 18),
+                          Icon(Icons.star,
+                              color: Color.fromARGB(255, 94, 94, 93), size: 18),
                         ],
                       ),
                       const SizedBox(height: 20),
@@ -314,13 +344,104 @@ class _GoodsViewState extends State<GoodsView> {
                                 isDense: true,
                               ),
                               style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w300,
-                              ),
+                                  fontSize: 16, fontWeight: FontWeight.w300),
                             ),
                           ),
                         ],
                       ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              TextButton.icon(
+                                onPressed: () {
+                                  requestStoragePermission(() {
+                                    uploadPhoto(
+                                      context,
+                                      '7783734209',
+                                      goods.nomenklaturaKod ?? "",
+                                      widget.catId ?? "",
+                                      () {
+                                        setState(
+                                            () {}); // Обновление состояния внутри диалога
+                                        _fetchGoods(widget.catId ??
+                                            ""); // Обновление данных на странице
+                                      },
+                                      (newPhotoUrl) {
+                                        setState(() {
+                                          goods.photo =
+                                              newPhotoUrl; // Обновление URL изображения
+                                        });
+                                      },
+                                    );
+                                  });
+                                },
+                                icon: const Icon(Icons.upload_file,
+                                    color: Colors.blue),
+                                label: const Text(
+                                  'Загрузить фото',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ),
+                              TextButton.icon(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/media_delete_page',
+                                    arguments: GoodsArguments(
+                                        'Медиафайлы',
+                                        goods.nomenklaturaKod ?? ''),
+                                  );
+                                },
+                                icon: const Icon(Icons.delete_outline_rounded,
+                                    color: Colors.red),
+                                label: const Text(
+                                  'Удалить',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 1),
+                          TextButton.icon(
+                            onPressed: () {
+                              requestStoragePermission(() {
+                                uploadVideo(
+                                  context,
+                                  '7783734209',
+                                  goods.nomenklaturaKod ?? "",
+                                  widget.catId ?? "",
+                                  () {
+                                    setState(
+                                        () {}); // Обновление состояния внутри диалога
+                                    _fetchGoods(widget.catId ??
+                                        ""); // Обновление данных на странице
+                                  },
+                                  (newPhotoUrl) {
+                                    setState(() {
+                                      goods.photo =
+                                          newPhotoUrl; // Обновление URL изображения
+                                    });
+                                  },
+                                );
+                              });
+                            },
+                            icon: const Icon(Icons.video_chat_outlined,
+                                color: Colors.blue),
+                            label: const Text(
+                              'Загрузить видео',
+                              style: TextStyle(
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
                     ],
                   ),
                 ),
@@ -382,7 +503,7 @@ class _GoodsViewState extends State<GoodsView> {
                                         const CircularProgressIndicator(),
                                     errorWidget: (context, url, error) =>
                                         Image.network(
-                                      'https://images.satu.kz/197787004_w200_h200_pomада-dlya-gub.jpg',
+                                      'https://images.satu.kz/197787004_w200_h200_pomада-для-губ.jpg',
                                     ),
                                     fit: BoxFit.cover,
                                   ),

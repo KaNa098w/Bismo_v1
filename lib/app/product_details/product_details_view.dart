@@ -34,9 +34,9 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
           children: [
             const ProductImagesSlider(
               images: [
-                'https://i.imgur.com/NOuZzbe.png',
-                'https://i.imgur.com/NOuZzbe.png',
-                'https://i.imgur.com/NOuZzbe.png',
+                'https://lipstick.by/image/cache/catalog/products/boxes/2020/red/p2_2-800x800.jpg',
+                'https://lipstick.by/image/cache/catalog/products/boxes/2020/red/p2_2-800x800.jpg',
+                'https://lipstick.by/image/cache/catalog/products/boxes/2020/red/p2_2-800x800.jpg',
               ],
             ),
             /* <---- Product Data -----> */
@@ -47,7 +47,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Средний пакет',
+                      'Бьюити бокс',
                       style:
                           Theme.of(context).textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
