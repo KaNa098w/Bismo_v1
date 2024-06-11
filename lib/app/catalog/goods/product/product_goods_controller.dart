@@ -3,6 +3,7 @@ import 'package:bismo/app/catalog/goods/product/product_goods_view.dart'
     as mobile;
 import 'package:bismo/core/classes/controller_manager.dart';
 import 'package:bismo/core/classes/display_manager.dart';
+import 'package:bismo/core/models/catalog/goods.dart';
 import 'package:flutter/material.dart';
 
 class ProductGoodsController extends StatelessController {
@@ -18,8 +19,9 @@ class ProductGoodsController extends StatelessController {
     return Display(
       title: _title,
       mobile: mobile.ProductGoodsView(
-        title: args.title,
-        catId: '',
+        goods: Goods(
+          catId: args.catId,
+        ),
       ),
     );
   }

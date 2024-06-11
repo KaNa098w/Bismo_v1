@@ -8,7 +8,9 @@ class MediaDeleteView extends StatefulWidget {
   final String phone;
   final String code;
 
-  const MediaDeleteView({Key? key, required this.title, required this.phone, required this.code}) : super(key: key);
+  const MediaDeleteView(
+      {Key? key, required this.title, required this.phone, required this.code})
+      : super(key: key);
 
   @override
   State<MediaDeleteView> createState() => _MediaDeleteViewState();
@@ -33,7 +35,8 @@ class _MediaDeleteViewState extends State<MediaDeleteView> {
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
-      List<String> media = data.map((item) => 'https://dulat.object.pscloud.io/$item').toList();
+      List<String> media =
+          data.map((item) => 'https://dulat.object.pscloud.io/$item').toList();
       return media;
     } else {
       throw Exception('Failed to load media');
@@ -43,7 +46,8 @@ class _MediaDeleteViewState extends State<MediaDeleteView> {
   Future<void> deleteMedia(String mediaUrl) async {
     final mediaName = mediaUrl.split('/').last;
     final response = await http.delete(
-      Uri.parse('http://86.107.45.59/api/images/?phone=${widget.phone}&code=${widget.code}&name=$mediaName'),
+      Uri.parse(
+          'http://86.107.45.59/api/images/?phone=${widget.phone}&code=${widget.code}&name=$mediaName'),
     );
 
     if (response.statusCode == 200) {

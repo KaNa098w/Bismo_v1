@@ -49,6 +49,7 @@ dependencies:
   permission_handler: ^11.3.1
   file_picker: ^8.0.3
   ffmpeg_kit_flutter: ^6.0.3
+  hive: ^2.2.3
   # flutter_google_places: ^0.3.0
   # awesome_snackbar_content: ^0.0.8
 

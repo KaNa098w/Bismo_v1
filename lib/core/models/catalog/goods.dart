@@ -1,66 +1,93 @@
-import 'package:bismo/core/models/cart/set_order_request.dart';
-
 class GoodsResponse {
   String? success;
   String? dateLoading;
   int? deliverySumm;
-  String? kontragent;
-  String? showCount;
-  String? adressProvider;
   List<Goods>? goods;
 
-  GoodsResponse({
-    this.success,
-    this.dateLoading,
-    this.deliverySumm,
-    this.kontragent,
-    this.showCount,
-    this.adressProvider,
-    this.goods,
-  });
+  GoodsResponse(
+      {this.success, this.dateLoading, this.deliverySumm, this.goods});
 
   GoodsResponse.fromJson(Map<String, dynamic> json) {
-    success = json['success'].toString();
+    success = json['success'];
     dateLoading = json['date_loading'];
-    deliverySumm = convertStringToInt(json['delivery_summ']);
-    kontragent = json['kontragent'];
-    showCount = json['show_count'];
-    adressProvider = json['adress_provider'];
+    deliverySumm = json['delivery_summ'];
     if (json['goods'] != null) {
       goods = <Goods>[];
       json['goods'].forEach((v) {
-        goods!.add(Goods.fromJson(v));
+        goods!.add(new Goods.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['success'] = success;
-    data['date_loading'] = dateLoading;
-    data['delivery_summ'] = deliverySumm;
-    data['kontragent'] = kontragent;
-    data['show_count'] = showCount;
-    data['adress_provider'] = adressProvider;
-    if (goods != null) {
-      data['goods'] = goods!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['success'] = this.success;
+    data['date_loading'] = this.dateLoading;
+    data['delivery_summ'] = this.deliverySumm;
+    if (this.goods != null) {
+      data['goods'] = this.goods!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
-int convertStringToInt(dynamic value) {
-  if (value == null) {
-    return 0;
-  } else if (value is int) {
-    return value;
-  } else if (value is String) {
-    try {
-      return int.parse(value);
-    } catch (e) {
-      return 0;
-    }
-  } else {
-    return 0;
+class Goods {
+  String? nomenklatura;
+  String? nomenklaturaKod;
+  String? count;
+  int? price;
+  int? optPrice;
+  String? kontragent;
+  int? step;
+  int? newProduct;
+  String? photo;
+  String? catId;
+  int? oldPrice;
+  String? newsPhoto;
+
+  Goods(
+      {this.nomenklatura,
+      this.nomenklaturaKod,
+      this.count,
+      this.price,
+      this.optPrice,
+      this.kontragent,
+      this.step,
+      this.newProduct,
+      this.photo,
+      this.catId,
+      this.oldPrice,
+      this.newsPhoto});
+
+  Goods.fromJson(Map<String, dynamic> json) {
+    nomenklatura = json['nomenklatura'];
+    nomenklaturaKod = json['nomenklatura_kod'];
+    count = json['count'];
+    price = json['price'];
+    optPrice = json['opt_price'];
+    kontragent = json['kontragent'];
+    step = json['step'];
+    newProduct = json['new_product'];
+    photo = json['photo'];
+    catId = json['cat_id'];
+    oldPrice = json['old_price'];
+    newsPhoto = json['news_photo'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['nomenklatura'] = this.nomenklatura;
+    data['nomenklatura_kod'] = this.nomenklaturaKod;
+    data['count'] = this.count;
+    data['price'] = this.price;
+    data['opt_price'] = this.optPrice;
+    data['kontragent'] = this.kontragent;
+    data['step'] = this.step;
+    data['new_product'] = this.newProduct;
+    data['photo'] = this.photo;
+    data['cat_id'] = this.catId;
+    data['old_price'] = this.oldPrice;
+    data['news_photo'] = this.newsPhoto;
+    return data;
   }
 }

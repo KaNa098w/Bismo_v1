@@ -146,7 +146,7 @@ class _CartViewState extends State<CartView> {
           .toInt();
 
       var goods = cartItems.map((item) {
-        return Goods(
+        return SetOrderGoods(
           nomenklaturaKod: item.productDetails?['nomenklaturaKod'],
           producer: item.productDetails?['producer'] ?? "",
           price: item.unitPrice,
@@ -342,7 +342,8 @@ class _CartViewState extends State<CartView> {
                   backgroundColor: Colors.transparent,
                   child: CachedNetworkImage(
                     imageUrl: cartItem.productThumbnail ?? "",
-                    placeholder: (context, url) => const CircularProgressIndicator(),
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
                     errorWidget: (context, url, error) => Image.network(
                       'https://images.satu.kz/197787004_w200_h200_pomада-для-губ.jpg',
                       fit: BoxFit.cover,

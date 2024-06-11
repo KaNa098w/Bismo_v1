@@ -36,10 +36,6 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
     try {
       final String url =
           'http://188.95.95.122:2223/server/hs/product/getfullprice?login_provider=7757499451&cat_id=$catId';
-      print('*** Request ***');
-      print('uri: $url');
-      print('method: GET');
-
       var dio = Dio();
       final response = await dio.get(url);
 
@@ -95,17 +91,18 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
     }
   }
 
-  void addToCart(Goods goods, int quantity) async {
+  void addToCart(
+      BuildContext context, SetOrderGoods goods, int quantity) async {
     await PersistentShoppingCart().addToCart(PersistentShoppingCartItem(
       productId: goods.nomenklaturaKod ?? "",
       productName: goods.nomenklatura ?? "",
-      unitPrice: goods.price ?? 0.0,
+      unitPrice: goods.price,
       quantity: quantity,
       productThumbnail: goods.photo,
       productDetails: {
         "nomenklatura": goods.nomenklatura,
         "nomenklaturaKod": goods.nomenklaturaKod,
-        "producer": goods.producer,
+        "producer": goods.kontragent,
         "step": goods.step,
         "count": goods.count,
       },
@@ -161,17 +158,18 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
       appBar: AppBar(
         title: Text(widget.goods.nomenklatura ?? 'Детали товара'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: goods != null
           ? SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (productImages.isNotEmpty)
                     Container(
-                      height: 200,
+                      height: 250,
                       child: PageView.builder(
                         itemCount: productImages.length,
                         itemBuilder: (context, index) {
@@ -197,197 +195,267 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                       ),
                     ),
                   const SizedBox(height: 20),
-                  Text(
-                    goods!.nomenklatura ?? '',
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w700),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      goods!.nomenklatura ?? '',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Center(
-                        child: InkWell(
-                          onTap: () {
-                            if (quantity > 0) {
-                              setState(() {
-                                quantity--;
-                              });
-                            }
-                          },
-                          child: Container(
-                            width: 25,
-                            height: 25,
-                            decoration: BoxDecoration(
-                              color: quantity > 0 ? Colors.blue : Colors.grey,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.remove,
-                                size: 15,
-                                color: Colors.white,
-                              ),
-                            ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Цена: ',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        Text(
+                          '${goods!.price?.toInt()}₸/кг',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 20),
-                      Text("$quantity"),
-                      const SizedBox(width: 20),
-                      Center(
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              quantity++;
-                            });
-                          },
-                          child: Container(
-                            width: 25,
-                            height: 25,
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.add,
-                                size: 15,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Количество: ',
+                          style: const TextStyle(fontSize: 20),
                         ),
-                      ),
-                      const SizedBox(width: 20),
-                      Text(
-                        '${goods!.price?.toInt()}₸/кг',
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Text(
-                        goods!.kontragent ?? "",
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w400),
-                      ),
-                      const SizedBox(width: 50),
-                      Text(
-                        "Сумма: ${(quantity * (goods!.price ?? 0)).toStringAsFixed(2)}₸",
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w300),
-                      ),
-                    ],
-                  ),
-                  const Row(
-                    children: [
-                      Icon(Icons.star, color: Colors.amber, size: 18),
-                      Icon(Icons.star, color: Colors.amber, size: 18),
-                      Icon(Icons.star, color: Colors.amber, size: 18),
-                      Icon(Icons.star, color: Colors.amber, size: 18),
-                      Icon(Icons.star,
-                          color: Color.fromARGB(255, 94, 94, 93), size: 18),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  const Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Комментария, пожелания',
-                            border: InputBorder.none,
-                            isDense: true,
-                          ),
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w300),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          TextButton.icon(
-                            onPressed: () {
-                              // requestStoragePermission(() {
-                              uploadPhoto(
-                                context,
-                                '7783734209',
-                                goods!.nomenklaturaKod ?? "",
-                                goods!.catId ?? "",
-                                () {
-                                  setState(
-                                      () {}); // Обновление состояния внутри диалога
-                                  _fetchGoods(goods!.catId ??
-                                      ""); // Обновление данных на странице
-                                },
-                                (newPhotoUrl) {
+                        Row(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                if (quantity > 0) {
                                   setState(() {
-                                    goods!.photo =
-                                        newPhotoUrl; // Обновление URL изображения
+                                    quantity--;
                                   });
-                                },
-                              );
-                              // });
-                            },
-                            icon: const Icon(Icons.add_photo_alternate_outlined,
-                                color: Colors.blue),
-                            label: const Text(
-                              'Загрузить фото',
-                              style: TextStyle(
-                                color: Colors.blue,
+                                }
+                              },
+                              child: Container(
+                                width: 35,
+                                height: 35,
+                                decoration: BoxDecoration(
+                                  color:
+                                      quantity > 0 ? Colors.blue : Colors.grey,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.remove,
+                                    size: 20,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                          TextButton.icon(
-                            onPressed: () {
-                              Navigator.pushNamed(
-                                context,
-                                '/media_delete_page',
-                                arguments: GoodsArguments(
-                                    'Медиафайлы', goods!.nomenklaturaKod ?? ''),
-                              );
-                            },
-                            icon: const Icon(Icons.delete_outline_rounded,
-                                color: Colors.red),
-                            label: const Text(
-                              '',
-                              style: TextStyle(
-                                color: Colors.red,
+                            const SizedBox(width: 10),
+                            Text(
+                              "$quantity",
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                            const SizedBox(width: 10),
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  quantity++;
+                                });
+                              },
+                              child: Container(
+                                width: 35,
+                                height: 35,
+                                decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 20,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 1),
-                      TextButton.icon(
-                        onPressed: () {
-                          uploadVideo(context, goods!.nomenklaturaKod ?? '');
-                        },
-                        icon: const Icon(Icons.video_chat_outlined,
-                            color: Colors.blue),
-                        label: const Text(
-                          'Загрузить видео',
-                          style: TextStyle(
-                            color: Colors.blue,
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Поставщик:',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        Text(
+                          goods?.kontragent ?? '',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      )
-                    ],
-                  )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Сумма:',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        Text(
+                          "${(quantity * (goods?.price ?? 0)).toStringAsFixed(2)}₸",
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      children: List.generate(5, (index) {
+                        return Icon(
+                          index < 4 ? Icons.star : Icons.star_border,
+                          color: Colors.amber,
+                          size: 24,
+                        );
+                      }),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        labelText: 'Комментария, пожелания',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      children: [
+                        TextButton.icon(
+                          onPressed: () {
+                            uploadPhoto(
+                              context,
+                              '7783734209',
+                              goods!.nomenklaturaKod ?? "",
+                              goods!.catId ?? "",
+                              () {
+                                setState(() {});
+                                _fetchGoods(goods!.catId ?? "");
+                              },
+                              (newPhotoUrl) {
+                                setState(() {
+                                  goods!.photo = newPhotoUrl;
+                                });
+                              },
+                            );
+                          },
+                          icon: const Icon(Icons.add_photo_alternate_outlined,
+                              color: Colors.blue),
+                          label: const Text(
+                            'Загрузить фото',
+                            style: TextStyle(color: Colors.blue),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/media_delete_page',
+                              arguments: GoodsArguments(
+                                  'Медиафайлы', goods!.nomenklaturaKod ?? ''),
+                            );
+                          },
+                          icon: const Icon(Icons.delete_outline_rounded,
+                              color: Colors.red),
+                          label: const Text(
+                            '',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TextButton.icon(
+                      onPressed: () {
+                        uploadVideo(context, goods!.nomenklaturaKod ?? '');
+                      },
+                      icon: const Icon(Icons.video_chat_outlined,
+                          color: Colors.blue),
+                      label: const Text(
+                        'Загрузить видео',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             )
           : const Center(
               child: CircularProgressIndicator(),
             ),
+      bottomNavigationBar: BottomAppBar(
+        child: Container(
+          height: 60,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: ElevatedButton(
+            onPressed: () {
+              addToCart(context, goods! as SetOrderGoods, quantity);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: const Center(
+              child: Text(
+                'Добавить в корзину',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

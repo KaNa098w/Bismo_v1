@@ -10,7 +10,7 @@ class SetOrderRequest {
   String? providerPhoto;
   String? shirota;
   String? user;
-  List<Goods>? goods;
+  List<SetOrderGoods>? goods;
 
   SetOrderRequest(
       {this.provider,
@@ -39,9 +39,9 @@ class SetOrderRequest {
     shirota = json['shirota'];
     user = json['user'];
     if (json['goods'] != null) {
-      goods = <Goods>[];
+      goods = <SetOrderGoods>[];
       json['goods'].forEach((v) {
-        goods!.add(Goods.fromJson(v));
+        goods!.add(SetOrderGoods.fromJson(v));
       });
     }
   }
@@ -66,7 +66,7 @@ class SetOrderRequest {
   }
 }
 
-class Goods {
+class SetOrderGoods {
   String? nomenklatura;
   String? nomenklaturaKod;
   int? count;
@@ -81,7 +81,7 @@ class Goods {
   double? oldPrice;
   String? newsPhoto;
 
-  Goods({
+  SetOrderGoods({
     this.nomenklatura,
     this.nomenklaturaKod,
     this.count,
@@ -94,10 +94,12 @@ class Goods {
     this.photo,
     this.catId,
     this.oldPrice,
-    this.newsPhoto, required comment, required int basketCount,
+    this.newsPhoto,
+    required comment,
+    required int basketCount,
   });
 
-  Goods.fromJson(Map<String, dynamic> json) {
+  SetOrderGoods.fromJson(Map<String, dynamic> json) {
     nomenklatura = json['nomenklatura'];
     nomenklaturaKod = json['nomenklatura_kod'];
     count = convertStringToInt(json['count']);
@@ -163,4 +165,3 @@ int convertStringToInt(dynamic value) {
     return 0;
   }
 }
-

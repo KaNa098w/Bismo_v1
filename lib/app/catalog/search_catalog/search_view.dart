@@ -53,7 +53,7 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
     }
   }
 
-  void addToCart(Goods goods, int quantity) async {
+  void addToCart(SetOrderGoods goods, int quantity) async {
     await PersistentShoppingCart().addToCart(PersistentShoppingCartItem(
       productId: goods.nomenklaturaKod ?? "",
       productName: goods.nomenklatura ?? "",
@@ -84,7 +84,7 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
     });
   }
 
-  void showProductDetails(Goods goods) {
+  void showProductDetails(SetOrderGoods goods) {
     int quantity = 0;
 
     void increment() {
@@ -307,7 +307,7 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
       );
 
       if (item != null) {
-        Goods good = Goods(
+        SetOrderGoods good = SetOrderGoods(
           nomenklatura: item.name,
           nomenklaturaKod: item.cateName,
           price: 100,

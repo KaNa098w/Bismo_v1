@@ -8,7 +8,7 @@ import 'package:bismo/core/presentation/widgets/custom_empty_widget.dart';
 import 'package:bismo/core/services/goods_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:hive/hive.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -35,9 +35,14 @@ class _GoodsViewState extends State<GoodsView> {
   @override
   void initState() {
     super.initState();
+    _initializeHive();
     _fetchGoods(widget.catId ?? "");
-    _loadCartItems();
     searchController.addListener(_filterGoods);
+  }
+
+  Future<void> _initializeHive() async {
+    await Hive.openBox('shopping_cart'); // Открытие коробки
+    _loadCartItems();
   }
 
   @override
@@ -96,7 +101,8 @@ class _GoodsViewState extends State<GoodsView> {
     }
   }
 
-  void addToCart(Goods goods, int quantity) async {
+  void addToCart(
+      BuildContext context, SetOrderGoods goods, int quantity) async {
     await PersistentShoppingCart().addToCart(PersistentShoppingCartItem(
       productId: goods.nomenklaturaKod ?? "",
       productName: goods.nomenklatura ?? "",
@@ -127,6 +133,26 @@ class _GoodsViewState extends State<GoodsView> {
       backgroundColor: Colors.red,
       duration: Duration(milliseconds: 500),
     ));
+  }
+
+  SetOrderGoods convertToSetOrderGoods(Goods goods) {
+    return SetOrderGoods(
+      nomenklatura: goods.nomenklatura,
+      nomenklaturaKod: goods.nomenklaturaKod,
+      count: int.tryParse(goods.count ?? '0'),
+      price: goods.price?.toDouble(),
+      optPrice: goods.optPrice?.toDouble(),
+      producer: goods.kontragent,
+      kontragent: goods.kontragent,
+      step: goods.step,
+      newProduct: goods.newProduct,
+      photo: goods.photo,
+      catId: goods.catId,
+      oldPrice: goods.oldPrice?.toDouble(),
+      newsPhoto: goods.newsPhoto,
+      comment: '',
+      basketCount: 0,
+    );
   }
 
   @override
@@ -236,7 +262,11 @@ class _GoodsViewState extends State<GoodsView> {
                                           color: Colors.green,
                                         ),
                                         onPressed: () {
-                                          addToCart(goods, 1);
+                                          addToCart(
+                                            context,
+                                            convertToSetOrderGoods(goods),
+                                            1,
+                                          );
                                         },
                                       ),
                                     if (isInCart)
