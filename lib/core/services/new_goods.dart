@@ -9,7 +9,7 @@ class NewGoodsService {
     headers: {},
   );
 
-  Future<GetNewGoodsResponse?> getUserAddress(String phoneNumber) async {
+  Future<GetNewGoodsResponse?> getGoods(String phoneNumber) async {
     try {
       Response res = await _http
           .get(ApiEndpoint.newGoods, params: {"login_provider": phoneNumber});

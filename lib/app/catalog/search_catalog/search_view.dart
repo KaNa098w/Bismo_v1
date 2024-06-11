@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:bismo/app/catalog/goods/goods_arguments.dart';
 import 'package:bismo/core/models/cart/set_order_request.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -333,8 +334,19 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
 
     if (cateId.isNotEmpty) {
       if (item.group == false) {
-        _fetchGroupDetails(
-            cateId); // Выполняем запрос с cateId и переходим в GoodsView
+        // _fetchGroupDetails(
+        //     cateId); // Выполняем запрос с cateId и переходим в GoodsView
+         Navigator.pushNamed(
+          context,
+          '/product_goods',
+          arguments: GoodsArguments(
+            item.name ?? '',
+            item.cateId ?? '',
+            item.name ?? '',
+            0,
+            item.cateName ?? '',
+          ),
+        );
       } else {
         Navigator.push(
           context,
@@ -345,6 +357,7 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
             ),
           ),
         );
+       
       }
     } else {
       print('Error: cateId is empty');

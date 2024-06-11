@@ -18,7 +18,7 @@ class _OurNewItemState extends State<OurNewItem> {
   @override
   void initState() {
     super.initState();
-    _newGoodsFuture = NewGoodsService().getUserAddress('phone_number');
+    _newGoodsFuture = NewGoodsService().getGoods('phone_number');
   }
 
   @override

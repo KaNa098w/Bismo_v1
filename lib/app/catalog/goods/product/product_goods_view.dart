@@ -2,6 +2,7 @@ import 'package:bismo/app/catalog/goods/goods_arguments.dart';
 import 'package:bismo/app/catalog/goods/media/photo_upload_helped.dart';
 import 'package:bismo/app/catalog/goods/media/video_upload_helper.dart';
 import 'package:bismo/core/models/cart/set_order_request.dart';
+import 'package:bismo/core/services/goods_service.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:bismo/core/models/catalog/goods.dart';
@@ -14,7 +15,10 @@ import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 
 class ProductGoodsView extends StatefulWidget {
   final Goods goods;
-  const ProductGoodsView({Key? key, required this.goods}) : super(key: key);
+  final GoodsArguments arguments;
+  const ProductGoodsView(
+      {Key? key, required this.goods, required this.arguments})
+      : super(key: key);
 
   @override
   State<ProductGoodsView> createState() => _ProductGoodsViewState();
@@ -24,34 +28,40 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
   int quantity = 0;
   List<String> productImages = [];
   Goods? goods;
-  String hz = '';
 
   @override
   void initState() {
     super.initState();
-    goods = widget.goods;
-    _fetchGoods(goods!.catId ?? '');
-    loadProductImages(hz); //модет истей
+    _fetchGoods(widget.arguments.catId);
+    loadProductImages(widget.arguments.nomenklaturaKod);
   }
 
   Future<void> _fetchGoods(String catId) async {
     try {
-      final String url =
-          'http://188.95.95.122:2223/server/hs/product/getfullprice?login_provider=7757499451&cat_id=$catId';
-      var dio = Dio();
-      final response = await dio.get(url);
+      // final String url =
+      //     'http://188.95.95.122:2223/server/hs/product/getfullprice?login_provider=7757499451&cat_id=$catId';
+      // var dio = Dio();
+      // final response = await dio.get(url);
 
-      if (response.statusCode == 200) {
-        GoodsResponse goodsResponse = GoodsResponse.fromJson(response.data);
-        setState(() {
-          goods = goodsResponse.goods
-              ?.firstWhere((element) => element.catId == catId);
-          loadProductImages(catId);
-        });
-      } else {
-        throw Exception(
-            'Failed to load goods. Status code: ${response.statusCode}');
-      }
+      final response = await GoodsService().getGoods(catId);
+
+      setState(() {
+        goods =
+            response?.goods?.firstWhere((element) => element.catId == catId);
+        // loadProductImages(catId);
+      });
+
+      // if (response.statusCode == 200) {
+      //   GoodsResponse goodsResponse = GoodsResponse.fromJson(response.data);
+      //   setState(() {
+      //     goods = goodsResponse.goods
+      //         ?.firstWhere((element) => element.catId == catId);
+      //     loadProductImages(catId);
+      //   });
+      // } else {
+      //   throw Exception(
+      //       'Failed to load goods. Status code: ${response.statusCode}');
+      // }
     } catch (e) {
       log("Error fetching goods: $e");
     }
@@ -73,7 +83,6 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
 
       if (response.statusCode == 200) {
         var data = response.data;
-        print("Ошибка: $data"); // Логирование полученных данных
         if (data is List) {
           setState(() {
             productImages = data
@@ -158,16 +167,9 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
 
   @override
   Widget build(BuildContext context) {
-    final GoodsArguments args =
-        ModalRoute.of(context)!.settings.arguments as GoodsArguments;
-    //inal String nomenklaturaKod = 'MA100000516';
-    hz = args.nomenklaturaKod;
-    loadProductImages(
-        args.nomenklaturaKod); // осы кодтты intistate ишинде шакыру керк ???
-    //loadProductImages(nomenklaturaKod);
     return Scaffold(
       appBar: AppBar(
-        title: Text(args.title ?? 'Детали товара'),
+        title: Text(widget.arguments.title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -206,6 +208,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                         },
                       ),
                     ),
+                  if (productImages.isEmpty) Text("net photky"),
                   const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -227,7 +230,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           style: TextStyle(fontSize: 20),
                         ),
                         Text(
-                          '${args.price}₸/кг',
+                          '${widget.arguments.price}₸/кг',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -317,7 +320,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           style: TextStyle(fontSize: 20),
                         ),
                         Text(
-                          args.kontragent,
+                          widget.arguments.kontragent,
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -337,7 +340,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           style: TextStyle(fontSize: 20),
                         ),
                         Text(
-                          "${(quantity * (args.price ?? 0)).toStringAsFixed(2)}₸",
+                          "${(quantity * (widget.arguments.price ?? 0)).toStringAsFixed(2)}₸",
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -381,16 +384,18 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                             uploadPhoto(
                               context,
                               '7783734209',
-                              goods!.nomenklaturaKod ?? "",
-                              goods!.catId ?? "",
+                              widget.arguments.nomenklaturaKod,
+                              widget.arguments.catId,
                               () {
-                                setState(() {});
-                                _fetchGoods(goods!.nomenklatura ?? "");
+                                // _fetchGoods(widget.arguments.nomenklaturaKod);
                               },
                               (newPhotoUrl) {
-                                setState(() {
-                                  goods!.photo = newPhotoUrl;
-                                });
+                                // setState(() {
+                                //   goods!.photo = newPhotoUrl;
+                                // });
+                                _fetchGoods(widget.arguments.catId);
+                                loadProductImages(
+                                    widget.arguments.nomenklaturaKod);
                               },
                             );
                           },
@@ -403,8 +408,8 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                         ),
                         const SizedBox(width: 10),
                         TextButton.icon(
-                          onPressed: () {
-                            Navigator.pushNamed(
+                          onPressed: () async {
+                            await Navigator.pushNamed(
                               context,
                               '/media_delete_page',
                               arguments: GoodsArguments(
@@ -412,9 +417,12 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                                 '',
                                 '',
                                 0,
-                                goods!.nomenklaturaKod ?? '',
+                                widget.arguments.nomenklaturaKod,
                               ),
                             );
+
+                            _fetchGoods(widget.arguments.catId);
+                            loadProductImages(widget.arguments.nomenklaturaKod);
                           },
                           icon: const Icon(Icons.delete_outline_rounded,
                               color: Colors.red),
@@ -431,7 +439,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: TextButton.icon(
                       onPressed: () {
-                        uploadVideo(context, goods!.nomenklaturaKod ?? '');
+                        uploadVideo(context, widget.arguments.nomenklaturaKod);
                       },
                       icon: const Icon(Icons.video_chat_outlined,
                           color: Colors.blue),

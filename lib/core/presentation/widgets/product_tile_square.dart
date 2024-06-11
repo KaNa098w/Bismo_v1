@@ -26,24 +26,24 @@ class ProductTileSquare extends StatelessWidget {
         child: InkWell(
           borderRadius: AppDefaults.borderRadius,
           onTap: () async {
-            final snapshot = await newGoodsFuture;
-            if (snapshot != null &&
-                snapshot.goods != null &&
-                snapshot.goods!.isNotEmpty) {
-              final goods = snapshot.goods!
-                  .first; // Используйте первый элемент или измените логику по необходимости
+            // final snapshot = await newGoodsFuture;
+            // if (snapshot != null &&
+            //     snapshot.goods != null &&
+            //     snapshot.goods!.isNotEmpty) {
+              // final goods = snapshot.goods!
+              //     .first; // Используйте первый элемент или измените логику по необходимости
               Navigator.pushNamed(
                 context,
                 '/product_goods',
                 arguments: GoodsArguments(
-                  goods.nomenklatura ?? '',
-                  goods.catId ?? '',
-                  goods.kontragent ?? '',
-                  goods.price ?? 0,
-                  goods.nomenklaturaKod ?? '',
+                  data.nomenklatura ?? '',
+                  data.catId ?? '',
+                  data.kontragent ?? '',
+                  data.price ?? 0,
+                  data.nomenklaturaKod ?? '',
                 ),
               );
-            }
+            // }
           },
           child: Container(
             width: 176,

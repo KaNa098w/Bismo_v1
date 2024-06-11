@@ -22,6 +22,7 @@ class ProductGoodsController extends StatelessController {
         goods: Goods(
           catId: args.catId,
         ),
+        arguments: args,
       ),
     );
   }
