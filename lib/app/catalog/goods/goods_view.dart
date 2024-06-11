@@ -16,7 +16,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 class GoodsView extends StatefulWidget {
   final String? title;
   final String? catId;
-  const GoodsView({Key? key, this.title, this.catId}) : super(key: key);
+  final String? kontragent;
+  final int? price;
+  final String? nomenklaturaKod;
+
+  const GoodsView(
+      {Key? key,
+      this.title,
+      this.catId,
+      this.kontragent,
+      this.price,
+      this.nomenklaturaKod})
+      : super(key: key);
 
   @override
   State<GoodsView> createState() => _GoodsViewState();
@@ -197,6 +208,9 @@ class _GoodsViewState extends State<GoodsView> {
                                   '/product_goods',
                                   arguments: GoodsArguments(
                                     goods.nomenklatura ?? '',
+                                    goods.catId ?? '',
+                                    goods.kontragent ?? '',
+                                    goods.price ?? 0,
                                     goods.nomenklaturaKod ?? '',
                                   ),
                                 ),

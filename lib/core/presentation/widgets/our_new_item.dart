@@ -51,7 +51,10 @@ class _OurNewItemState extends State<OurNewItem> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: goods
-                      .map((item) => ProductTileSquare(data: item))
+                      .map((item) => ProductTileSquare(
+                            data: item,
+                            newGoodsFuture: _newGoodsFuture,
+                          ))
                       .toList(),
                 ),
               );

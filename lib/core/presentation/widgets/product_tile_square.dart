@@ -1,3 +1,4 @@
+import 'package:bismo/app/catalog/goods/goods_arguments.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:bismo/core/models/order/get_new_goods.dart';
@@ -7,9 +8,11 @@ class ProductTileSquare extends StatelessWidget {
   const ProductTileSquare({
     Key? key,
     required this.data,
+    required this.newGoodsFuture,
   }) : super(key: key);
 
   final Goods data;
+  final Future<GetNewGoodsResponse?> newGoodsFuture;
   final String fallbackImageUrl =
       'https://images.satu.kz/197787004_w200_h200_pomада-для-губ.jpg';
 
@@ -22,8 +25,25 @@ class ProductTileSquare extends StatelessWidget {
         color: AppColors.scaffoldBackground,
         child: InkWell(
           borderRadius: AppDefaults.borderRadius,
-          onTap: () {
-            Navigator.pushNamed(context, '/product');
+          onTap: () async {
+            final snapshot = await newGoodsFuture;
+            if (snapshot != null &&
+                snapshot.goods != null &&
+                snapshot.goods!.isNotEmpty) {
+              final goods = snapshot.goods!
+                  .first; // Используйте первый элемент или измените логику по необходимости
+              Navigator.pushNamed(
+                context,
+                '/product_goods',
+                arguments: GoodsArguments(
+                  goods.nomenklatura ?? '',
+                  goods.catId ?? '',
+                  goods.kontragent ?? '',
+                  goods.price ?? 0,
+                  goods.nomenklaturaKod ?? '',
+                ),
+              );
+            }
           },
           child: Container(
             width: 176,

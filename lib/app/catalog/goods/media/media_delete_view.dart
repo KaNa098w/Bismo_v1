@@ -151,7 +151,7 @@ class _MediaDeleteViewState extends State<MediaDeleteView> {
                             _confirmDelete(mediaUrl);
                           },
                           label: const Text(
-                            'Удалить файл',
+                            'Удалить',
                             style: TextStyle(
                               color: Colors.red,
                             ),

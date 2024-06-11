@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:bismo/core/presentation/widgets/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:video_player/video_player.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:dio/dio.dart';
 
 class ReelsView extends StatefulWidget {
   final String? title;
@@ -125,20 +128,45 @@ class _ReelsViewState extends State<ReelsView> {
       return;
     }
 
-    final controller = VideoPlayerController.network(url);
+    final videoFile = await _downloadAndCacheVideo(url);
+    if (videoFile != null) {
+      final controller = VideoPlayerController.file(videoFile);
 
-    try {
-      await controller.initialize().timeout(const Duration(seconds: 10));
-      _videoControllers[index] = controller;
-      if (index == _currentPage && mounted) {
-        setState(() {});
+      try {
+        await controller.initialize().timeout(const Duration(seconds: 10));
+        _videoControllers[index] = controller;
+        if (index == _currentPage && mounted) {
+          setState(() {});
+        }
+        controller.play();
+        controller.setLooping(true);
+      } catch (e) {
+        // Handle timeout error or other errors
+        print('Error loading video: $e');
       }
-      controller.play();
-      controller.setLooping(true);
-    } catch (e) {
-      // Handle timeout error or other errors
-      print('Error loading video: $e');
     }
+  }
+
+  Future<File?> _downloadAndCacheVideo(String url) async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final fileName = Uri.parse(url).pathSegments.last;
+      final filePath = '${appDir.path}/$fileName';
+
+      final file = File(filePath);
+
+      if (await file.exists()) {
+        return file;
+      }
+
+      final response = await Dio().download(url, filePath);
+      if (response.statusCode == 200) {
+        return file;
+      }
+    } catch (e) {
+      print('Error downloading video: $e');
+    }
+    return null;
   }
 
   @override

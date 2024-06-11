@@ -19,6 +19,9 @@ class GoodsController extends StatelessController {
       mobile: mobile.GoodsView(
         title: args.title,
         catId: args.catId,
+        kontragent: args.kontragent,
+        price: args.price,
+        nomenklaturaKod: args.nomenklaturaKod,
       ),
     );
   }

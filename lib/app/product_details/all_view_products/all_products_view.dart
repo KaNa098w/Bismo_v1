@@ -64,6 +64,8 @@ class _AllProductsViewState extends State<AllProductsView> {
                       itemBuilder: (context, index) {
                         return ProductTileSquare(
                           data: goods[index],
+                          newGoodsFuture:
+                              _newGoodsFuture, // Pass the future here
                         );
                       },
                     ),

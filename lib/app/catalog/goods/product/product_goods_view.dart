@@ -24,12 +24,14 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
   int quantity = 0;
   List<String> productImages = [];
   Goods? goods;
+  String hz = '';
 
   @override
   void initState() {
     super.initState();
     goods = widget.goods;
     _fetchGoods(goods!.catId ?? '');
+    loadProductImages(hz); //модет истей
   }
 
   Future<void> _fetchGoods(String catId) async {
@@ -55,8 +57,9 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
     }
   }
 
-  Future<void> loadProductImages(String catId) async {
-    final url = 'http://86.107.45.59/api/images?phone=7783734209&code=$catId';
+  Future<void> loadProductImages(String nomenklaturaKod) async {
+    final url =
+        'http://86.107.45.59/api/images?phone=7783734209&code=$nomenklaturaKod';
     var headers = {'Accept': 'application/json'};
     var dio = Dio();
     try {
@@ -70,6 +73,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
 
       if (response.statusCode == 200) {
         var data = response.data;
+        print("Ошибка: $data"); // Логирование полученных данных
         if (data is List) {
           setState(() {
             productImages = data
@@ -96,7 +100,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
     await PersistentShoppingCart().addToCart(PersistentShoppingCartItem(
       productId: goods.nomenklaturaKod ?? "",
       productName: goods.nomenklatura ?? "",
-      unitPrice: goods.price,
+      unitPrice: goods.price ?? 0.0,
       quantity: quantity,
       productThumbnail: goods.photo,
       productDetails: {
@@ -154,9 +158,16 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
 
   @override
   Widget build(BuildContext context) {
+    final GoodsArguments args =
+        ModalRoute.of(context)!.settings.arguments as GoodsArguments;
+    //inal String nomenklaturaKod = 'MA100000516';
+    hz = args.nomenklaturaKod;
+    loadProductImages(
+        args.nomenklaturaKod); // осы кодтты intistate ишинде шакыру керк ???
+    //loadProductImages(nomenklaturaKod);
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.goods.nomenklatura ?? 'Детали товара'),
+        title: Text(args.title ?? 'Детали товара'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -180,14 +191,15 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                               borderRadius: BorderRadius.circular(20),
                               child: CachedNetworkImage(
                                 imageUrl: productImages[index],
-                                cacheManager: null, // Disable caching
                                 placeholder: (context, url) =>
                                     const CircularProgressIndicator(),
-                                errorWidget: (context, url, error) =>
-                                    Image.network(
-                                  'https://images.satu.kz/197787004_w200_h200_pomада-для-губ.jpg',
-                                ),
-                                fit: BoxFit.cover,
+                                errorWidget: (context, url, error) {
+                                  print(
+                                      "Failed to load image $url, error: $error");
+                                  return Image.network(
+                                      'https://images.satu.kz/197787004_w200_h200_pомада-для-губ.jpg');
+                                },
+                                fit: BoxFit.contain,
                               ),
                             ),
                           );
@@ -200,7 +212,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                     child: Text(
                       goods!.nomenklatura ?? '',
                       style: const TextStyle(
-                        fontSize: 24,
+                        fontSize: 1,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -215,7 +227,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           style: TextStyle(fontSize: 20),
                         ),
                         Text(
-                          '${goods!.price?.toInt()}₸/кг',
+                          '${args.price}₸/кг',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -305,7 +317,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           style: TextStyle(fontSize: 20),
                         ),
                         Text(
-                          goods?.kontragent ?? '',
+                          args.kontragent,
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -325,7 +337,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           style: TextStyle(fontSize: 20),
                         ),
                         Text(
-                          "${(quantity * (goods?.price ?? 0)).toStringAsFixed(2)}₸",
+                          "${(quantity * (args.price ?? 0)).toStringAsFixed(2)}₸",
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -373,7 +385,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                               goods!.catId ?? "",
                               () {
                                 setState(() {});
-                                _fetchGoods(goods!.catId ?? "");
+                                _fetchGoods(goods!.nomenklatura ?? "");
                               },
                               (newPhotoUrl) {
                                 setState(() {
@@ -396,13 +408,18 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                               context,
                               '/media_delete_page',
                               arguments: GoodsArguments(
-                                  'Медиафайлы', goods!.nomenklaturaKod ?? ''),
+                                'Медиафайлы',
+                                '',
+                                '',
+                                0,
+                                goods!.nomenklaturaKod ?? '',
+                              ),
                             );
                           },
                           icon: const Icon(Icons.delete_outline_rounded,
                               color: Colors.red),
                           label: const Text(
-                            '',
+                            'Удалить',
                             style: TextStyle(color: Colors.red),
                           ),
                         ),
@@ -432,7 +449,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
             ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
-          height: 60,
+          height: 40,
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: ElevatedButton(
             onPressed: () {
@@ -448,7 +465,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
               child: Text(
                 'Добавить в корзину',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 18,
                   color: Colors.white,
                 ),
               ),

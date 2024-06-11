@@ -81,29 +81,22 @@ class _CatalogViewState extends State<CatalogView> {
     }
   }
 
-void _onSearchSubmitted(String query) async {
-  if (query.isNotEmpty) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SearchCatalogView(query: query), // Передача поискового запроса
-      ),
-    );
+  void _onSearchSubmitted(String query) async {
+    if (query.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              SearchCatalogView(query: query), // Передача поискового запроса
+        ),
+      );
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: widget.catId == null
-            ? null
-            : IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
         title: TextField(
           onSubmitted: _onSearchSubmitted,
           decoration: InputDecoration(

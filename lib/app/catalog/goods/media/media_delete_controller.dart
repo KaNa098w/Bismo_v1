@@ -19,7 +19,7 @@ class MediaDeleteController extends StatelessController {
       mobile: mobile.MediaDeleteView(
         title: args.title,
         phone: '7783734209',
-        code: args.catId, // Используем переданный код
+        code: args.nomenklaturaKod, // Используем переданный код
       ),
     );
   }
