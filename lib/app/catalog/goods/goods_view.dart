@@ -1,10 +1,7 @@
 import 'dart:developer';
 import 'package:bismo/app/catalog/goods/goods_arguments.dart';
-import 'package:bismo/app/catalog/goods/media/photo_upload_helped.dart';
-import 'package:bismo/app/catalog/goods/media/video_upload_helper.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/helpers/app_bar_back.dart';
-import 'package:bismo/core/helpers/app_bar_title.dart';
 import 'package:bismo/core/models/cart/set_order_request.dart';
 import 'package:bismo/core/models/catalog/goods.dart';
 import 'package:bismo/core/presentation/widgets/custom_empty_widget.dart';
@@ -26,7 +23,6 @@ class GoodsView extends StatefulWidget {
 }
 
 class _GoodsViewState extends State<GoodsView> {
-  late GlobalKey<NavigatorState> navigatorKey;
   TextEditingController searchController = TextEditingController();
 
   GoodsResponse? goodsResponse;
@@ -34,6 +30,7 @@ class _GoodsViewState extends State<GoodsView> {
   List<PersistentShoppingCartItem> cartItems = [];
   List<Goods> filteredGoods = [];
   int currentQuantity = 0;
+  List<String> productImages = [];
 
   @override
   void initState() {
@@ -132,327 +129,6 @@ class _GoodsViewState extends State<GoodsView> {
     ));
   }
 
-  void showProductDetails(Goods goods) {
-    int quantity = 0;
-
-    void increment() {
-      setState(() {
-        quantity++;
-      });
-    }
-
-    void decrement() {
-      if (quantity > 0) {
-        setState(() {
-          quantity--;
-        });
-      }
-    }
-
-    Future<void> requestStoragePermission(Function onPermissionGranted) async {
-      if (await Permission.storage.request().isGranted) {
-        onPermissionGranted();
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Доступ к хранилищу не предоставлен'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
-    }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxHeight: 550,
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            onPressed: () => Navigator.pop(context),
-                            icon: const Icon(Icons.arrow_back),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              if (quantity > 0) {
-                                addToCart(goods, quantity);
-                                setState(
-                                  () {
-                                    currentQuantity = quantity;
-                                  },
-                                );
-
-                                Navigator.pop(context);
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        'Количество должно быть больше нуля'),
-                                    backgroundColor: Colors.red,
-                                    duration: Duration(milliseconds: 500),
-                                  ),
-                                );
-                              }
-                            },
-                            child: const Text(
-                              'Готово',
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      if (goods.photo != null)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 0.0),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: CachedNetworkImage(
-                              imageUrl: goods.photo!,
-                              placeholder: (context, url) =>
-                                  const CircularProgressIndicator(),
-                              errorWidget: (context, url, error) =>
-                                  Image.network(
-                                'https://images.satu.kz/197787004_w200_h200_pomада-для-губ.jpg',
-                              ),
-                              width: 180,
-                              height: 160,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      const SizedBox(height: 20),
-                      Text(
-                        goods.nomenklatura ?? '',
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Center(
-                            child: InkWell(
-                              onTap: () {
-                                if (quantity > 0) {
-                                  setState(() {
-                                    quantity--;
-                                  });
-                                }
-                              },
-                              child: Container(
-                                width: 25,
-                                height: 25,
-                                decoration: BoxDecoration(
-                                  color:
-                                      quantity > 0 ? Colors.blue : Colors.grey,
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.remove,
-                                    size: 15,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Text("$quantity"),
-                          const SizedBox(width: 20),
-                          Center(
-                            child: InkWell(
-                              onTap: () {
-                                setState(() {
-                                  quantity++;
-                                });
-                              },
-                              child: Container(
-                                width: 25,
-                                height: 25,
-                                decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.add,
-                                    size: 15,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Text(
-                            '${goods.price?.toInt()}₸/кг',
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Text(
-                            goods.kontragent ?? "",
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w400),
-                          ),
-                          const SizedBox(width: 50),
-                          Text(
-                            "Сумма: ${(quantity * (goods.price ?? 0)).toStringAsFixed(2)}₸",
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w300),
-                          ),
-                        ],
-                      ),
-                      const Row(
-                        children: [
-                          Icon(Icons.star, color: Colors.amber, size: 18),
-                          Icon(Icons.star, color: Colors.amber, size: 18),
-                          Icon(Icons.star, color: Colors.amber, size: 18),
-                          Icon(Icons.star, color: Colors.amber, size: 18),
-                          Icon(Icons.star,
-                              color: Color.fromARGB(255, 94, 94, 93), size: 18),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      const Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                labelText: 'Комментария, пожелания',
-                                border: InputBorder.none,
-                                isDense: true,
-                              ),
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w300),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              TextButton.icon(
-                                onPressed: () {
-                                  requestStoragePermission(() {
-                                    uploadPhoto(
-                                      context,
-                                      '7783734209',
-                                      goods.nomenklaturaKod ?? "",
-                                      widget.catId ?? "",
-                                      () {
-                                        setState(
-                                            () {}); // Обновление состояния внутри диалога
-                                        _fetchGoods(widget.catId ??
-                                            ""); // Обновление данных на странице
-                                      },
-                                      (newPhotoUrl) {
-                                        setState(() {
-                                          goods.photo =
-                                              newPhotoUrl; // Обновление URL изображения
-                                        });
-                                      },
-                                    );
-                                  });
-                                },
-                                icon: const Icon(Icons.upload_file,
-                                    color: Colors.blue),
-                                label: const Text(
-                                  'Загрузить фото',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              ),
-                              TextButton.icon(
-                                onPressed: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/media_delete_page',
-                                    arguments: GoodsArguments(
-                                        'Медиафайлы',
-                                        goods.nomenklaturaKod ?? ''),
-                                  );
-                                },
-                                icon: const Icon(Icons.delete_outline_rounded,
-                                    color: Colors.red),
-                                label: const Text(
-                                  'Удалить',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 1),
-                          TextButton.icon(
-                            onPressed: () {
-                              requestStoragePermission(() {
-                                uploadVideo(
-                                  context,
-                                  '7783734209',
-                                  goods.nomenklaturaKod ?? "",
-                                  widget.catId ?? "",
-                                  () {
-                                    setState(
-                                        () {}); // Обновление состояния внутри диалога
-                                    _fetchGoods(widget.catId ??
-                                        ""); // Обновление данных на странице
-                                  },
-                                  (newPhotoUrl) {
-                                    setState(() {
-                                      goods.photo =
-                                          newPhotoUrl; // Обновление URL изображения
-                                    });
-                                  },
-                                );
-                              });
-                            },
-                            icon: const Icon(Icons.video_chat_outlined,
-                                color: Colors.blue),
-                            label: const Text(
-                              'Загрузить видео',
-                              style: TextStyle(
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -490,7 +166,14 @@ class _GoodsViewState extends State<GoodsView> {
                             return Card(
                               color: Colors.white,
                               child: ListTile(
-                                onTap: () => showProductDetails(goods),
+                                onTap: () => Navigator.pushNamed(
+                                  context,
+                                  '/product_goods',
+                                  arguments: GoodsArguments(
+                                    goods.nomenklatura ?? '',
+                                    goods.nomenklaturaKod ?? '',
+                                  ),
+                                ),
                                 leading: Container(
                                   width: 50,
                                   height: 50,
@@ -499,6 +182,7 @@ class _GoodsViewState extends State<GoodsView> {
                                   ),
                                   child: CachedNetworkImage(
                                     imageUrl: goods.photo ?? "",
+                                    cacheManager: null, // Disable caching
                                     placeholder: (context, url) =>
                                         const CircularProgressIndicator(),
                                     errorWidget: (context, url, error) =>
@@ -597,7 +281,6 @@ class _GoodsViewState extends State<GoodsView> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(),
                     Text(
                       'Далее',
                       style: TextStyle(

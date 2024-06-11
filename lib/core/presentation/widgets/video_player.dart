@@ -6,7 +6,8 @@ class VideoPlayerWidget extends StatefulWidget {
   final String url;
   final VideoPlayerController? controller;
 
-  const VideoPlayerWidget({Key? key, required this.url, this.controller}) : super(key: key);
+  const VideoPlayerWidget({Key? key, required this.url, this.controller})
+      : super(key: key);
 
   @override
   _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
@@ -15,23 +16,18 @@ class VideoPlayerWidget extends StatefulWidget {
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
-  bool _isVisible = false;
   bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
-    if (widget.controller != null) {
-      _controller = widget.controller!;
-      _initializeVideoPlayerFuture = Future.value();
-    } else {
-      _controller = VideoPlayerController.network(widget.url);
-      _initializeVideoPlayerFuture = _controller.initialize().then((_) {
-        if (!_isDisposed) {
-          setState(() {});
-        }
-      });
-    }
+    _controller =
+        widget.controller ?? VideoPlayerController.network(widget.url);
+    _initializeVideoPlayerFuture = _controller.initialize().then((_) {
+      if (!_isDisposed) {
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -45,26 +41,21 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   void _handleVisibilityChanged(VisibilityInfo info) {
     if (!_isDisposed) {
-      setState(() {
-        _isVisible = info.visibleFraction > 0.5;
-        if (_isVisible) {
-          _controller.play();
-        } else {
-          _controller.pause();
-        }
-      });
+      if (info.visibleFraction > 0.5) {
+        _controller.play();
+      } else {
+        _controller.pause();
+      }
     }
   }
 
   void _handleTap() {
     if (!_isDisposed) {
-      setState(() {
-        if (_controller.value.isPlaying) {
-          _controller.pause();
-        } else {
-          _controller.play();
-        }
-      });
+      if (_controller.value.isPlaying) {
+        _controller.pause();
+      } else {
+        _controller.play();
+      }
     }
   }
 
@@ -77,28 +68,32 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         future: _initializeVideoPlayerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return Stack(
-              children: [
-                Center(
-                  child: AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
-                  ),
-                ),
-                Positioned(
-                  bottom: 8,
-                  left: 240,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+            return GestureDetector(
+              onTap: _handleTap,
+              child: Stack(
+                children: [
+                  Center(
+                    child: AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
                     ),
-                    onPressed: () {
-                      // Логика для показа товара
-                    },
-                    child: const Text('Показать товар', style: TextStyle(color: Colors.white)),
                   ),
-                ),
-              ],
+                  Positioned(
+                    bottom: 8,
+                    left: 16,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: () {
+                        // Логика для показа товара
+                      },
+                      child: const Text('Показать товар',
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                  ),
+                ],
+              ),
             );
           } else {
             return const Center(child: CircularProgressIndicator());
@@ -112,7 +107,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 class FullScreenVideoPlayer extends StatelessWidget {
   final VideoPlayerController controller;
 
-  const FullScreenVideoPlayer({Key? key, required this.controller}) : super(key: key);
+  const FullScreenVideoPlayer({Key? key, required this.controller})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

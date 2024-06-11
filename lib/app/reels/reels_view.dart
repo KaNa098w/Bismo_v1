@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:bismo/core/presentation/widgets/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
 class ReelsView extends StatefulWidget {
@@ -19,14 +17,13 @@ class _ReelsViewState extends State<ReelsView> {
   List<String> _videos = [];
   final Map<int, VideoPlayerController> _videoControllers = {};
   int _currentPage = 0;
-  int _currentPageLoading = -1;
   bool _isLoading = false;
   bool _hasMore = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchInitialVideos();
+    _fetchVideos(page: 1);
     _pageController.addListener(_onPageChanged);
   }
 
@@ -39,82 +36,45 @@ class _ReelsViewState extends State<ReelsView> {
     super.dispose();
   }
 
-  Future<void> _fetchInitialVideos() async {
+  void _onPageChanged() {
+    final int nextPage = _pageController.page!.round();
+    if (nextPage != _currentPage) {
+      _currentPage = nextPage;
+      if (_currentPage < _videos.length) {
+        _loadVideoController(_videos[nextPage], nextPage);
+      }
+      if (_currentPage == _videos.length - 1 && _hasMore) {
+        _fetchVideos(page: (_currentPage ~/ 10) + 2);
+      }
+    }
+  }
+
+  Future<void> _fetchVideos({required int page}) async {
+    if (_isLoading || !_hasMore) return;
+
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final List<String> videos = await _fetchVideosFromApi(page: 1);
-      setState(() {
-        _videos = videos;
-        _hasMore = videos.isNotEmpty;
-        _isLoading = false;
-      });
-
-      // Предварительная загрузка первых двух видео
-      if (_videos.isNotEmpty) {
-        _loadVideoController(_videos[0], 0);
-        if (_videos.length > 1) {
-          _loadVideoController(_videos[1], 1);
+      final List<String> videos = await _fetchVideosFromApi(page: page);
+      if (videos.isEmpty) {
+        _hasMore = false;
+      } else {
+        setState(() {
+          _videos.addAll(videos);
+        });
+        // Preload the next video controllers
+        for (int i = _videos.length - videos.length; i < _videos.length; i++) {
+          _loadVideoController(_videos[i], i);
         }
       }
     } catch (error) {
+      // Handle error appropriately
+    } finally {
       setState(() {
         _isLoading = false;
       });
-    }
-  }
-
-  void _onPageChanged() {
-    int nextPage = _pageController.page!.round();
-    if (nextPage != _currentPage) {
-      setState(() {
-        _currentPage = nextPage;
-      });
-      _loadSurroundingVideos(nextPage);
-    }
-  }
-
-  Future<void> _fetchMoreVideos() async {
-    if (_isLoading || !_hasMore || _currentPageLoading == _currentPage) return;
-
-    setState(() {
-      _currentPageLoading = _currentPage + 1;
-    });
-
-    try {
-      final List<String> videos = await _fetchVideosFromApi(page: _currentPage + 1);
-      setState(() {
-        _videos.addAll(videos);
-        _hasMore = videos.isNotEmpty;
-      });
-
-      // Предварительная загрузка текущего и следующих двух видео
-      _loadSurroundingVideos(_currentPage);
-    } catch (error) {
-      // Handle error appropriately
-    }
-  }
-
-  Future<void> _fetchPreviousVideos() async {
-    if (_isLoading || _currentPageLoading == _currentPage) return;
-
-    setState(() {
-      _currentPageLoading = _currentPage;
-    });
-
-    try {
-      final List<String> videos = await _fetchVideosFromApi(page: _currentPage - 1);
-      setState(() {
-        _videos.insertAll(0, videos);
-        _hasMore = videos.isNotEmpty;
-      });
-
-      // Предварительная загрузка текущего и предыдущих двух видео
-      _loadSurroundingVideos(_currentPage);
-    } catch (error) {
-      // Handle error appropriately
     }
   }
 
@@ -130,16 +90,15 @@ class _ReelsViewState extends State<ReelsView> {
       final Map<String, dynamic> data = json.decode(response.body);
       if (data.containsKey('data')) {
         final Map<String, dynamic> videosData = data['data'];
-        final List<dynamic> videoList = videosData.values.expand((element) => element as List<dynamic>).toList();
+        final List<dynamic> videoList = videosData.values
+            .expand((element) => element as List<dynamic>)
+            .toList();
         final List<String> videoUrls = [];
 
         for (var video in videoList) {
           final url = video['image_path'] as String;
           if (await _isValidVideoUrl(url)) {
-            print('Valid video URL: $url');
             videoUrls.add(url);
-          } else {
-            print('Invalid video URL: $url');
           }
         }
         return videoUrls;
@@ -154,93 +113,57 @@ class _ReelsViewState extends State<ReelsView> {
   Future<bool> _isValidVideoUrl(String url) async {
     try {
       final response = await http.head(Uri.parse(url));
-      return response.statusCode == 200 && response.headers['content-type']?.startsWith('video/') == true;
+      return response.statusCode == 200 &&
+          response.headers['content-type']?.startsWith('video/') == true;
     } catch (e) {
       return false;
     }
   }
 
   Future<void> _loadVideoController(String url, int index) async {
-    if (!_videoControllers.containsKey(index)) {
-      try {
-        final file = await _downloadAndSaveFile(url, 'video_$index.mp4');
-        final controller = VideoPlayerController.file(file);
-        await controller.initialize();
-        if (mounted) {
-          setState(() {
-            _videoControllers[index] = controller;
-          });
-        }
-      } catch (e) {
-        // Handle error if video file is not found or fails to download
-        print('Error loading video controller for $url: $e');
-      }
+    if (_videoControllers.containsKey(index)) {
+      return;
     }
-  }
 
-  Future<File> _downloadAndSaveFile(String url, String fileName) async {
-    final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/$fileName';
-    final file = File(filePath);
+    final controller = VideoPlayerController.network(url);
 
-    if (await file.exists()) {
-      return file;
-    } else {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        await file.writeAsBytes(response.bodyBytes);
-        return file;
-      } else {
-        throw Exception('Failed to download video');
+    try {
+      await controller.initialize().timeout(const Duration(seconds: 10));
+      _videoControllers[index] = controller;
+      if (index == _currentPage && mounted) {
+        setState(() {});
       }
+      controller.play();
+      controller.setLooping(true);
+    } catch (e) {
+      // Handle timeout error or other errors
+      print('Error loading video: $e');
     }
-  }
-
-  void _loadSurroundingVideos(int index) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_videos.isNotEmpty) {
-        if (index < _videos.length) {
-          _loadVideoController(_videos[index], index);
-        }
-        if (index + 1 < _videos.length) {
-          _loadVideoController(_videos[index + 1], index + 1);
-        }
-        if (index + 2 < _videos.length) {
-          _loadVideoController(_videos[index + 2], index + 2);
-        }
-        if (index - 1 >= 0) {
-          _loadVideoController(_videos[index - 1], index - 1);
-        }
-        if (index - 2 >= 0) {
-          _loadVideoController(_videos[index - 2], index - 2);
-        }
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isLoading && _videos.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : PageView.builder(
-              scrollDirection: Axis.vertical, // Прокрутка по вертикали
-              controller: _pageController,
-              itemCount: _videos.length + 1,
-              itemBuilder: (context, index) {
-                if (index == _videos.length) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) => _fetchMoreVideos());
-                  return const Center(child: CircularProgressIndicator());
-                } else if (index == 0 && _currentPage == 0) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) => _fetchPreviousVideos());
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return VideoPlayerWidget(
-                  url: _videos[index],
-                  controller: _videoControllers[index],
-                );
-              },
-            ),
+      body: PageView.builder(
+        scrollDirection: Axis.vertical,
+        controller: _pageController,
+        itemCount: _videos.length + (_hasMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index >= _videos.length) {
+            return _hasMore
+                ? const Center(child: CircularProgressIndicator())
+                : const Center(child: Text('No more videos.'));
+          }
+          return Stack(
+            children: [
+              VideoPlayerWidget(
+                url: _videos[index],
+                controller: _videoControllers[index],
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

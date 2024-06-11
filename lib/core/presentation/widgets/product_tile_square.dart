@@ -1,9 +1,7 @@
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
-import 'package:bismo/core/models/dummy_product_model.dart';
+import 'package:bismo/core/models/order/get_new_goods.dart';
 import 'package:flutter/material.dart';
-
-import 'network_image.dart';
 
 class ProductTileSquare extends StatelessWidget {
   const ProductTileSquare({
@@ -11,7 +9,9 @@ class ProductTileSquare extends StatelessWidget {
     required this.data,
   }) : super(key: key);
 
-  final ProductModel data;
+  final Goods data;
+  final String fallbackImageUrl =
+      'https://images.satu.kz/197787004_w200_h200_pomада-для-губ.jpg';
 
   @override
   Widget build(BuildContext context) {
@@ -39,15 +39,21 @@ class ProductTileSquare extends StatelessWidget {
                   padding: const EdgeInsets.all(AppDefaults.padding / 2),
                   child: AspectRatio(
                     aspectRatio: 1 / 1,
-                    child: NetworkImageWithLoader(
-                      data.cover,
+                    child: Image.network(
+                      data.photo ?? fallbackImageUrl,
                       fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.network(
+                          fallbackImageUrl,
+                          fit: BoxFit.contain,
+                        );
+                      },
                     ),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  data.name,
+                  data.nomenklatura ?? '',
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium
@@ -57,7 +63,7 @@ class ProductTileSquare extends StatelessWidget {
                 ),
                 const Spacer(),
                 Text(
-                  data.weight,
+                  data.count ?? '',
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -65,23 +71,21 @@ class ProductTileSquare extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '${data.price.toInt()}₸',
+                      '${data.price ?? 0}₸',
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
                           ?.copyWith(color: Colors.black),
                     ),
-                    const SizedBox(
-                      width: 4,
-                    ),
+                    const SizedBox(width: 4),
                     Text(
-                      '${data.mainPrice}₸',
+                      '${data.oldPrice ?? 0}₸',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             decoration: TextDecoration.lineThrough,
                           ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),

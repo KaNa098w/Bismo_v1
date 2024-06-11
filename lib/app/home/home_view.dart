@@ -17,16 +17,6 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-    requestPermissions();
-  }
-
-  Future<void> requestPermissions() async {
-    var status = await Permission.storage.request();
-    if (status.isGranted) {
-      print('Storage permission granted');
-    } else {
-      print('Storage permission denied');
-    }
   }
 
   @override
