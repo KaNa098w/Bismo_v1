@@ -1,6 +1,5 @@
 import 'package:bismo/core/presentation/widgets/video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -28,6 +27,12 @@ class _ReelsViewState extends State<ReelsView> {
         'http://86.107.45.59/api/movies?phone=7783734209&page=$_currentPage'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      if (data['data']?.isEmpty) {
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
       final newVideos = _extractVideoUrls(data['data']);
       if (newVideos.isNotEmpty) {
         setState(() {

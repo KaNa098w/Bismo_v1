@@ -256,7 +256,7 @@ class _CartViewState extends State<CartView> {
                       borderRadius: BorderRadius.circular(12),
                       children: [
                         SizedBox(
-                          width: 100,
+                          width: 120,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
@@ -272,7 +272,7 @@ class _CartViewState extends State<CartView> {
                           ),
                         ),
                         SizedBox(
-                          width: 100,
+                          width: 120,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
