@@ -1,6 +1,7 @@
 import 'package:bismo/app/catalog/goods/goods_arguments.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'dart:io';
 
 class VideoPlayerWidget extends StatefulWidget {
   final String url;
@@ -12,21 +13,25 @@ class VideoPlayerWidget extends StatefulWidget {
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   late VideoPlayerController _controller;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(widget.url)
+    _controller = VideoPlayerController.file(File(widget.url))
       ..initialize().then((_) {
-        setState(() {});
-        _controller.play();
+        setState(() {
+          _isInitialized = true;
+          _controller.play();
+        });
       });
     _controller.addListener(_onVideoEnd);
   }
 
   void _onVideoEnd() {
     if (_controller.value.position == _controller.value.duration) {
-      // Логика для загрузки следующего видео
+      _controller.seekTo(Duration.zero);
+      _controller.play();
     }
   }
 
@@ -37,6 +42,16 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     super.dispose();
   }
 
+  void _handleTap() {
+    setState(() {
+      if (_controller.value.isPlaying) {
+        _controller.pause();
+      } else {
+        _controller.play();
+      }
+    });
+  }
+
   String extractNomenklatureKod(String url) {
     Uri uri = Uri.parse(url);
     List<String> segments = uri.pathSegments;
@@ -45,40 +60,48 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return _controller.value.isInitialized
-        ? Stack(
-            children: [
-              AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              ),
-              Positioned(
-                bottom: 8,
-                left: 16,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+    return GestureDetector(
+      onTap: _handleTap,
+      child: Center(
+        child: _isInitialized
+            ? Stack(
+                children: [
+                  Center(
+                    child: AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    ),
                   ),
-                  onPressed: () {
-                    String nomenklatureKod = extractNomenklatureKod(widget.url);
-                    Navigator.pushNamed(
-                      context,
-                      '/product_goods',
-                      arguments: GoodsArguments(
-                        '',
-                        '',
-                        '',
-                        0,
-                        nomenklatureKod,
+                  Positioned(
+                    bottom: 15,
+                    right: 35,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
                       ),
-                    );
-                  },
-                  child: const Text('Показать товар',
-                      style: TextStyle(color: Colors.white)),
-                ),
-              ),
-            ],
-          )
-        : const Center(child: CircularProgressIndicator());
+                      onPressed: () {
+                        String nomenklatureKod =
+                            extractNomenklatureKod(widget.url);
+                        Navigator.pushNamed(
+                          context,
+                          '/product_goods',
+                          arguments: GoodsArguments(
+                            '',
+                            '',
+                            '',
+                            0,
+                            nomenklatureKod,
+                          ),
+                        );
+                      },
+                      child: const Text('Показать товар',
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                  ),
+                ],
+              )
+            : const Center(child: CircularProgressIndicator()),
+      ),
+    );
   }
 }

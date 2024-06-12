@@ -1,8 +1,10 @@
 import 'package:bismo/core/presentation/widgets/video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'dart:io';
 
 class ReelsView extends StatefulWidget {
   final String? title;
@@ -21,6 +23,7 @@ class _ReelsViewState extends State<ReelsView> {
   void initState() {
     super.initState();
     _fetchVideos();
+    _cleanupOldCache();
   }
 
   Future<void> _fetchVideos() async {
@@ -36,7 +39,7 @@ class _ReelsViewState extends State<ReelsView> {
         });
       }
     } else {
-      // Обработка ошибки
+      // Handle error
       setState(() {
         _isLoading = false;
       });
@@ -53,6 +56,23 @@ class _ReelsViewState extends State<ReelsView> {
     return urls;
   }
 
+  Future<void> _cleanupOldCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cacheDir = await getTemporaryDirectory();
+    final now = DateTime.now();
+
+    prefs.getKeys().forEach((key) {
+      final cachedTime = DateTime.parse(prefs.getString(key) ?? '');
+      if (now.difference(cachedTime).inDays > 10) {
+        final file = File('${cacheDir.path}/$key');
+        if (file.existsSync()) {
+          file.deleteSync();
+        }
+        prefs.remove(key);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,9 +86,39 @@ class _ReelsViewState extends State<ReelsView> {
                   _currentPage++;
                   _fetchVideos();
                 }
-                return VideoPlayerWidget(url: _videoUrls[index]);
+                return FutureBuilder<String>(
+                  future: _getCachedVideoPath(_videoUrls[index]),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done &&
+                        snapshot.hasData) {
+                      return VideoPlayerWidget(url: snapshot.data!);
+                    } else {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  },
+                );
               },
             ),
     );
+  }
+
+  Future<String> _getCachedVideoPath(String url) async {
+    final cacheDir = await getTemporaryDirectory();
+    final fileName = Uri.parse(url).pathSegments.last;
+    final file = File('${cacheDir.path}/$fileName');
+
+    if (await file.exists()) {
+      return file.path;
+    } else {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        await file.writeAsBytes(response.bodyBytes);
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString(fileName, DateTime.now().toIso8601String());
+        return file.path;
+      } else {
+        throw Exception('Failed to load video');
+      }
+    }
   }
 }
