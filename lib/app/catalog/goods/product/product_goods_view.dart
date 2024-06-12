@@ -1,8 +1,11 @@
 import 'package:bismo/app/catalog/goods/goods_arguments.dart';
 import 'package:bismo/app/catalog/goods/media/photo_upload_helped.dart';
 import 'package:bismo/app/catalog/goods/media/video_upload_helper.dart';
+import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/models/cart/set_order_request.dart';
+import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
 import 'package:bismo/core/services/goods_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:bismo/core/models/catalog/goods.dart';
@@ -25,7 +28,7 @@ class ProductGoodsView extends StatefulWidget {
 }
 
 class _ProductGoodsViewState extends State<ProductGoodsView> {
-  int quantity = 0;
+  int quantity = 1;
   List<String> productImages = [];
   Goods? goods;
 
@@ -102,11 +105,11 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
         "count": goods.count,
       },
     ));
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Товар добавлен в корзину'),
-      backgroundColor: Colors.green,
-      duration: Duration(milliseconds: 500),
-    ));
+    // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    //   content: Text('Товар добавлен в корзину'),
+    //   backgroundColor: Colors.green,
+    //   duration: Duration(milliseconds: 500),
+    // ));
   }
 
   SetOrderGoods convertToSetOrderGoods(Goods goods) {
@@ -464,34 +467,96 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
               child: CircularProgressIndicator(),
             ),
       bottomNavigationBar: BottomAppBar(
-        child: Container(
-          height: 40,
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: ElevatedButton(
-            onPressed: () {
-              addToCart(
-                context,
-                convertToSetOrderGoods(widget.goods),
-                quantity,
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: const Center(
-              child: Text(
-                'Добавить в корзину',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
+        child: PersistentShoppingCart().showAndUpdateCartItemWidget(
+            inCartWidget: Container(
+              height: 40,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: ElevatedButton(
+                onPressed: () async {
+                  await Navigator.pushNamed(context, "/cart");
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Перейти в корзину',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
+            notInCartWidget: Container(
+              height: 40,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: ElevatedButton(
+                onPressed: () async {
+                  addToCart(
+                    context,
+                    convertToSetOrderGoods(goods ?? widget.goods),
+                    quantity,
+                  );
+
+                  showAlertDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    title: "Уведомление",
+                    content: "Товар успешно добавлен в корзину!",
+                    actions: <Widget>[
+                      CupertinoDialogAction(
+                        onPressed: () async {
+                          Navigator.pop(context);
+                          await Navigator.pushNamed(context, "/cart");
+                        },
+                        textStyle:
+                            const TextStyle(color: AppColors.primaryColor),
+                        child: const Text("Перейти в корзину"),
+                      ),
+                      CupertinoDialogAction(
+                        onPressed: () => Navigator.of(context).pop(),
+                        textStyle: const TextStyle(color: AppColors.textBlack),
+                        child: const Text("Назад"),
+                      ),
+                    ],
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Добавить в корзину',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            product: PersistentShoppingCartItem(
+              productId: goods?.nomenklaturaKod ?? "",
+              productName: goods?.nomenklatura ?? "",
+              unitPrice: goods?.price?.toDouble() ?? 0,
+              quantity: quantity,
+              productThumbnail: goods?.photo,
+              productDetails: {
+                "nomenklatura": goods?.nomenklatura,
+                "nomenklaturaKod": goods?.nomenklaturaKod,
+                "producer": goods?.kontragent,
+                "step": goods?.step,
+                "count": goods?.count,
+              },
+            )),
       ),
     );
   }

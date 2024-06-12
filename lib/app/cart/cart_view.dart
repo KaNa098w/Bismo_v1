@@ -32,11 +32,12 @@ class _CartViewState extends State<CartView> {
   bool isLoaded = false;
   bool isDeliverySelected = false;
   GetAddressResponse? userAddress;
+  Future<List<PersistentShoppingCartItem>>? _futureCartItems;
 
   @override
   void initState() {
     super.initState();
-    _loadCartItems();
+    _futureCartItems = _loadCartItems();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       var userProvider = context.read<UserProvider>();
@@ -60,6 +61,7 @@ class _CartViewState extends State<CartView> {
     Map<String, dynamic> cartData = PersistentShoppingCart().getCartData();
     cartItems =
         (cartData['cartItems'] ?? []) as List<PersistentShoppingCartItem>;
+    _controllers.clear();
     _controllers = List.generate(cartItems.length, (index) {
       var newController = TextEditingController();
       newController.text = "${cartItems[index].quantity}";
@@ -75,7 +77,9 @@ class _CartViewState extends State<CartView> {
 
   void removeFromCart(String productId) async {
     await PersistentShoppingCart().removeFromCart(productId);
-    _loadCartItems();
+    _futureCartItems = _loadCartItems();
+    // setState(() {});
+    // _loadCartItems();
   }
 
   void _showDeleteConfirmationDialog(
@@ -96,8 +100,8 @@ class _CartViewState extends State<CartView> {
             ),
             TextButton(
               onPressed: () {
-                removeFromCart(productId); // Удалить товар из корзины
                 Navigator.of(context).pop(); // Закрыть диалоговое окно
+                removeFromCart(productId); // Удалить товар из корзины
               },
               child: const Text('Удалить'),
             ),
@@ -293,7 +297,7 @@ class _CartViewState extends State<CartView> {
         ),
       ),
       body: FutureBuilder<List<PersistentShoppingCartItem>>(
-        future: _loadCartItems(),
+        future: _futureCartItems,
         builder: (context,
             AsyncSnapshot<List<PersistentShoppingCartItem>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting &&
@@ -335,6 +339,10 @@ class _CartViewState extends State<CartView> {
                 const Divider(),
             itemBuilder: (context, index) {
               PersistentShoppingCartItem cartItem = snapshot.data![index];
+
+              if (!_controllers.asMap().containsKey(index)) {
+                return const SizedBox();
+              }
 
               return ListTile(
                 leading: CircleAvatar(
