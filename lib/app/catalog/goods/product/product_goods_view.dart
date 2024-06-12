@@ -32,17 +32,17 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
   @override
   void initState() {
     super.initState();
-    _fetchGoods(widget.arguments.catId);
+    _fetchGoods(widget.arguments.nomenklaturaKod);
     loadProductImages(widget.arguments.nomenklaturaKod);
   }
 
-  Future<void> _fetchGoods(String catId) async {
+  Future<void> _fetchGoods(String nomenklaturaKod) async {
     try {
-      final response = await GoodsService().getGoods(catId);
+      final response = await GoodsService().getGood(nomenklaturaKod);
 
       setState(() {
-        goods =
-            response?.goods?.firstWhere((element) => element.catId == catId);
+        goods = response?.goods?.firstWhere(
+            (element) => element.nomenklaturaKod == nomenklaturaKod);
       });
     } catch (e) {
       log("Error fetching goods: $e");
@@ -173,8 +173,8 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
       appBar: AppBar(
         title: Center(
           child: Text(
-            widget.arguments.title,
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+            goods?.nomenklatura ?? "",
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
           ),
         ),
         leading: IconButton(
@@ -188,7 +188,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (productImages.isNotEmpty)
-                    Container(
+                    SizedBox(
                       height: 250,
                       child: PageView.builder(
                         itemCount: productImages.length,
@@ -239,7 +239,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           style: TextStyle(fontSize: 20),
                         ),
                         Text(
-                          '${widget.arguments.price}₸/кг',
+                          '${goods?.price}₸/кг',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -254,9 +254,9 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        const Text(
                           'Количество: ',
-                          style: const TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 20),
                         ),
                         Row(
                           children: [
@@ -329,7 +329,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           style: TextStyle(fontSize: 20),
                         ),
                         Text(
-                          widget.arguments.kontragent,
+                          goods?.kontragent ?? "",
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -349,7 +349,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           style: TextStyle(fontSize: 20),
                         ),
                         Text(
-                          "${(quantity * (widget.arguments.price ?? 0)).toStringAsFixed(2)}₸",
+                          "${(quantity * (goods?.price ?? 0)).toStringAsFixed(2)}₸",
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -373,14 +373,14 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                   ),
                   const SizedBox(height: 20),
                   const Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: TextField(
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Комментария, пожелания',
                         border: OutlineInputBorder(),
                         isDense: true,
                       ),
-                      style: const TextStyle(fontSize: 18),
+                      style: TextStyle(fontSize: 18),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -393,8 +393,8 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                             uploadPhoto(
                               context,
                               '7783734209',
-                              widget.arguments.nomenklaturaKod,
-                              widget.arguments.catId,
+                              goods?.nomenklaturaKod ?? "",
+                              goods?.catId ?? "",
                               () {
                                 // _fetchGoods(widget.arguments.nomenklaturaKod);
                               },
@@ -402,9 +402,8 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                                 // setState(() {
                                 //   goods!.photo = newPhotoUrl;
                                 // });
-                                _fetchGoods(widget.arguments.catId);
-                                loadProductImages(
-                                    widget.arguments.nomenklaturaKod);
+                                _fetchGoods(goods?.nomenklaturaKod ?? "");
+                                loadProductImages(goods?.nomenklaturaKod ?? "");
                               },
                             );
                           },
@@ -426,12 +425,12 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                                 '',
                                 '',
                                 0,
-                                widget.arguments.nomenklaturaKod,
+                                goods?.nomenklaturaKod ?? "",
                               ),
                             );
 
-                            _fetchGoods(widget.arguments.catId);
-                            loadProductImages(widget.arguments.nomenklaturaKod);
+                            _fetchGoods(goods?.nomenklaturaKod ?? "");
+                            loadProductImages(goods?.nomenklaturaKod ?? "");
                           },
                           icon: const Icon(Icons.delete_outline_rounded,
                               color: Colors.red),
@@ -448,7 +447,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: TextButton.icon(
                       onPressed: () {
-                        uploadVideo(context, widget.arguments.nomenklaturaKod);
+                        uploadVideo(context, goods?.nomenklaturaKod ?? "");
                       },
                       icon: const Icon(Icons.video_chat_outlined,
                           color: Colors.blue),

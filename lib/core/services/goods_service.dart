@@ -11,7 +11,8 @@ class GoodsService {
 
   Future<GoodsResponse?> getGoods(String catId) async {
     try {
-      final url = '${ApiEndpoint.getGoods}?login_provider=7757499451&cat_id=$catId';
+      final url =
+          '${ApiEndpoint.getGoods}?login_provider=7757499451&cat_id=$catId';
       print('*** Request ***');
       print('uri: $url');
       print('method: GET');
@@ -22,7 +23,30 @@ class GoodsService {
         GoodsResponse goodsResponse = GoodsResponse.fromJson(response.data);
         return goodsResponse;
       } else {
-        throw Exception('Failed to load goods. Status code: ${response.statusCode}');
+        throw Exception(
+            'Failed to load goods. Status code: ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      print('Error fetching goods: $e');
+      rethrow;
+    }
+  }
+
+  Future<GoodsResponse?> getGood(String nomenklaturaKod) async {
+    try {
+      final url = '${ApiEndpoint.getGoods}?nomenklature_kod=$nomenklaturaKod';
+      print('*** Request ***');
+      print('uri: $url');
+      print('method: GET');
+
+      final response = await _http.get(url);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        GoodsResponse goodsResponse = GoodsResponse.fromJson(response.data);
+        return goodsResponse;
+      } else {
+        throw Exception(
+            'Failed to load goods. Status code: ${response.statusCode}');
       }
     } on DioException catch (e) {
       print('Error fetching goods: $e');

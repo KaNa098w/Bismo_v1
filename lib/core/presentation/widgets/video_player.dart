@@ -1,3 +1,4 @@
+import 'package:bismo/app/catalog/goods/goods_arguments.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -36,6 +37,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     super.dispose();
   }
 
+  String extractNomenklatureKod(String url) {
+    Uri uri = Uri.parse(url);
+    List<String> segments = uri.pathSegments;
+    return segments.length > 1 ? segments[1] : '';
+  }
+
   @override
   Widget build(BuildContext context) {
     return _controller.value.isInitialized
@@ -53,7 +60,18 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                     backgroundColor: Colors.red,
                   ),
                   onPressed: () {
-                    // Логика для показа товара
+                    String nomenklatureKod = extractNomenklatureKod(widget.url);
+                    Navigator.pushNamed(
+                      context,
+                      '/product_goods',
+                      arguments: GoodsArguments(
+                        '',
+                        '',
+                        '',
+                        0,
+                        nomenklatureKod,
+                      ),
+                    );
                   },
                   child: const Text('Показать товар',
                       style: TextStyle(color: Colors.white)),
@@ -61,6 +79,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
               ),
             ],
           )
-        : Center(child: CircularProgressIndicator());
+        : const Center(child: CircularProgressIndicator());
   }
 }
