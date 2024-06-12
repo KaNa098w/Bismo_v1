@@ -65,3 +65,27 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/fonts/
+
+  fonts:
+        - family: Montserrat
+          fonts:
+              # - asset: assets/fonts/Montserrat-VariableFont_wght.ttf
+              - asset: assets/fonts/static/Montserrat-Black.ttf
+              - asset: assets/fonts/static/Montserrat-BlackItalic.ttf
+              - asset: assets/fonts/static/Montserrat-Bold.ttf
+              - asset: assets/fonts/static/Montserrat-BoldItalic.ttf
+              - asset: assets/fonts/static/Montserrat-ExtraBold.ttf
+              - asset: assets/fonts/static/Montserrat-ExtraLight.ttf
+              - asset: assets/fonts/static/Montserrat-ExtraLightItalic.ttf
+              - asset: assets/fonts/static/Montserrat-ExtraBoldItalic.ttf
+              - asset: assets/fonts/static/Montserrat-Light.ttf
+              - asset: assets/fonts/static/Montserrat-LightItalic.ttf
+              - asset: assets/fonts/static/Montserrat-Italic.ttf
+              - asset: assets/fonts/static/Montserrat-Medium.ttf
+              - asset: assets/fonts/static/Montserrat-MediumItalic.ttf
+              - asset: assets/fonts/static/Montserrat-Regular.ttf
+              - asset: assets/fonts/static/Montserrat-Semibold.ttf
+              - asset: assets/fonts/static/Montserrat-SemiboldItalic.ttf
+              - asset: assets/fonts/static/Montserrat-Thin.ttf
+              - asset: assets/fonts/static/Montserrat-ThinItalic.ttf
