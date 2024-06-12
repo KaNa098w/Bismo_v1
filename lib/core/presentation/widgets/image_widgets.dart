@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class ImageWidget extends StatelessWidget {
   final String imageUrl;
-  final String fallbackImageUrl = 'https://images.satu.kz/197787004_w200_h200_pomada-dlya-gub.jpg';
+  final String fallbackImageUrl = '';
 
   const ImageWidget({super.key, required this.imageUrl});
 

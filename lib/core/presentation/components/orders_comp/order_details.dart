@@ -27,7 +27,9 @@ class OrderDetailsPage extends StatelessWidget {
               child: Text(
                 'Номер заказа: ${order?.number}',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold, color: Colors.black),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 14),
               ),
             ),
             const SizedBox(height: AppDefaults.padding),

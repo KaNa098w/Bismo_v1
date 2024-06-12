@@ -24,7 +24,8 @@ class OrderPreviewTile extends StatefulWidget {
     required this.status,
     required this.onTap,
     required this.orderNumber,
-    required this.refresh, required JSONBody order,
+    required this.refresh,
+    required JSONBody order,
   }) : super(key: key);
 
   final String orderID;
@@ -71,7 +72,7 @@ class _OrderPreviewTileState extends State<OrderPreviewTile> {
                       style: Theme.of(context)
                           .textTheme
                           .bodyLarge
-                          ?.copyWith(color: Colors.black),
+                          ?.copyWith(color: Colors.black, fontSize: 14),
                     ),
                     const Spacer(),
                     Text(formatDateWithTime(widget.date, 'ru')),
@@ -104,12 +105,12 @@ class _OrderPreviewTileState extends State<OrderPreviewTile> {
                             user: userProvider.user?.phoneNumber ?? "",
                             status: '09',
                           );
-                          bool success = await setStatus(setStatusRequest, context);
+                          bool success =
+                              await setStatus(setStatusRequest, context);
                           if (success) {
                             setState(() {
                               _isCancelled = true;
                               widget.refresh();
-                           
                             });
                           }
                         },
@@ -131,7 +132,8 @@ class _OrderPreviewTileState extends State<OrderPreviewTile> {
     );
   }
 
-  Future<bool> setStatus(SetStatusRequest setStatusRequest, BuildContext ctx) async {
+  Future<bool> setStatus(
+      SetStatusRequest setStatusRequest, BuildContext ctx) async {
     showLoader(ctx);
 
     try {
@@ -241,8 +243,7 @@ class _OrderPreviewTileState extends State<OrderPreviewTile> {
       case OrderStatus.cancelled:
         return const Color(0xFFFF1F1F);
       default:
-               return Colors.red;
-      }
+        return Colors.red;
     }
   }
-
+}

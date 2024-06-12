@@ -248,7 +248,7 @@ class _CartViewState extends State<CartView> {
                         });
                       },
                       selectedColor: Colors.white,
-                      fillColor: Colors.blue,
+                      fillColor: Colors.purple,
                       borderRadius: BorderRadius.circular(12),
                       children: [
                         SizedBox(

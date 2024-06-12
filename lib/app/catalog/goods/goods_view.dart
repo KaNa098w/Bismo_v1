@@ -323,7 +323,7 @@ class _GoodsViewState extends State<GoodsView> {
               child: Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       'Далее',

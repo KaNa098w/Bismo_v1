@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   final String url;
-  final VideoPlayerController? controller;
-
-  const VideoPlayerWidget({Key? key, required this.url, this.controller})
-      : super(key: key);
+  const VideoPlayerWidget({Key? key, required this.url}) : super(key: key);
 
   @override
   _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
@@ -15,111 +11,56 @@ class VideoPlayerWidget extends StatefulWidget {
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   late VideoPlayerController _controller;
-  late Future<void> _initializeVideoPlayerFuture;
-  bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        widget.controller ?? VideoPlayerController.network(widget.url);
-    _initializeVideoPlayerFuture = _controller.initialize().then((_) {
-      if (!_isDisposed) {
+    _controller = VideoPlayerController.network(widget.url)
+      ..initialize().then((_) {
         setState(() {});
-      }
-    });
+        _controller.play();
+      });
+    _controller.addListener(_onVideoEnd);
+  }
+
+  void _onVideoEnd() {
+    if (_controller.value.position == _controller.value.duration) {
+      // Логика для загрузки следующего видео
+    }
   }
 
   @override
   void dispose() {
-    if (widget.controller == null) {
-      _controller.dispose();
-    }
-    _isDisposed = true;
+    _controller.removeListener(_onVideoEnd);
+    _controller.dispose();
     super.dispose();
   }
 
-  void _handleVisibilityChanged(VisibilityInfo info) {
-    if (!_isDisposed) {
-      if (info.visibleFraction > 0.5) {
-        _controller.play();
-      } else {
-        _controller.pause();
-      }
-    }
-  }
-
-  void _handleTap() {
-    if (!_isDisposed) {
-      if (_controller.value.isPlaying) {
-        _controller.pause();
-      } else {
-        _controller.play();
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return VisibilityDetector(
-      key: Key(widget.url),
-      onVisibilityChanged: _handleVisibilityChanged,
-      child: FutureBuilder(
-        future: _initializeVideoPlayerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return GestureDetector(
-              onTap: _handleTap,
-              child: Stack(
-                children: [
-                  Center(
-                    child: AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 8,
-                    left: 16,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                      ),
-                      onPressed: () {
-                        // Логика для показа товара
-                      },
-                      child: const Text('Показать товар',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                  ),
-                ],
+    return _controller.value.isInitialized
+        ? Stack(
+            children: [
+              AspectRatio(
+                aspectRatio: _controller.value.aspectRatio,
+                child: VideoPlayer(_controller),
               ),
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
-    );
-  }
-}
-
-class FullScreenVideoPlayer extends StatelessWidget {
-  final VideoPlayerController controller;
-
-  const FullScreenVideoPlayer({Key? key, required this.controller})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: AspectRatio(
-          aspectRatio: controller.value.aspectRatio,
-          child: VideoPlayer(controller),
-        ),
-      ),
-    );
+              Positioned(
+                bottom: 8,
+                left: 16,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                  onPressed: () {
+                    // Логика для показа товара
+                  },
+                  child: const Text('Показать товар',
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ),
+            ],
+          )
+        : Center(child: CircularProgressIndicator());
   }
 }

@@ -1,3 +1,4 @@
+import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:bismo/core/presentation/widgets/ad_space.dart';
 import 'package:bismo/core/presentation/widgets/our_new_item.dart';

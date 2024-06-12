@@ -22,7 +22,8 @@ class __UserDataState extends State<_UserData> {
   Future<void> _pickImage() async {
     try {
       if (await Permission.storage.request().isGranted) {
-        final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+        final XFile? pickedFile =
+            await _picker.pickImage(source: ImageSource.gallery);
         if (pickedFile != null) {
           setState(() {
             _image = File(pickedFile.path);
@@ -52,7 +53,7 @@ class __UserDataState extends State<_UserData> {
               backgroundImage: _image != null
                   ? FileImage(_image!)
                   : const NetworkImage(
-                      'https://w7.pngwing.com/pngs/244/76/png-transparent-avatar-male-man-person-profile-user-website-website-internet-icon.png')
+                          'https://w7.pngwing.com/pngs/244/76/png-transparent-avatar-male-man-person-profile-user-website-website-internet-icon.png')
                       as ImageProvider,
             ),
           ),
@@ -89,7 +90,7 @@ class ProfileHeader extends StatelessWidget {
     return Stack(
       children: [
         /// Background
-        Image.asset('assets/images/profile_page_background.png'),
+        Image.asset('assets/images/profile_page_image.avif'),
 
         /// Content
         Column(

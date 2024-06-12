@@ -3,6 +3,7 @@ import 'package:bismo/app/catalog/catalog_controller.dart';
 import 'package:bismo/app/home/home_controller.dart';
 import 'package:bismo/app/profile/profile_controller.dart';
 import 'package:bismo/app/reels/reels_controller.dart';
+import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/models/bottom_nav_bar.dart';
 import 'package:bismo/core/models/button_data.dart';
 import 'package:bismo/core/providers/theme_provider.dart';
@@ -111,16 +112,14 @@ class _RootState extends State<Root> {
             color: Color(0xFF19191B),
           ),
         ),
-        actions: index == 2 ? [ 
-          
-        ] : null,
+        actions: index == 2 ? [] : null,
       ),
       body: buttonData[index].page,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color.fromARGB(255, 7, 77, 182),
-        unselectedItemColor: const Color(0xFF999999),
+        selectedItemColor: AppColors.primaryColor,
+        unselectedItemColor: Color.fromARGB(255, 117, 117, 117),
         currentIndex: index,
         onTap: (val) => _selectPage(val, context),
         items: buttonData

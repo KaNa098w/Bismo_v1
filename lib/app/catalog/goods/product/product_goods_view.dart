@@ -38,30 +38,12 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
 
   Future<void> _fetchGoods(String catId) async {
     try {
-      // final String url =
-      //     'http://188.95.95.122:2223/server/hs/product/getfullprice?login_provider=7757499451&cat_id=$catId';
-      // var dio = Dio();
-      // final response = await dio.get(url);
-
       final response = await GoodsService().getGoods(catId);
 
       setState(() {
         goods =
             response?.goods?.firstWhere((element) => element.catId == catId);
-        // loadProductImages(catId);
       });
-
-      // if (response.statusCode == 200) {
-      //   GoodsResponse goodsResponse = GoodsResponse.fromJson(response.data);
-      //   setState(() {
-      //     goods = goodsResponse.goods
-      //         ?.firstWhere((element) => element.catId == catId);
-      //     loadProductImages(catId);
-      //   });
-      // } else {
-      //   throw Exception(
-      //       'Failed to load goods. Status code: ${response.statusCode}');
-      // }
     } catch (e) {
       log("Error fetching goods: $e");
     }
@@ -127,6 +109,26 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
     ));
   }
 
+  SetOrderGoods convertToSetOrderGoods(Goods goods) {
+    return SetOrderGoods(
+      nomenklatura: goods.nomenklatura,
+      nomenklaturaKod: goods.nomenklaturaKod,
+      count: int.tryParse(goods.count ?? '0'),
+      price: goods.price?.toDouble(),
+      optPrice: goods.optPrice?.toDouble(),
+      producer: goods.kontragent,
+      kontragent: goods.kontragent,
+      step: goods.step,
+      newProduct: goods.newProduct,
+      photo: goods.photo,
+      catId: goods.catId,
+      oldPrice: goods.oldPrice?.toDouble(),
+      newsPhoto: goods.newsPhoto,
+      comment: '',
+      basketCount: 0,
+    );
+  }
+
   void openAppSettings() {
     openAppSettings();
   }
@@ -169,7 +171,12 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.arguments.title),
+        title: Center(
+          child: Text(
+            widget.arguments.title,
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+          ),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -208,14 +215,16 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                         },
                       ),
                     ),
-                  if (productImages.isEmpty) Text("net photky"),
+                  if (productImages.isEmpty)
+                    Image.network(
+                        'https://www.landuse-ca.org/wp-content/uploads/2019/04/no-photo-available.png'),
                   const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
                       goods!.nomenklatura ?? '',
                       style: const TextStyle(
-                        fontSize: 1,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -363,7 +372,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Padding(
+                  const Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: TextField(
                       decoration: const InputDecoration(
@@ -461,7 +470,11 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: ElevatedButton(
             onPressed: () {
-              addToCart(context, goods! as SetOrderGoods, quantity);
+              addToCart(
+                context,
+                convertToSetOrderGoods(widget.goods),
+                quantity,
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
