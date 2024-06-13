@@ -107,7 +107,9 @@ class _CatalogViewState extends State<CatalogView> {
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide.none,
             ),
-            prefixIcon: const Icon(Icons.search),
+            prefixIcon: const Icon(
+              Icons.search,
+            ),
           ),
         ),
         elevation: 0,

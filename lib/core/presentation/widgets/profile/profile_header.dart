@@ -159,8 +159,7 @@ class ProfileHeader extends StatelessWidget {
         /// Background
         // Image.asset('assets/images/profile_page_image.avif'),
 
-        Image.network(
-            'https://sotni.ru/wp-content/uploads/2023/08/kosmetika-na-chernom-fone-1.webp'),
+        Image.asset('assets/images/background_image.webp'),
 
         /// Contentasd
         Column(

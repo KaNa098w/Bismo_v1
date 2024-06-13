@@ -29,7 +29,7 @@ class _NotificationViewState extends State<NotificationView> {
             Icon(
               Icons.notifications_none,
               size: 200,
-              color: Colors.black45,
+              color: AppColors.primaryColor,
             ),
             SizedBox(height: 20.0),
             Text('Пока что здесь пусто :)'),
