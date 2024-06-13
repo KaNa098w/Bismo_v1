@@ -6,9 +6,9 @@ import 'package:flutter/widgets.dart';
 
 class AdSpace extends StatelessWidget {
   List<String> imagePaths = [
-    'https://ros-test.info/images/article/5b0d49bf643f1.jpg',
-    'https://img.eurointegration.com.ua/images/doc/8/a/8abcd77-photo-2020-11-19-12-52-17.jpg',
-    'https://ros-test.info/images/article/5e021fbe9b2c3.jpg',
+    'https://images.smiletemplates.com/uploads/screenshots/596/0000596566/powerpoint-template-450w.jpg',
+    'https://img.freepik.com/premium-photo/variety-makeup-products-purple-background_1031240-10519.jpg',
+    'https://images.smiletemplates.com/uploads/screenshots/284/0000284946/powerpoint-template-450w.jpg',
     'https://cdn.nur.kz/images/1120x630/3e7752811d7442c9.jpeg'
   ];
   AdSpace({

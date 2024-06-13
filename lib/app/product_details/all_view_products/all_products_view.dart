@@ -17,11 +17,18 @@ class AllProductsView extends StatefulWidget {
 
 class _AllProductsViewState extends State<AllProductsView> {
   late Future<GetNewGoodsResponse?> _newGoodsFuture;
+  bool _isSorted = false;
 
   @override
   void initState() {
     super.initState();
     _newGoodsFuture = NewGoodsService().getGoods('phone_number');
+  }
+
+  void _toggleSort() {
+    setState(() {
+      _isSorted = !_isSorted;
+    });
   }
 
   @override
@@ -30,6 +37,12 @@ class _AllProductsViewState extends State<AllProductsView> {
       appBar: AppBar(
         title: const Text('Популярные пакеты'),
         leading: const AppBackButton(),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.sort),
+            onPressed: _toggleSort,
+          ),
+        ],
       ),
       body: SafeArea(
         child: FutureBuilder<GetNewGoodsResponse?>(
@@ -53,9 +66,8 @@ class _AllProductsViewState extends State<AllProductsView> {
                         horizontal: AppDefaults.padding),
                     child: GridView.builder(
                       padding: const EdgeInsets.only(top: AppDefaults.padding),
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 200,
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: _isSorted ? 400 : 300,
                         childAspectRatio: 0.62,
                         crossAxisSpacing: 20,
                         mainAxisSpacing: 16,
@@ -64,8 +76,7 @@ class _AllProductsViewState extends State<AllProductsView> {
                       itemBuilder: (context, index) {
                         return ProductTileSquare(
                           data: goods[index],
-                          newGoodsFuture:
-                              _newGoodsFuture, // Pass the future here
+                          newGoodsFuture: _newGoodsFuture,
                         );
                       },
                     ),

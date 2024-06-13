@@ -4,12 +4,10 @@ import 'package:bismo/app/home/home_controller.dart';
 import 'package:bismo/app/profile/profile_controller.dart';
 import 'package:bismo/app/reels/reels_controller.dart';
 import 'package:bismo/core/colors.dart';
-import 'package:bismo/core/models/bottom_nav_bar.dart';
 import 'package:bismo/core/models/button_data.dart';
 import 'package:bismo/core/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'catalog/goods/media/video_upload_helper.dart'; // Импортируем наш новый файл
 
 class Root extends StatefulWidget {
   const Root({Key? key}) : super(key: key);
@@ -73,11 +71,9 @@ class _RootState extends State<Root> {
     var tm = context.read<ThemeProvider>();
 
     tm.setNavIndex(index);
-    index = index;
-
-    print(index);
-
-    setState(() {});
+    setState(() {
+      this.index = index;
+    });
   }
 
   @override
@@ -119,13 +115,21 @@ class _RootState extends State<Root> {
         backgroundColor: Colors.white,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColors.primaryColor,
-        unselectedItemColor: Color.fromARGB(255, 117, 117, 117),
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        unselectedItemColor: const Color.fromARGB(255, 117, 117, 117),
         currentIndex: index,
         onTap: (val) => _selectPage(val, context),
         items: buttonData
             .map(
-              (e) =>
-                  bottomNavigationBarItem(icon: Icon(e.icon), label: e.labelRu),
+              (e) => BottomNavigationBarItem(
+                icon: Icon(
+                  e.icon,
+                  size: e == buttonData[index]
+                      ? 30
+                      : 25, // Increase size when selected
+                ),
+                label: e.labelRu,
+              ),
             )
             .toList(),
       ),

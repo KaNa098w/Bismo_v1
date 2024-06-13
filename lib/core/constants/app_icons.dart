@@ -34,17 +34,18 @@ class AppIcons {
   static const masterCard = 'assets/icons/master_card.svg';
   static const filter = 'assets/icons/filter.svg';
   static const searchTileArrow = 'assets/icons/search_tile_arrow.svg';
-  static const homeProfile = 'assets/icons/home_profile.svg';
-  static const truckIcon = 'assets/icons/truck_icon.svg';
+  static const homeProfile = 'assets/icons/address.svg';
+  static const truckIcon = 'assets/icons/delivery_icon1.svg';
   static const voucher = 'assets/icons/voucher.svg';
   static const reply = 'assets/icons/reply.svg';
+  static const orderIcon = 'assets/icons/delivery1.svg';
 
   static const right = 'assets/icons/right.svg';
-  static const profilePerson = 'assets/icons/profile_person.svg';
-  static const profileNotification = 'assets/icons/profile_notification.svg';
+  static const profilePerson = 'assets/icons/user_profile2.svg';
+  static const profileNotification = 'assets/icons/notification_icon2.svg';
   static const profilePayment = 'assets/icons/profile_payment.svg';
-  static const profileSetting = 'assets/icons/profile_setting.svg';
-  static const profileLogout = 'assets/icons/profile_logout.svg';
+  static const profileSetting = 'assets/icons/settings_icon.svg';
+  static const profileLogout = 'assets/icons/logout_icon.svg';
 
   static const orderConfirmed = 'assets/icons/order_confirm.svg';
   static const orderDelivered = 'assets/icons/order_delivered.svg';
@@ -56,6 +57,5 @@ class AppIcons {
   static const contactMap = 'assets/icons/contact_map.svg';
 
   static const cardAdd = 'assets/icons/card_add.svg';
-  static const support = 'assets/icons/whatsapp_icon3.svg';
-  
+  static const support = 'assets/icons/whatsapp_support.svg';
 }

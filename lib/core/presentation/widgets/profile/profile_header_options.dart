@@ -26,10 +26,11 @@ class ProfileHeaderOptions extends StatelessWidget {
           ProfileSqureTile(
             label: 'Мои заказы',
             icon: AppIcons.truckIcon,
+
             onTap: () {
               Navigator.pushNamed(context, '/orders');
             },
-            iconSize: 30.0, // Задайте желаемый размер иконки
+            iconSize: 40.0, // Задайте желаемый размер иконки
           ),
           ProfileSqureTile(
             label: 'Адрес',
@@ -37,36 +38,40 @@ class ProfileHeaderOptions extends StatelessWidget {
             onTap: () {
               Navigator.pushNamed(context, '/address');
             },
-            iconSize: 30.0, // Задайте желаемый размер иконки
+            iconSize: 33.0, // Задайте желаемый размер иконки
           ),
           ProfileSqureTile(
             label: 'Поддержка',
             icon: AppIcons.support,
-            iconSize: 30.0, // Задайте желаемый размер иконки
+            iconSize: 32.0, // Задайте желаемый размер иконки
             onTap: () async {
               String contact = "77077303923";
               String text = '';
               String androidUrl = "whatsapp://send?phone=$contact&text=$text";
               String iosUrl = "https://wa.me/$contact?text=${Uri.parse(text)}";
 
-              String webUrl = 'https://api.whatsapp.com/send/?phone=$contact&text=${Uri.encodeComponent(text)}';
+              String webUrl =
+                  'https://api.whatsapp.com/send/?phone=$contact&text=${Uri.encodeComponent(text)}';
 
               try {
                 if (Platform.isIOS) {
                   if (await canLaunchUrl(Uri.parse(iosUrl))) {
                     await launchUrl(Uri.parse(iosUrl));
                   } else {
-                    await launchUrl(Uri.parse(webUrl), mode: LaunchMode.externalApplication);
+                    await launchUrl(Uri.parse(webUrl),
+                        mode: LaunchMode.externalApplication);
                   }
                 } else {
                   if (await canLaunchUrl(Uri.parse(androidUrl))) {
                     await launchUrl(Uri.parse(androidUrl));
                   } else {
-                    await launchUrl(Uri.parse(webUrl), mode: LaunchMode.externalApplication);
+                    await launchUrl(Uri.parse(webUrl),
+                        mode: LaunchMode.externalApplication);
                   }
                 }
               } catch (e) {
-                await launchUrl(Uri.parse(webUrl), mode: LaunchMode.externalApplication);
+                await launchUrl(Uri.parse(webUrl),
+                    mode: LaunchMode.externalApplication);
               }
             },
           ),

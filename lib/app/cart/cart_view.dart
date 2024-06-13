@@ -38,6 +38,7 @@ class _CartViewState extends State<CartView> {
   void initState() {
     super.initState();
     _futureCartItems = _loadCartItems();
+    isDeliverySelected = true; // Добавьте эту строку
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       var userProvider = context.read<UserProvider>();
@@ -47,14 +48,6 @@ class _CartViewState extends State<CartView> {
         userAddress = res;
       });
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
   }
 
   Future<List<PersistentShoppingCartItem>> _loadCartItems() async {
@@ -256,7 +249,7 @@ class _CartViewState extends State<CartView> {
                       borderRadius: BorderRadius.circular(12),
                       children: [
                         SizedBox(
-                          width: 100,
+                          width: 120,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
@@ -272,7 +265,7 @@ class _CartViewState extends State<CartView> {
                           ),
                         ),
                         SizedBox(
-                          width: 100,
+                          width: 120,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
@@ -346,14 +339,14 @@ class _CartViewState extends State<CartView> {
 
               return ListTile(
                 leading: CircleAvatar(
-                  radius: 30,
+                  radius: 25,
                   backgroundColor: Colors.transparent,
                   child: CachedNetworkImage(
                     imageUrl: cartItem.productThumbnail ?? "",
                     placeholder: (context, url) =>
                         const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) => Image.network(
-                      'https://images.satu.kz/197787004_w200_h200_pomада-для-губ.jpg',
+                    errorWidget: (context, url, error) => Image.asset(
+                      'assets/images/no_image.png',
                       fit: BoxFit.cover,
                     ),
                     fit: BoxFit.cover,
@@ -411,7 +404,7 @@ class _CartViewState extends State<CartView> {
                     ),
                     IconButton(
                       iconSize: 30,
-                      color: Colors.green,
+                      color: AppColors.primaryColor,
                       icon: const Icon(Icons.add_box),
                       onPressed: () {
                         setState(() {
@@ -433,17 +426,17 @@ class _CartViewState extends State<CartView> {
       ),
       bottomNavigationBar: cartItems.isNotEmpty
           ? Padding(
-              padding: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.all(10.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.green,
+                      foregroundColor: AppColors.primaryColor,
                       backgroundColor: Colors.transparent,
                       elevation: 0,
-                      padding: const EdgeInsets.all(9),
+                      padding: const EdgeInsets.all(1),
                       textStyle: const TextStyle(
                           fontSize: 18.0, fontWeight: FontWeight.bold),
                     ),
@@ -466,7 +459,10 @@ class _CartViewState extends State<CartView> {
                           horizontal: 20, vertical: 12),
                       textStyle: const TextStyle(fontSize: 16),
                     ),
-                    child: const Text('Оформить заказ'),
+                    child: const Text(
+                      'Оформить заказ',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ],
               ),

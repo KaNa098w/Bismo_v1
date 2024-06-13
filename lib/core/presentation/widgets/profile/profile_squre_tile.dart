@@ -2,14 +2,14 @@ import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-
 class ProfileSqureTile extends StatelessWidget {
   const ProfileSqureTile({
     Key? key,
     required this.label,
     required this.icon,
     required this.onTap,
-    this.iconSize = 24.0, // Добавьте параметр для размера иконки с значением по умолчанию
+    this.iconSize =
+        24.0, // Добавьте параметр для размера иконки с значением по умолчанию
   }) : super(key: key);
 
   final String label;

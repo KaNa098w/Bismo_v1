@@ -1,14 +1,10 @@
 import 'dart:developer';
 import 'package:bismo/core/app_cache.dart';
 import 'package:bismo/core/colors.dart';
-import 'package:bismo/core/constants/app_defaults.dart';
-import 'package:bismo/core/constants/app_icons.dart';
 import 'package:bismo/core/exceptions.dart';
 import 'package:bismo/core/models/location/screens/current_location.dart';
-import 'package:bismo/core/models/user/add_address_response.dart';
 import 'package:bismo/core/models/user/address_request.dart';
 import 'package:bismo/core/models/user/get_address_response.dart';
-import 'package:bismo/core/presentation/components/app_radio.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
 import 'package:bismo/core/presentation/dialogs/loader_dialog.dart';
 import 'package:bismo/core/presentation/widgets/app_back_button.dart';
@@ -17,7 +13,6 @@ import 'package:bismo/core/services/address_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 class AddressView extends StatefulWidget {
@@ -62,7 +57,6 @@ class _AddressViewState extends State<AddressView> {
     var userProvider = context.read<UserProvider>();
 
     try {
-   
       final response = await AddressService()
           .getAddresses(userProvider.user?.phoneNumber ?? "");
 
@@ -267,7 +261,8 @@ class _AddressViewState extends State<AddressView> {
                                       dolgota == null
                                           ? 'Указать геолокацию на карте *'
                                           : "Изменить точку",
-                                      style: const TextStyle(color: Colors.red),
+                                      style: const TextStyle(
+                                          color: Colors.red, fontSize: 12),
                                     ),
                                   ),
                                 ],

@@ -3,7 +3,6 @@ import 'package:bismo/core/constants/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-
 class ProfileListTile extends StatelessWidget {
   const ProfileListTile({
     Key? key,
@@ -24,10 +23,14 @@ class ProfileListTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: AppDefaults.borderRadius,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(7.0),
           child: Row(
             children: [
-              SvgPicture.asset(icon),
+              SvgPicture.asset(
+                icon,
+                width: 30.0, // Set the width
+                height: 30.0, // Set the height
+              ),
               const SizedBox(width: 16),
               Text(
                 title,
@@ -37,7 +40,12 @@ class ProfileListTile extends StatelessWidget {
                     ?.copyWith(color: Colors.black),
               ),
               const Spacer(),
-              SvgPicture.asset(AppIcons.right),
+              SvgPicture.asset(
+                AppIcons.right,
+                width: 24.0, // Set the width
+                height: 24.0, // Set the height
+                color: Colors.purple, // Set the color to purple
+              ),
             ],
           ),
         ),

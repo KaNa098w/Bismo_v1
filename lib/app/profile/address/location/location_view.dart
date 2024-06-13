@@ -5,14 +5,8 @@ import 'package:bismo/core/models/location/screens/current_location.dart';
 import 'package:bismo/core/models/location/screens/nearby_places.dart';
 import 'package:bismo/core/models/location/screens/polyline_screen.dart';
 import 'package:bismo/core/models/location/screens/simple_map.dart';
-import 'package:bismo/core/presentation/components/order_traking_page.dart';
 import 'package:flutter/material.dart';
-import 'package:bismo/core/constants/app_defaults.dart';
-import 'package:bismo/core/constants/app_icons.dart';
-import 'package:bismo/core/presentation/components/app_radio.dart';
-import 'package:bismo/core/presentation/widgets/app_back_button.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationView extends StatefulWidget {
@@ -24,8 +18,6 @@ class LocationView extends StatefulWidget {
 }
 
 class _LocationViewState extends State<LocationView> {
-  final Completer<GoogleMapController> _controller = Completer();
-
   static LatLng sourceLocation = const LatLng(37.33500926, -122.03272188);
   static LatLng destination = const LatLng(37.33429383, -122.06600055);
 

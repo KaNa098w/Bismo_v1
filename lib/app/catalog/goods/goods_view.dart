@@ -131,7 +131,7 @@ class _GoodsViewState extends State<GoodsView> {
     _loadCartItems();
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Товар добавлен в корзину'),
-      backgroundColor: Colors.green,
+      backgroundColor: AppColors.primaryColor,
       duration: Duration(milliseconds: 500),
     ));
   }
@@ -216,7 +216,7 @@ class _GoodsViewState extends State<GoodsView> {
                                 ),
                                 leading: Container(
                                   width: 50,
-                                  height: 50,
+                                  height: 40,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -226,8 +226,8 @@ class _GoodsViewState extends State<GoodsView> {
                                     placeholder: (context, url) =>
                                         const CircularProgressIndicator(),
                                     errorWidget: (context, url, error) =>
-                                        Image.network(
-                                      'https://images.satu.kz/197787004_w200_h200_pomада-для-губ.jpg',
+                                        Image.asset(
+                                      'assets/images/no_image.png',
                                     ),
                                     fit: BoxFit.cover,
                                   ),
@@ -273,7 +273,7 @@ class _GoodsViewState extends State<GoodsView> {
                                       IconButton(
                                         icon: const Icon(
                                           Icons.add_shopping_cart,
-                                          color: Colors.green,
+                                          color: AppColors.primaryColor,
                                         ),
                                         onPressed: () {
                                           addToCart(
@@ -316,7 +316,7 @@ class _GoodsViewState extends State<GoodsView> {
           child: Container(
             height: 60,
             decoration: const BoxDecoration(
-              color: Colors.blue,
+              color: AppColors.primaryColor,
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
             child: const Center(

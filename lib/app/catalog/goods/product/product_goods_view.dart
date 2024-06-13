@@ -3,6 +3,7 @@ import 'package:bismo/app/catalog/goods/media/photo_upload_helped.dart';
 import 'package:bismo/app/catalog/goods/media/video_upload_helper.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/models/cart/set_order_request.dart';
+import 'package:bismo/core/models/catalog/fullscreenimage.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
 import 'package:bismo/core/services/goods_service.dart';
 import 'package:flutter/cupertino.dart';
@@ -136,6 +137,16 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
     openAppSettings();
   }
 
+  void _openFullScreenImage(List<String> images, int initialIndex) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            FullScreenImage(images: images, initialIndex: initialIndex),
+      ),
+    );
+  }
+
   Future<void> requestStoragePermission(Function onPermissionGranted) async {
     var status = await Permission.storage.status;
     if (status.isDenied || status.isPermanentlyDenied) {
@@ -199,19 +210,24 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           return Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: CachedNetworkImage(
-                                imageUrl: productImages[index],
-                                placeholder: (context, url) =>
-                                    const CircularProgressIndicator(),
-                                errorWidget: (context, url, error) {
-                                  print(
-                                      "Failed to load image $url, error: $error");
-                                  return Image.network(
-                                      'https://images.satu.kz/197787004_w200_h200_pомада-для-губ.jpg');
-                                },
-                                fit: BoxFit.contain,
+                            child: GestureDetector(
+                              onTap: () {
+                                _openFullScreenImage(productImages, index);
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: CachedNetworkImage(
+                                  imageUrl: productImages[index],
+                                  placeholder: (context, url) =>
+                                      const CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) {
+                                    print(
+                                        "Failed to load image $url, error: $error");
+                                    return Image.asset(
+                                        'assets/images/no_image.png');
+                                  },
+                                  fit: BoxFit.contain,
+                                ),
                               ),
                             ),
                           );
@@ -219,15 +235,20 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                       ),
                     ),
                   if (productImages.isEmpty)
-                    Image.network(
-                        'https://www.landuse-ca.org/wp-content/uploads/2019/04/no-photo-available.png'),
+                    Center(
+                      child: Image.asset(
+                        'assets/images/no_image.png',
+                        width: 250,
+                        height: 250,
+                      ),
+                    ),
                   const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
                       goods!.nomenklatura ?? '',
                       style: const TextStyle(
-                        fontSize: 24,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -242,7 +263,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           style: TextStyle(fontSize: 20),
                         ),
                         Text(
-                          '${goods?.price}₸/кг',
+                          '${goods?.price}₸/шт',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -275,8 +296,9 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                                 width: 35,
                                 height: 35,
                                 decoration: BoxDecoration(
-                                  color:
-                                      quantity > 0 ? Colors.blue : Colors.grey,
+                                  color: quantity > 0
+                                      ? AppColors.primaryColor
+                                      : Colors.grey,
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: const Center(
@@ -304,7 +326,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                                 width: 35,
                                 height: 35,
                                 decoration: BoxDecoration(
-                                  color: Colors.blue,
+                                  color: AppColors.primaryColor,
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: const Center(
@@ -527,7 +549,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: AppColors.primaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),

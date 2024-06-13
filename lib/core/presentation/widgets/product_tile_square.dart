@@ -13,8 +13,7 @@ class ProductTileSquare extends StatelessWidget {
 
   final Goods data;
   final Future<GetNewGoodsResponse?> newGoodsFuture;
-  final String fallbackImageUrl =
-      'https://images.satu.kz/197787004_w200_h200_pomада-для-губ.jpg';
+  final String fallbackImageAsset = 'assets/images/no_image.png';
 
   @override
   Widget build(BuildContext context) {
@@ -26,27 +25,20 @@ class ProductTileSquare extends StatelessWidget {
         child: InkWell(
           borderRadius: AppDefaults.borderRadius,
           onTap: () async {
-            // final snapshot = await newGoodsFuture;
-            // if (snapshot != null &&
-            //     snapshot.goods != null &&
-            //     snapshot.goods!.isNotEmpty) {
-              // final goods = snapshot.goods!
-              //     .first; // Используйте первый элемент или измените логику по необходимости
-              Navigator.pushNamed(
-                context,
-                '/product_goods',
-                arguments: GoodsArguments(
-                  data.nomenklatura ?? '',
-                  data.catId ?? '',
-                  data.kontragent ?? '',
-                  data.price ?? 0,
-                  data.nomenklaturaKod ?? '',
-                ),
-              );
-            // }
+            Navigator.pushNamed(
+              context,
+              '/product_goods',
+              arguments: GoodsArguments(
+                data.nomenklatura ?? '',
+                data.catId ?? '',
+                data.kontragent ?? '',
+                data.price ?? 0,
+                data.nomenklaturaKod ?? '',
+              ),
+            );
           },
           child: Container(
-            width: 176,
+            width: 150,
             padding: const EdgeInsets.all(AppDefaults.padding),
             decoration: BoxDecoration(
               border: Border.all(width: 0.1, color: AppColors.placeholder),
@@ -60,11 +52,11 @@ class ProductTileSquare extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: 1 / 1,
                     child: Image.network(
-                      data.photo ?? fallbackImageUrl,
+                      data.photo ?? '',
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) {
-                        return Image.network(
-                          fallbackImageUrl,
+                        return Image.asset(
+                          fallbackImageAsset,
                           fit: BoxFit.contain,
                         );
                       },

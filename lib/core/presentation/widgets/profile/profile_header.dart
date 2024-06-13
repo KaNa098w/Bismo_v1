@@ -1,12 +1,13 @@
+import 'package:bismo/core/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
-import 'package:bismo/core/presentation/widgets/network_image.dart';
 import 'package:bismo/core/presentation/widgets/profile/profile_header_options.dart';
 import 'package:bismo/core/providers/user_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class _UserData extends StatefulWidget {
   const _UserData({Key? key}) : super(key: key);
@@ -19,6 +20,12 @@ class __UserDataState extends State<_UserData> {
   File? _image;
   final ImagePicker _picker = ImagePicker();
 
+  @override
+  void initState() {
+    super.initState();
+    _loadAvatar();
+  }
+
   Future<void> _pickImage() async {
     try {
       if (await Permission.storage.request().isGranted) {
@@ -28,6 +35,7 @@ class __UserDataState extends State<_UserData> {
           setState(() {
             _image = File(pickedFile.path);
           });
+          await _saveAvatar(pickedFile.path);
         }
       } else {
         print('Permission not granted');
@@ -35,6 +43,65 @@ class __UserDataState extends State<_UserData> {
     } catch (e) {
       print('Error picking image: $e');
     }
+  }
+
+  Future<void> _loadAvatar() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? imagePath = prefs.getString('avatar_path');
+    if (imagePath != null && File(imagePath).existsSync()) {
+      setState(() {
+        _image = File(imagePath);
+      });
+    }
+  }
+
+  Future<void> _saveAvatar(String path) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('avatar_path', path);
+  }
+
+  Future<void> _deleteAvatar() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('avatar_path');
+    setState(() {
+      _image = null;
+    });
+  }
+
+  void _showOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(
+                  Icons.photo_library,
+                  color: AppColors.primaryColor,
+                ),
+                title: const Text('Загрузить фото'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await _pickImage();
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.delete,
+                  color: AppColors.primaryColor,
+                ),
+                title: const Text('Удалить фото'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await _deleteAvatar();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -47,7 +114,7 @@ class __UserDataState extends State<_UserData> {
         children: [
           const SizedBox(width: AppDefaults.padding),
           GestureDetector(
-            onTap: _pickImage,
+            onTap: () => _showOptions(context),
             child: CircleAvatar(
               radius: 50,
               backgroundImage: _image != null
@@ -90,9 +157,12 @@ class ProfileHeader extends StatelessWidget {
     return Stack(
       children: [
         /// Background
-        Image.asset('assets/images/profile_page_image.avif'),
+        // Image.asset('assets/images/profile_page_image.avif'),
 
-        /// Content
+        Image.network(
+            'https://sotni.ru/wp-content/uploads/2023/08/kosmetika-na-chernom-fone-1.webp'),
+
+        /// Contentasd
         Column(
           children: [
             AppBar(
