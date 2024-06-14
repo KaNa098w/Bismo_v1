@@ -307,19 +307,19 @@ class _CartViewState extends State<CartView> {
           }
 
           if (snapshot.data == null || snapshot.data!.isEmpty) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     Icons.remove_shopping_cart_outlined,
-                    size: 120,
-                    color: Colors.grey,
+                    size: 160,
+                    color: Colors.purple[100],
                   ),
-                  SizedBox(height: 20),
-                  Text(
+                  const SizedBox(height: 20),
+                  const Text(
                     'Нет товаров',
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                    style: TextStyle(fontSize: 18, color: Colors.black54),
                   ),
                 ],
               ),

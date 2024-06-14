@@ -13,8 +13,11 @@ class SearchCatalogView extends StatefulWidget {
   final String? title;
   final String query;
 
-  const SearchCatalogView({Key? key, this.title, required this.query})
-      : super(key: key);
+  const SearchCatalogView({
+    Key? key,
+    this.title,
+    required this.query,
+  }) : super(key: key);
 
   @override
   State<SearchCatalogView> createState() => _SearchCatalogViewState();
@@ -54,37 +57,6 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
     }
   }
 
-  void addToCart(SetOrderGoods goods, int quantity) async {
-    await PersistentShoppingCart().addToCart(PersistentShoppingCartItem(
-      productId: goods.nomenklaturaKod ?? "",
-      productName: goods.nomenklatura ?? "",
-      unitPrice: goods.price ?? 0.0,
-      quantity: quantity,
-      productThumbnail: goods.photo,
-      productDetails: {
-        "nomenklatura": goods.nomenklatura,
-        "nomenklaturaKod": goods.nomenklaturaKod,
-        "producer": goods.producer,
-        "step": goods.step,
-        "count": goods.count,
-      },
-    ));
-    _loadCartItems();
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Товар добавлен в корзину'),
-      backgroundColor: Colors.green,
-      duration: Duration(milliseconds: 500),
-    ));
-  }
-
-  Future<void> _loadCartItems() async {
-    Map<String, dynamic> cartData = PersistentShoppingCart().getCartData();
-    setState(() {
-      // cartItems =
-      //     (cartData['cartItems'] ?? []) as List<PersistentShoppingCartItem>;
-    });
-  }
-
   void showProductDetails(SetOrderGoods goods) {
     int quantity = 0;
 
@@ -101,204 +73,6 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
         });
       }
     }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxHeight: 500,
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            onPressed: () => Navigator.pop(context),
-                            icon: const Icon(Icons.arrow_back),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              if (quantity > 0) {
-                                addToCart(goods, quantity);
-                                setState(
-                                  () {
-                                    // currentQuantity = quantity;
-                                  },
-                                );
-
-                                Navigator.pop(context);
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        'Количество должно быть больше нуля'),
-                                    backgroundColor: Colors.red,
-                                    duration: Duration(milliseconds: 500),
-                                  ),
-                                );
-                              }
-                            },
-                            child: const Text(
-                              'Готова',
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      if (goods.photo != null)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 0.0),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: CachedNetworkImage(
-                              imageUrl: goods.photo!,
-                              placeholder: (context, url) =>
-                                  const CircularProgressIndicator(),
-                              errorWidget: (context, url, error) =>
-                                  Image.network(
-                                'https://images.satu.kz/197787004_w200_h200_pomада-для-губ.jpg',
-                              ),
-                              width: 180,
-                              height: 160,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      const SizedBox(height: 20),
-                      Text(
-                        goods.nomenklatura ?? '',
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Center(
-                            child: InkWell(
-                              onTap: () {
-                                if (quantity > 0) {
-                                  setState(() {
-                                    quantity--;
-                                  });
-                                }
-                              },
-                              child: Container(
-                                width: 25,
-                                height: 25,
-                                decoration: BoxDecoration(
-                                  color:
-                                      quantity > 0 ? Colors.blue : Colors.grey,
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.remove,
-                                    size: 15,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Text("$quantity"),
-                          const SizedBox(width: 20),
-                          Center(
-                            child: InkWell(
-                              onTap: () {
-                                setState(() {
-                                  quantity++;
-                                });
-                              },
-                              child: Container(
-                                width: 25,
-                                height: 25,
-                                decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.add,
-                                    size: 15,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Text(
-                            '${goods.price?.toInt()}₸/кг',
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Text(
-                            goods.kontragent ?? "",
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w400),
-                          ),
-                          const SizedBox(width: 50),
-                          Text(
-                            "Сумма: ${(quantity * (goods.price ?? 0)).toStringAsFixed(2)}₸",
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w300),
-                          ),
-                        ],
-                      ),
-                      const Row(
-                        children: [
-                          Icon(Icons.star, color: Colors.amber, size: 18),
-                          Icon(Icons.star, color: Colors.amber, size: 18),
-                          Icon(Icons.star, color: Colors.amber, size: 18),
-                          Icon(Icons.star, color: Colors.amber, size: 18),
-                          Icon(Icons.star,
-                              color: Color.fromARGB(255, 94, 94, 93), size: 18),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      const Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                labelText: 'Комментария, пожелания',
-                                border: InputBorder.none,
-                                isDense: true,
-                              ),
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        );
-      },
-    );
   }
 
   void _fetchGroupDetails(String cateId) {
@@ -336,15 +110,15 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
       if (item.group == false) {
         // _fetchGroupDetails(
         //     cateId); // Выполняем запрос с cateId и переходим в GoodsView
-         Navigator.pushNamed(
+        Navigator.pushNamed(
           context,
           '/product_goods',
           arguments: GoodsArguments(
-            item.name ?? '',
+            item.cateName ?? '',
             item.cateId ?? '',
             item.name ?? '',
             0,
-            item.cateName ?? '',
+            item.code ?? '',
           ),
         );
       } else {
@@ -357,7 +131,6 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
             ),
           ),
         );
-       
       }
     } else {
       print('Error: cateId is empty');
@@ -422,9 +195,8 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
                               imageUrl: item.cateName ?? "",
                               placeholder: (context, url) =>
                                   const CircularProgressIndicator(),
-                              errorWidget: (context, url, error) =>
-                                  Image.network(
-                                'https://images.satu.kz/197787004_w200_h200_pomада-для-губ.jpg',
+                              errorWidget: (context, url, error) => Image.asset(
+                                'assets/images/no_image.png',
                               ),
                               fit: BoxFit.cover,
                             ),

@@ -65,17 +65,25 @@ class _OrderPreviewTileState extends State<OrderPreviewTile> {
               children: [
                 Row(
                   children: [
-                    const Text('Номер заказа:'),
+                    const Text(
+                      'Номер заказа:',
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+                    ),
                     const SizedBox(width: 5),
                     Text(
                       widget.orderNumber,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
-                          ?.copyWith(color: Colors.black, fontSize: 14),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Colors.black,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500),
                     ),
                     const Spacer(),
-                    Text(formatDateWithTime(widget.date, 'ru')),
+                    Text(
+                      formatDateWithTime(widget.date, 'ru'),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -84,10 +92,10 @@ class _OrderPreviewTileState extends State<OrderPreviewTile> {
                     Expanded(
                       child: Text(
                         _getStatusText(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge
-                            ?.copyWith(color: _orderColor()),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: _orderColor(),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16),
                       ),
                     ),
                     if (_isCancelled)
@@ -119,7 +127,8 @@ class _OrderPreviewTileState extends State<OrderPreviewTile> {
                         ),
                         child: const Text(
                           'Отменить заказ',
-                          style: TextStyle(color: Colors.red),
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.w600),
                         ),
                       ),
                   ],
@@ -233,7 +242,7 @@ class _OrderPreviewTileState extends State<OrderPreviewTile> {
   Color _orderColor() {
     switch (widget.status) {
       case OrderStatus.confirmed:
-        return const Color(0xFF4044AA);
+        return AppColors.primaryColor;
       case OrderStatus.processing:
         return const Color(0xFF41A954);
       case OrderStatus.shipped:
