@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:bismo/core/presentation/widgets/video_player.dart';
+import 'package:bismo/core/presentation/widgets/video_player_two.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -133,7 +133,10 @@ class _MediaDeleteViewState extends State<MediaDeleteView> {
                       children: [
                         Expanded(
                           child: isVideo(mediaUrl)
-                              ? VideoPlayerWidget(url: mediaUrl)
+                              ? VideoPlayerWidgetTwo(
+                                  url: mediaUrl,
+                                  videoUrl: '',
+                                )
                               : Image.network(
                                   mediaUrl,
                                   fit: BoxFit.cover,

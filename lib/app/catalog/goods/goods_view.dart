@@ -4,9 +4,11 @@ import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/helpers/app_bar_back.dart';
 import 'package:bismo/core/models/cart/set_order_request.dart';
 import 'package:bismo/core/models/catalog/goods.dart';
+import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
 import 'package:bismo/core/presentation/widgets/custom_empty_widget.dart';
 import 'package:bismo/core/services/goods_service.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
@@ -35,13 +37,13 @@ class GoodsView extends StatefulWidget {
 
 class _GoodsViewState extends State<GoodsView> {
   TextEditingController searchController = TextEditingController();
-
   GoodsResponse? goodsResponse;
   bool isLoading = true;
   List<PersistentShoppingCartItem> cartItems = [];
   List<Goods> filteredGoods = [];
-  int currentQuantity = 0;
-  List<String> productImages = [];
+  Map<String, int> quantities = {}; // Количество для каждого товара
+  Map<String, TextEditingController> controllers =
+      {}; // Контроллеры для каждого товара
 
   @override
   void initState() {
@@ -52,7 +54,7 @@ class _GoodsViewState extends State<GoodsView> {
   }
 
   Future<void> _initializeHive() async {
-    await Hive.openBox('shopping_cart'); // Открытие коробки
+    await Hive.openBox('shopping_cart');
     _loadCartItems();
   }
 
@@ -60,7 +62,35 @@ class _GoodsViewState extends State<GoodsView> {
   void dispose() {
     searchController.removeListener(_filterGoods);
     searchController.dispose();
+    controllers.values.forEach((controller) => controller.dispose());
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadCartItems();
+  }
+
+  void _refreshGoodsQuantities() {
+    Map<String, dynamic> cartData = PersistentShoppingCart().getCartData();
+    List<PersistentShoppingCartItem> updatedCartItems =
+        (cartData['cartItems'] ?? []) as List<PersistentShoppingCartItem>;
+
+    setState(() {
+      cartItems = updatedCartItems;
+      for (var goods in filteredGoods) {
+        quantities[goods.nomenklaturaKod ?? ""] = 0;
+        for (var cartItem in updatedCartItems) {
+          if (goods.nomenklaturaKod == cartItem.productId) {
+            quantities[goods.nomenklaturaKod ?? ""] = cartItem.quantity;
+            controllers[goods.nomenklaturaKod ?? ""]?.text =
+                cartItem.quantity.toString();
+            break;
+          }
+        }
+      }
+    });
   }
 
   Future<void> _loadCartItems() async {
@@ -93,6 +123,12 @@ class _GoodsViewState extends State<GoodsView> {
         goodsResponse = res;
         filteredGoods = res?.goods ?? [];
         isLoading = false;
+        // Инициализация количества и контроллеров для каждого товара
+        filteredGoods.forEach((goods) {
+          quantities[goods.nomenklaturaKod ?? ""] = 0;
+          controllers[goods.nomenklaturaKod ?? ""] =
+              TextEditingController(text: "0");
+        });
       });
     } catch (e) {
       setState(() {
@@ -123,27 +159,17 @@ class _GoodsViewState extends State<GoodsView> {
       productDetails: {
         "nomenklatura": goods.nomenklatura,
         "nomenklaturaKod": goods.nomenklaturaKod,
-        "producer": goods.producer,
+        "producer": goods.kontragent,
         "step": goods.step,
         "count": goods.count,
       },
     ));
     _loadCartItems();
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Товар добавлен в корзину'),
-      backgroundColor: AppColors.primaryColor,
-      duration: Duration(milliseconds: 500),
-    ));
   }
 
   void removeFromCart(Goods goods) async {
     await PersistentShoppingCart().removeFromCart(goods.nomenklaturaKod ?? "");
     _loadCartItems();
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Товар удален из корзины'),
-      backgroundColor: Colors.red,
-      duration: Duration(milliseconds: 500),
-    ));
   }
 
   SetOrderGoods convertToSetOrderGoods(Goods goods) {
@@ -163,6 +189,63 @@ class _GoodsViewState extends State<GoodsView> {
       newsPhoto: goods.newsPhoto,
       comment: '',
       basketCount: 0,
+    );
+  }
+
+  void _addToCartAndNavigate() {
+    bool hasSelectedGoods = filteredGoods.any((goods) {
+      int quantity = quantities[goods.nomenklaturaKod ?? ""] ?? 0;
+      return quantity > 0;
+    });
+
+    if (!hasSelectedGoods) {
+      showWarningDialog(context);
+      return;
+    }
+
+    filteredGoods.forEach((goods) {
+      int quantity = quantities[goods.nomenklaturaKod ?? ""] ?? 0;
+      if (quantity > 0) {
+        addToCart(context, convertToSetOrderGoods(goods), quantity);
+      }
+    });
+
+    showAlertDialog(
+      context: context,
+      barrierDismissible: true,
+      title: "Уведомление",
+      content: "Товар успешно добавлен в корзину!",
+      actions: <Widget>[
+        CupertinoDialogAction(
+          onPressed: () async {
+            Navigator.pop(context);
+            await Navigator.pushNamed(context, "/cart");
+          },
+          textStyle: const TextStyle(color: AppColors.primaryColor),
+          child: const Text("Перейти в корзину"),
+        ),
+        CupertinoDialogAction(
+          onPressed: () => Navigator.of(context).pop(),
+          textStyle: const TextStyle(color: AppColors.textBlack),
+          child: const Text("Назад"),
+        ),
+      ],
+    );
+  }
+
+  void showWarningDialog(BuildContext context) {
+    showAlertDialog(
+      context: context,
+      barrierDismissible: true,
+      title: "Предупреждение",
+      content: "Пожалуйста, выберите товар перед продолжением.",
+      actions: <Widget>[
+        CupertinoDialogAction(
+          onPressed: () => Navigator.of(context).pop(),
+          textStyle: const TextStyle(color: AppColors.textBlack),
+          child: const Text("ОК"),
+        ),
+      ],
     );
   }
 
@@ -198,6 +281,8 @@ class _GoodsViewState extends State<GoodsView> {
                           itemCount: filteredGoods.length,
                           itemBuilder: (context, index) {
                             Goods goods = filteredGoods[index];
+                            int quantity =
+                                quantities[goods.nomenklaturaKod ?? ""] ?? 0;
                             bool isInCart = cartItems.any((item) =>
                                 item.productId == goods.nomenklaturaKod);
                             return Card(
@@ -216,7 +301,7 @@ class _GoodsViewState extends State<GoodsView> {
                                 ),
                                 leading: Container(
                                   width: 50,
-                                  height: 40,
+                                  height: 50,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -235,7 +320,7 @@ class _GoodsViewState extends State<GoodsView> {
                                 title: Text(
                                   goods.nomenklatura ?? '',
                                   style: const TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w500),
                                 ),
                                 subtitle: Column(
@@ -243,11 +328,10 @@ class _GoodsViewState extends State<GoodsView> {
                                   children: [
                                     Row(
                                       children: [
-                                        const Text('Поставщик: '),
                                         Text(
                                           goods.kontragent ?? "",
                                           style: const TextStyle(
-                                              fontSize: 16,
+                                              fontSize: 14,
                                               fontWeight: FontWeight.w500),
                                         ),
                                       ],
@@ -259,7 +343,7 @@ class _GoodsViewState extends State<GoodsView> {
                                         Text(
                                           '${goods.price?.toInt()}₸/кг',
                                           style: const TextStyle(
-                                              fontSize: 16,
+                                              fontSize: 14,
                                               fontWeight: FontWeight.w500),
                                         ),
                                       ],
@@ -269,30 +353,90 @@ class _GoodsViewState extends State<GoodsView> {
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    if (!isInCart)
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.add_shopping_cart,
+                                    InkWell(
+                                      onTap: () {
+                                        if (quantity > 0) {
+                                          setState(() {
+                                            quantities[goods.nomenklaturaKod ??
+                                                ""] = quantity - 1;
+                                            controllers[goods.nomenklaturaKod ??
+                                                        ""]
+                                                    ?.text =
+                                                (quantity - 1).toString();
+                                          });
+                                        }
+                                      },
+                                      child: Container(
+                                        width: 30,
+                                        height: 30,
+                                        decoration: BoxDecoration(
+                                          color: quantity > 0
+                                              ? AppColors.primaryColor
+                                              : Colors.grey,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: const Center(
+                                          child: Icon(
+                                            Icons.remove,
+                                            size: 20,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    SizedBox(
+                                      width: 38,
+                                      height: 30,
+                                      child: TextFormField(
+                                        keyboardType: TextInputType.number,
+                                        controller: controllers[
+                                            goods.nomenklaturaKod ?? ""],
+                                        textAlign: TextAlign.center,
+                                        decoration: const InputDecoration(
+                                          contentPadding: EdgeInsets.zero,
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) {
+                                          int newQuantity =
+                                              int.tryParse(value) ?? 0;
+                                          setState(() {
+                                            quantities[goods.nomenklaturaKod ??
+                                                ""] = newQuantity;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          quantities[goods.nomenklaturaKod ??
+                                              ""] = quantity + 1;
+                                          controllers[goods.nomenklaturaKod ??
+                                                      ""]
+                                                  ?.text =
+                                              (quantity + 1).toString();
+                                        });
+                                      },
+                                      child: Container(
+                                        width: 30,
+                                        height: 30,
+                                        decoration: BoxDecoration(
                                           color: AppColors.primaryColor,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
                                         ),
-                                        onPressed: () {
-                                          addToCart(
-                                            context,
-                                            convertToSetOrderGoods(goods),
-                                            1,
-                                          );
-                                        },
-                                      ),
-                                    if (isInCart)
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.delete_outline_rounded,
-                                          color: Colors.red,
+                                        child: const Center(
+                                          child: Icon(
+                                            Icons.add,
+                                            size: 20,
+                                            color: Colors.white,
+                                          ),
                                         ),
-                                        onPressed: () {
-                                          removeFromCart(goods);
-                                        },
                                       ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -310,8 +454,9 @@ class _GoodsViewState extends State<GoodsView> {
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
         child: InkWell(
+          // onTap: _addToCartAndNavigate,
           onTap: () {
-            Navigator.pushNamed(context, "/cart");
+            _addToCartAndNavigate();
           },
           child: Container(
             height: 60,

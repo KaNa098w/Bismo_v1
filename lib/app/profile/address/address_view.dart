@@ -86,13 +86,13 @@ class _AddressViewState extends State<AddressView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cardColor,
+      backgroundColor: Colors.white,
       key: scaffoldKey,
       appBar: AppBar(
         leading: const AppBackButton(),
         title: const Text(
           'Адрес доставки',
-          style: TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
         ),
       ),
       body: SingleChildScrollView(
@@ -332,8 +332,8 @@ class _AddressViewState extends State<AddressView> {
                   },
                 );
               },
-              backgroundColor: AppColors.primary,
-              splashColor: AppColors.primary,
+              backgroundColor: AppColors.primaryColor,
+              splashColor: AppColors.primaryColor,
               label: const Text(
                 'Добавить новый адрес',
                 style: TextStyle(color: Colors.white),

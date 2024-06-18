@@ -5,6 +5,7 @@ import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/models/cart/set_order_request.dart';
 import 'package:bismo/core/models/catalog/fullscreenimage.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
+import 'package:bismo/core/presentation/widgets/video_player_product.dart';
 import 'package:bismo/core/services/goods_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'dart:developer';
 
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
+import 'package:video_player/video_player.dart';
 
 class ProductGoodsView extends StatefulWidget {
   final Goods goods;
@@ -31,6 +33,7 @@ class ProductGoodsView extends StatefulWidget {
 class _ProductGoodsViewState extends State<ProductGoodsView> {
   int quantity = 1;
   List<String> productImages = [];
+  List<String> productVideos = [];
   Goods? goods;
 
   @override
@@ -72,10 +75,13 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
         if (data is List) {
           setState(() {
             productImages = data
+                .where(
+                    (image) => !image.endsWith('.mp4')) // Exclude video files
+                .map((image) => 'https://dulat.object.pscloud.io/$image')
+                .toList();
+            productVideos = data
                 .where((image) =>
-                    image.endsWith('.png') ||
-                    image.endsWith('.jpg') ||
-                    image.endsWith('.jpeg'))
+                    image.endsWith('.mp4')) // Include only video files
                 .map((image) => 'https://dulat.object.pscloud.io/$image')
                 .toList();
           });
@@ -181,7 +187,6 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
     }
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -201,36 +206,53 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (productImages.isNotEmpty)
+                  if (productImages.isNotEmpty || productVideos.isNotEmpty)
                     SizedBox(
                       height: 250,
                       child: PageView.builder(
-                        itemCount: productImages.length,
+                        itemCount: productImages.length + productVideos.length,
                         itemBuilder: (context, index) {
-                          return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                _openFullScreenImage(productImages, index);
-                              },
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: CachedNetworkImage(
-                                  imageUrl: productImages[index],
-                                  placeholder: (context, url) =>
-                                      const CircularProgressIndicator(),
-                                  errorWidget: (context, url, error) {
-                                    print(
-                                        "Failed to load image $url, error: $error");
-                                    return Image.asset(
-                                        'assets/images/no_image.png');
-                                  },
-                                  fit: BoxFit.contain,
+                          if (index < productImages.length) {
+                            // Show image
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  _openFullScreenImage(
+                                      productImages + productVideos, index);
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: CachedNetworkImage(
+                                    imageUrl: productImages[index],
+                                    placeholder: (context, url) =>
+                                        const CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) {
+                                      print(
+                                          "Failed to load image $url, error: $error");
+                                      return Image.asset(
+                                          'assets/images/no_image.png');
+                                    },
+                                    fit: BoxFit.contain,
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
+                            );
+                          } else {
+                            // Show video
+                            String videoUrl =
+                                productVideos[index - productImages.length];
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: VideoPlayerWidgetProduct(
+                                    videoUrl: videoUrl),
+                              ),
+                            );
+                          }
                         },
                       ),
                     ),
@@ -498,7 +520,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                   await Navigator.pushNamed(context, "/cart");
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: AppColors.primaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),

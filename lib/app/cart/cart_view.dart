@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:bismo/app/catalog/goods/goods_arguments.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/exceptions.dart';
 import 'package:bismo/core/models/cart/set_order_request.dart';
@@ -338,18 +339,33 @@ class _CartViewState extends State<CartView> {
               }
 
               return ListTile(
-                leading: CircleAvatar(
-                  radius: 25,
-                  backgroundColor: Colors.transparent,
-                  child: CachedNetworkImage(
-                    imageUrl: cartItem.productThumbnail ?? "",
-                    placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) => Image.asset(
-                      'assets/images/no_image.png',
+                leading: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/product_goods',
+                      arguments: GoodsArguments(
+                        cartItem.productName ?? '',
+                        cartItem.productId ?? '',
+                        cartItem.productName ?? '',
+                        0,
+                        cartItem.productId ?? '',
+                      ),
+                    );
+                  },
+                  child: CircleAvatar(
+                    radius: 25,
+                    backgroundColor: Colors.transparent,
+                    child: CachedNetworkImage(
+                      imageUrl: cartItem.productThumbnail ?? "",
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Image.asset(
+                        'assets/images/no_image.png',
+                        fit: BoxFit.cover,
+                      ),
                       fit: BoxFit.cover,
                     ),
-                    fit: BoxFit.cover,
                   ),
                 ),
                 title: Text(cartItem.productName),
@@ -358,20 +374,26 @@ class _CartViewState extends State<CartView> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (cartItem.quantity > 1)
-                      IconButton(
-                        color: Colors.red,
-                        iconSize: 30,
-                        icon: const Icon(Icons.remove_circle),
-                        onPressed: () {
-                          setState(() {
-                            cartItem.quantity--;
-                            _controllers[index].text =
-                                cartItem.quantity.toString();
-                          });
-                          PersistentShoppingCart()
-                              .removeFromCart(cartItem.productId);
-                          PersistentShoppingCart().addToCart(cartItem);
+                      GestureDetector(
+                        onLongPress: () {
+                          _showDeleteConfirmationDialog(context,
+                              cartItem.productName, cartItem.productId);
                         },
+                        child: IconButton(
+                          color: Colors.red,
+                          iconSize: 30,
+                          icon: const Icon(Icons.remove_circle),
+                          onPressed: () {
+                            setState(() {
+                              cartItem.quantity--;
+                              _controllers[index].text =
+                                  cartItem.quantity.toString();
+                            });
+                            PersistentShoppingCart()
+                                .removeFromCart(cartItem.productId);
+                            PersistentShoppingCart().addToCart(cartItem);
+                          },
+                        ),
                       )
                     else
                       IconButton(
@@ -385,7 +407,7 @@ class _CartViewState extends State<CartView> {
                       ),
                     const SizedBox(width: 5),
                     SizedBox(
-                      width: 30,
+                      width: 40,
                       height: 30,
                       child: TextFormField(
                         keyboardType: TextInputType.number,

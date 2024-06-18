@@ -25,7 +25,12 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Карта"),
+        title: const Text(
+          "Карта",
+          style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontFamilyFallback: kDefaultContentInsertionMimeTypes),
+        ),
         centerTitle: true,
       ),
       body: Stack(
@@ -53,7 +58,7 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: isMarkerSelected
-                      ? AppColors.primary
+                      ? AppColors.primaryColor
                       : Colors.grey, // Text color
                   minimumSize: const Size(double.infinity, 50), // Full width
                 ),
@@ -80,7 +85,7 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
 
           setState(() {});
         },
-        label: const Text("Текущая позиция"),
+        label: const Text("Мой адрес"),
         icon: const Icon(Icons.location_history),
       ),
     );

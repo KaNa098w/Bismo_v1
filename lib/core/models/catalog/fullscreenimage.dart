@@ -1,5 +1,7 @@
+import 'package:bismo/core/presentation/widgets/video_player_product.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 
 class FullScreenImage extends StatefulWidget {
   final List<String> images;
@@ -43,19 +45,23 @@ class _FullScreenImageState extends State<FullScreenImage> {
         controller: _pageController,
         itemCount: widget.images.length,
         itemBuilder: (context, index) {
+          String mediaUrl = widget.images[index];
+          bool isVideo = mediaUrl.endsWith('.mp4');
           return InteractiveViewer(
             child: Center(
-              child: CachedNetworkImage(
-                imageUrl: widget.images[index],
-                placeholder: (context, url) =>
-                    const CircularProgressIndicator(),
-                errorWidget: (context, url, error) {
-                  print("Failed to load image $url, error: $error");
-                  return Image.network(
-                      'https://www.landuse-ca.org/wp-content/uploads/2019/04/no-photo-available.png');
-                },
-                fit: BoxFit.contain,
-              ),
+              child: isVideo
+                  ? VideoPlayerWidgetProduct(videoUrl: mediaUrl)
+                  : CachedNetworkImage(
+                      imageUrl: mediaUrl,
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) {
+                        print("Failed to load image $url, error: $error");
+                        return Image.network(
+                            'https://www.landuse-ca.org/wp-content/uploads/2019/04/no-photo-available.png');
+                      },
+                      fit: BoxFit.contain,
+                    ),
             ),
           );
         },
