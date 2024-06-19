@@ -16,7 +16,7 @@ class PopularPacks extends StatelessWidget {
         TitleAndActionButton(
           title: 'Популярные товары',
           onTap: () {
-              Navigator.pushNamed(context, '/all_view');
+            Navigator.pushNamed(context, '/all_view');
           },
         ),
         SingleChildScrollView(

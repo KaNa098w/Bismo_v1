@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "211115840626",
+    "project_id": "cosmetika-f01e9",
+    "storage_bucket": "cosmetika-f01e9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:211115840626:android:d4e4573bc9d92e5c07deeb",
+        "android_client_info": {
+          "package_name": "kz.bismo.app.bismo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsSUxlpKdjlczugvZXH79ViCVXaTMmVyM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
