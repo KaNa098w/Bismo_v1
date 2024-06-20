@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:bismo/app/catalog/goods/goods_arguments.dart';
+import 'package:bismo/app/product_details/product_details.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/exceptions.dart';
 import 'package:bismo/core/models/cart/set_order_request.dart';
@@ -7,6 +8,7 @@ import 'package:bismo/core/models/user/get_address_response.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
 import 'package:bismo/core/presentation/dialogs/loader_dialog.dart';
 import 'package:bismo/core/presentation/widgets/custom_error_widget.dart';
+import 'package:bismo/core/presentation/widgets/custom_number_format.dart';
 import 'package:bismo/core/providers/user_provider.dart';
 import 'package:bismo/core/services/cart_service.dart';
 import 'package:bismo/core/services/user_service.dart';
@@ -74,6 +76,36 @@ class _CartViewState extends State<CartView> {
     _futureCartItems = _loadCartItems();
     // setState(() {});
     // _loadCartItems();
+  }
+
+  void _showClearCartConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Очистить корзину?'),
+          content: const Text('Вы уверены, что хотите очистить корзину?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Закрыть диалоговое окно
+              },
+              child: const Text('Отмена'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  PersistentShoppingCart().clearCart();
+                  _futureCartItems = _loadCartItems();
+                });
+                Navigator.of(context).pop(); // Закрыть диалоговое окно
+              },
+              child: const Text('Очистить'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showDeleteConfirmationDialog(
@@ -149,7 +181,7 @@ class _CartViewState extends State<CartView> {
           producer: item.productDetails?['producer'] ?? "",
           price: item.unitPrice,
           count: item.productDetails?['count'] ?? 0,
-          step: item.productDetails?['step'] ?? 1,
+          step: item.productDetails?['step'], // Извлекаем значение поля step
           nomenklatura: item.productDetails?['nomenklatura'],
           comment: item.productDetails?['comment'] ?? "Нет комментарии",
           basketCount: item.quantity ?? 1,
@@ -289,6 +321,21 @@ class _CartViewState extends State<CartView> {
             ),
           ],
         ),
+        actions: cartItems.isNotEmpty
+            ? [
+                IconButton(
+                  icon: Icon(
+                    Icons.delete_sweep_outlined,
+                    color: AppColors.primaryColor,
+                    size: 33,
+                  ),
+                  onPressed: () {
+                    _showClearCartConfirmationDialog(context);
+                  },
+                  tooltip: 'Очистить корзину',
+                ),
+              ]
+            : null,
       ),
       body: FutureBuilder<List<PersistentShoppingCartItem>>(
         future: _futureCartItems,
@@ -338,6 +385,10 @@ class _CartViewState extends State<CartView> {
                 return const SizedBox();
               }
 
+              double itemTotal = cartItem.unitPrice *
+                  (cartItem.productDetails?['step'] ?? 1) *
+                  cartItem.quantity;
+
               return ListTile(
                 leading: GestureDetector(
                   onTap: () {
@@ -369,7 +420,28 @@ class _CartViewState extends State<CartView> {
                   ),
                 ),
                 title: Text(cartItem.productName),
-                subtitle: Text('${cartItem.unitPrice}₸ x ${cartItem.quantity}'),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Цена: ${CustomNumberFormat.format(cartItem.unitPrice)}₸/шт',
+                      style: TextStyle(fontSize: 13),
+                    ),
+                    Text(
+                        'В упаковке: ${CustomNumberFormat.format(cartItem.productDetails!['step'])}шт x ${cartItem.quantity}',
+                        style: TextStyle(fontSize: 13)),
+                    Text(
+                      (cartItem.unitPrice != null &&
+                              cartItem.productDetails?['step'] != null)
+                          ? 'Сумма: ${CustomNumberFormat.format(cartItem.unitPrice * cartItem.productDetails!['step'] * cartItem.quantity)}₸'
+                          : '0₸',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -463,7 +535,16 @@ class _CartViewState extends State<CartView> {
                           fontSize: 18.0, fontWeight: FontWeight.bold),
                     ),
                     child: Text(
-                      'Итого: ${NumberFormat.currency(locale: 'ru', symbol: '₸').format(cartItems.fold<double>(0, (total, item) => total + (item.unitPrice * item.quantity)))}',
+                      'Итого: ${CustomNumberFormat.format(
+                        cartItems.fold<double>(
+                          0,
+                          (total, item) =>
+                              total +
+                              (item.unitPrice *
+                                  (item.productDetails?['step'] ?? 1) *
+                                  item.quantity),
+                        ),
+                      )}₸',
                     ),
                   ),
                   ElevatedButton(
@@ -533,7 +614,7 @@ class _CartViewState extends State<CartView> {
                                 child: Text(
                                   'Выбрать адрес',
                                   style: TextStyle(
-                                    color: AppColors.primary,
+                                    color: AppColors.primaryColor,
                                     fontSize: 16,
                                   ),
                                 ),

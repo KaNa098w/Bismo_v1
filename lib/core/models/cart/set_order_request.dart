@@ -107,7 +107,7 @@ class SetOrderGoods {
     optPrice = convertStringToDouble(json['opt_price']);
     producer = json['producer'];
     kontragent = json['kontragent'];
-    step = convertStringToInt(json['step']);
+    step = json['step'];
     newProduct = convertStringToInt(json['new_product']);
     photo = json['photo'];
     catId = json['cat_id'];

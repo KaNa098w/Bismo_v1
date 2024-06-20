@@ -1,26 +1,79 @@
 {
   "project_info": {
-    "project_number": "211115840626",
-    "project_id": "cosmetika-f01e9",
-    "storage_bucket": "cosmetika-f01e9.appspot.com"
+    "project_number": "583699680543",
+    "project_id": "dulashop-5e6f0",
+    "storage_bucket": "dulashop-5e6f0.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:211115840626:android:d4e4573bc9d92e5c07deeb",
+        "mobilesdk_app_id": "1:583699680543:android:3efd66dda3d039c9d0b42a",
         "android_client_info": {
           "package_name": "kz.bismo.app.bismo"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "583699680543-oghqc9qr45h31l9j3q75ovsggh7lrrmb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDsSUxlpKdjlczugvZXH79ViCVXaTMmVyM"
+          "current_key": "AIzaSyDFRf0RX7MmKhGDk-SQlKpOT9PjCMZaRUI"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "583699680543-oghqc9qr45h31l9j3q75ovsggh7lrrmb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "583699680543-u6da604aut05ajolt8s5i6p5m6e24utl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.app.Bismo"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:583699680543:android:56d2bc8066a203ccd0b42a",
+        "android_client_info": {
+          "package_name": "product.kz.dulashop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "583699680543-oghqc9qr45h31l9j3q75ovsggh7lrrmb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFRf0RX7MmKhGDk-SQlKpOT9PjCMZaRUI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "583699680543-oghqc9qr45h31l9j3q75ovsggh7lrrmb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "583699680543-u6da604aut05ajolt8s5i6p5m6e24utl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.app.Bismo"
+              }
+            }
+          ]
         }
       }
     }

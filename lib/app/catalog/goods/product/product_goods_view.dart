@@ -279,6 +279,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
                           'Цена: ',
@@ -294,7 +295,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 14),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
@@ -392,11 +393,31 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Сумма:',
+                          'Общая сумма:',
                           style: TextStyle(fontSize: 20),
                         ),
                         Text(
-                          "${(quantity * (goods?.price ?? 0)).toStringAsFixed(2)}₸",
+                          "${((goods?.step)! * quantity * (goods?.price ?? 0)).toStringAsFixed(2)}₸",
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'В упаковке:',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        Text(
+                          "${(goods?.step)}шт в коробке",
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -510,98 +531,101 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
           : const Center(
               child: CircularProgressIndicator(),
             ),
-      bottomNavigationBar: BottomAppBar(
-        child: PersistentShoppingCart().showAndUpdateCartItemWidget(
-            inCartWidget: Container(
-              height: 40,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ElevatedButton(
-                onPressed: () async {
-                  await Navigator.pushNamed(context, "/cart");
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Перейти в корзину',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
+      bottomNavigationBar: goods != null
+          ? BottomAppBar(
+              child: PersistentShoppingCart().showAndUpdateCartItemWidget(
+                  inCartWidget: Container(
+                    height: 40,
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        await Navigator.pushNamed(context, "/cart");
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Перейти в корзину',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
-            notInCartWidget: Container(
-              height: 40,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ElevatedButton(
-                onPressed: () async {
-                  addToCart(
-                    context,
-                    convertToSetOrderGoods(goods ?? widget.goods),
-                    quantity,
-                  );
+                  notInCartWidget: Container(
+                    height: 40,
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        addToCart(
+                          context,
+                          convertToSetOrderGoods(goods ?? widget.goods),
+                          quantity,
+                        );
 
-                  showAlertDialog(
-                    context: context,
-                    barrierDismissible: true,
-                    title: "Уведомление",
-                    content: "Товар успешно добавлен в корзину!",
-                    actions: <Widget>[
-                      CupertinoDialogAction(
-                        onPressed: () async {
-                          Navigator.pop(context);
-                          await Navigator.pushNamed(context, "/cart");
-                        },
-                        textStyle:
-                            const TextStyle(color: AppColors.primaryColor),
-                        child: const Text("Перейти в корзину"),
+                        showAlertDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          title: "Уведомление",
+                          content: "Товар успешно добавлен в корзину!",
+                          actions: <Widget>[
+                            CupertinoDialogAction(
+                              onPressed: () async {
+                                Navigator.pop(context);
+                                await Navigator.pushNamed(context, "/cart");
+                              },
+                              textStyle: const TextStyle(
+                                  color: AppColors.primaryColor),
+                              child: const Text("Перейти в корзину"),
+                            ),
+                            CupertinoDialogAction(
+                              onPressed: () => Navigator.of(context).pop(),
+                              textStyle:
+                                  const TextStyle(color: AppColors.textBlack),
+                              child: const Text("Назад"),
+                            ),
+                          ],
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
-                      CupertinoDialogAction(
-                        onPressed: () => Navigator.of(context).pop(),
-                        textStyle: const TextStyle(color: AppColors.textBlack),
-                        child: const Text("Назад"),
+                      child: const Center(
+                        child: Text(
+                          'Добавить в корзину',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                    ],
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Добавить в корзину',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
                     ),
                   ),
-                ),
-              ),
-            ),
-            product: PersistentShoppingCartItem(
-              productId: goods?.nomenklaturaKod ?? "",
-              productName: goods?.nomenklatura ?? "",
-              unitPrice: goods?.price?.toDouble() ?? 0,
-              quantity: quantity,
-              productThumbnail: goods?.photo,
-              productDetails: {
-                "nomenklatura": goods?.nomenklatura,
-                "nomenklaturaKod": goods?.nomenklaturaKod,
-                "producer": goods?.kontragent,
-                "step": goods?.step,
-                "count": goods?.count,
-              },
-            )),
-      ),
+                  product: PersistentShoppingCartItem(
+                    productId: goods?.nomenklaturaKod ?? "",
+                    productName: goods?.nomenklatura ?? "",
+                    unitPrice: goods?.price?.toDouble() ?? 0,
+                    quantity: quantity,
+                    productThumbnail: goods?.photo,
+                    productDetails: {
+                      "nomenklatura": goods?.nomenklatura,
+                      "nomenklaturaKod": goods?.nomenklaturaKod,
+                      "producer": goods?.kontragent,
+                      "step": goods?.step,
+                      "count": goods?.count,
+                    },
+                  )),
+            )
+          : null,
     );
   }
 }

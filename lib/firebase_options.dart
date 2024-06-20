@@ -50,19 +50,22 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDsSUxlpKdjlczugvZXH79ViCVXaTMmVyM',
-    appId: '1:211115840626:android:d4e4573bc9d92e5c07deeb',
-    messagingSenderId: '211115840626',
-    projectId: 'cosmetika-f01e9',
-    storageBucket: 'cosmetika-f01e9.appspot.com',
+    apiKey: 'AIzaSyDFRf0RX7MmKhGDk-SQlKpOT9PjCMZaRUI',
+    appId: '1:583699680543:android:3efd66dda3d039c9d0b42a',
+    messagingSenderId: '583699680543',
+    projectId: 'dulashop-5e6f0',
+    storageBucket: 'dulashop-5e6f0.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBAykAksN81sla8SJ8nv_udkATn1pUR31U',
-    appId: '1:211115840626:ios:5bec4254d7008b0507deeb',
-    messagingSenderId: '211115840626',
-    projectId: 'cosmetika-f01e9',
-    storageBucket: 'cosmetika-f01e9.appspot.com',
+    apiKey: 'AIzaSyCRDH1MRgmN1eWyZnnJSFZ45Xmi9N2s0qE',
+    appId: '1:583699680543:ios:781af33db2dc072ad0b42a',
+    messagingSenderId: '583699680543',
+    projectId: 'dulashop-5e6f0',
+    storageBucket: 'dulashop-5e6f0.appspot.com',
+    androidClientId: '583699680543-6j7l9cedcf9fr6b81rb1idkge1m22f01.apps.googleusercontent.com',
+    iosClientId: '583699680543-tftvtmc7ja8lvi0sbddca6trqfujccbm.apps.googleusercontent.com',
     iosBundleId: 'kz.bismo.app.bismo',
   );
+
 }

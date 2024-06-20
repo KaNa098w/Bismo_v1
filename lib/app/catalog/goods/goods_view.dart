@@ -6,6 +6,7 @@ import 'package:bismo/core/models/cart/set_order_request.dart';
 import 'package:bismo/core/models/catalog/goods.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
 import 'package:bismo/core/presentation/widgets/custom_empty_widget.dart';
+import 'package:bismo/core/presentation/widgets/custom_number_format.dart';
 import 'package:bismo/core/services/goods_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +15,7 @@ import 'package:hive/hive.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:intl/intl.dart';
 
 class GoodsView extends StatefulWidget {
   final String? title;
@@ -44,6 +46,9 @@ class _GoodsViewState extends State<GoodsView> {
   Map<String, int> quantities = {}; // Количество для каждого товара
   Map<String, TextEditingController> controllers =
       {}; // Контроллеры для каждого товара
+  double totalAmount = 0.0; // Общая сумма выбранных товаров
+  int totalQuantity = 0;
+  int totalUniqueItems = 0; // Общее количество уникальных выбранных товаров
 
   @override
   void initState() {
@@ -72,6 +77,23 @@ class _GoodsViewState extends State<GoodsView> {
     _loadCartItems();
   }
 
+  void _updateTotalAmount() {
+    double newTotal = 0.0;
+    int newTotalUniqueItems = 0;
+    for (var goods in filteredGoods) {
+      int quantity = quantities[goods.nomenklaturaKod ?? ""] ?? 0;
+      if (quantity > 0) {
+        newTotal +=
+            (goods.price?.toDouble() ?? 0.0) * (goods.step ?? 1) * quantity;
+        newTotalUniqueItems++;
+      }
+    }
+    setState(() {
+      totalAmount = newTotal;
+      totalUniqueItems = newTotalUniqueItems;
+    });
+  }
+
   void _refreshGoodsQuantities() {
     Map<String, dynamic> cartData = PersistentShoppingCart().getCartData();
     List<PersistentShoppingCartItem> updatedCartItems =
@@ -90,6 +112,7 @@ class _GoodsViewState extends State<GoodsView> {
           }
         }
       }
+      _updateTotalAmount();
     });
   }
 
@@ -109,6 +132,7 @@ class _GoodsViewState extends State<GoodsView> {
       filteredGoods = goodsResponse!.goods!.where((goods) {
         return goods.nomenklatura?.toLowerCase().contains(query) ?? false;
       }).toList();
+      _updateTotalAmount();
     });
   }
 
@@ -129,6 +153,7 @@ class _GoodsViewState extends State<GoodsView> {
           controllers[goods.nomenklaturaKod ?? ""] =
               TextEditingController(text: "0");
         });
+        _updateTotalAmount();
       });
     } catch (e) {
       setState(() {
@@ -165,11 +190,13 @@ class _GoodsViewState extends State<GoodsView> {
       },
     ));
     _loadCartItems();
+    _updateTotalAmount();
   }
 
   void removeFromCart(Goods goods) async {
     await PersistentShoppingCart().removeFromCart(goods.nomenklaturaKod ?? "");
     _loadCartItems();
+    _updateTotalAmount();
   }
 
   SetOrderGoods convertToSetOrderGoods(Goods goods) {
@@ -295,7 +322,7 @@ class _GoodsViewState extends State<GoodsView> {
                                     goods.nomenklatura ?? '',
                                     goods.catId ?? '',
                                     goods.kontragent ?? '',
-                                    goods.price ?? 0,
+                                    goods.price as int,
                                     goods.nomenklaturaKod ?? '',
                                   ),
                                 ),
@@ -341,13 +368,55 @@ class _GoodsViewState extends State<GoodsView> {
                                       children: [
                                         const Text('Цена: '),
                                         Text(
-                                          '${goods.price?.toInt()}₸/кг',
+                                          '${goods.price?.toInt()}₸/шт',
                                           style: const TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w500),
                                         ),
                                       ],
                                     ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        const Text(
+                                          'В упаковке: ',
+                                          style: TextStyle(fontSize: 12),
+                                        ),
+                                        quantity > 0
+                                            ? Text(
+                                                '${goods.step}шт х $quantity',
+                                                style: const TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              )
+                                            : Text(
+                                                '${goods.step}шт',
+                                                style: const TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    if (quantity > 0)
+                                      Row(
+                                        children: [
+                                          const Text('Сумма: '),
+                                          Text(
+                                            (goods.price != null &&
+                                                    goods.step != null)
+                                                ? '${CustomNumberFormat.format(goods.price! * goods.step! * quantity)}₸'
+                                                : '0₸',
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                        ],
+                                      )
+                                    else
+                                      const SizedBox.shrink(),
                                   ],
                                 ),
                                 trailing: Row(
@@ -363,6 +432,7 @@ class _GoodsViewState extends State<GoodsView> {
                                                         ""]
                                                     ?.text =
                                                 (quantity - 1).toString();
+                                            _updateTotalAmount();
                                           });
                                         }
                                       },
@@ -404,6 +474,7 @@ class _GoodsViewState extends State<GoodsView> {
                                           setState(() {
                                             quantities[goods.nomenklaturaKod ??
                                                 ""] = newQuantity;
+                                            _updateTotalAmount();
                                           });
                                         },
                                       ),
@@ -418,6 +489,7 @@ class _GoodsViewState extends State<GoodsView> {
                                                       ""]
                                                   ?.text =
                                               (quantity + 1).toString();
+                                          _updateTotalAmount();
                                         });
                                       },
                                       child: Container(
@@ -454,7 +526,6 @@ class _GoodsViewState extends State<GoodsView> {
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
         child: InkWell(
-          // onTap: _addToCartAndNavigate,
           onTap: () {
             _addToCartAndNavigate();
           },
@@ -464,22 +535,18 @@ class _GoodsViewState extends State<GoodsView> {
               color: AppColors.primaryColor,
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
-            child: const Center(
+            child: Center(
               child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Далее',
-                      style: TextStyle(
+                      '${totalAmount.toStringAsFixed(2)}₸, $totalUniqueItems товар',
+                      style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 16,
                       ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      color: Colors.white,
                     ),
                   ],
                 ),
