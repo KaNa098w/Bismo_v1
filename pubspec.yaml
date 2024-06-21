@@ -50,6 +50,7 @@ dependencies:
   file_picker: ^8.0.5
   firebase_core: ^3.1.0
   firebase_messaging: ^15.0.1
+  confetti: ^0.7.0
   # ffmpeg_kit_flutter: ^6.0.3
   # hive: ^2.2.3
   # flutter_google_places: ^0.3.0

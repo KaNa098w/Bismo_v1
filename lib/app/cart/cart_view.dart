@@ -3,6 +3,7 @@ import 'package:bismo/app/catalog/goods/goods_arguments.dart';
 import 'package:bismo/app/product_details/product_details.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/exceptions.dart';
+import 'package:bismo/core/models/cart/promocode_bottom.dart';
 import 'package:bismo/core/models/cart/set_order_request.dart';
 import 'package:bismo/core/models/user/get_address_response.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
@@ -519,59 +520,90 @@ class _CartViewState extends State<CartView> {
         },
       ),
       bottomNavigationBar: cartItems.isNotEmpty
-          ? Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: AppColors.primaryColor,
-                      backgroundColor: Colors.transparent,
-                      elevation: 0,
-                      padding: const EdgeInsets.all(1),
-                      textStyle: const TextStyle(
-                          fontSize: 18.0, fontWeight: FontWeight.bold),
-                    ),
-                    child: Text(
-                      'Итого: ${CustomNumberFormat.format(
-                        cartItems.fold<double>(
-                          0,
-                          (total, item) =>
-                              total +
-                              (item.unitPrice *
-                                  (item.productDetails?['step'] ?? 1) *
-                                  item.quantity),
-                        ),
-                      )}₸',
+          ? BottomAppBar(
+              color: Colors.white,
+              child: InkWell(
+                onTap: () {
+                  if (isDeliverySelected) {
+                    _showBottomSheet(context);
+                  } else {
+                    _setOrder(context);
+                  }
+                },
+                child: Container(
+                  height: 50,
+                  decoration: const BoxDecoration(
+                    color: AppColors.primaryColor,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Итого: ${CustomNumberFormat.format(
+                              cartItems.fold<double>(
+                                0,
+                                (total, item) =>
+                                    total +
+                                    (item.unitPrice *
+                                        (item.productDetails?['step'] ?? 1) *
+                                        item.quantity),
+                              ),
+                            )}₸',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (isDeliverySelected) {
-                        _showBottomSheet(context);
-                      } else {
-                        _setOrder(context);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 12),
-                      textStyle: const TextStyle(fontSize: 16),
-                    ),
-                    child: const Text(
-                      'Оформить заказ',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
+                ),
               ),
             )
           : null,
     );
+
+    // child: Text(
+    //   'Итого: ${CustomNumberFormat.format(
+    //     cartItems.fold<double>(
+    //       0,
+    //       (total, item) =>
+    //           total +
+    //           (item.unitPrice *
+    //               (item.productDetails?['step'] ?? 1) *
+    //               item.quantity),
+    //     ),
+    //   )}₸',
+    //                 // ),
+    //               ),
+    //               ElevatedButton(
+    //                 onPressed: () {
+    //                   if (isDeliverySelected) {
+    //                     _showBottomSheet(context);
+    //                   } else {
+    //                     _setOrder(context);
+    //                   }
+    //                 },
+    //                 style: ElevatedButton.styleFrom(
+    //                   foregroundColor: Colors.white,
+    //                   backgroundColor: Colors.red,
+    //                   padding: const EdgeInsets.symmetric(
+    //                       horizontal: 20, vertical: 12),
+    //                   textStyle: const TextStyle(fontSize: 16),
+    //                 ),
+    //                 child: const Text(
+    //                   'Оформить заказ',
+    //                   style: TextStyle(color: Colors.white),
+    //                 ),
+    //               ),
+    //             ],
+    //           ),
+    //         )
+    //       : null,
   }
 
   void _showBottomSheet(BuildContext context) {
@@ -584,81 +616,7 @@ class _CartViewState extends State<CartView> {
             topLeft: Radius.circular(15), topRight: Radius.circular(15)),
       ),
       builder: (context) {
-        return StatefulBuilder(
-            builder: (BuildContext context, StateSetter currentSetState) {
-          var userProvider = context.watch<UserProvider>();
-          return SizedBox(
-            height: 200,
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 22),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Адрес доставки',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  userProvider.userAddress?.deliveryAddress != null
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(userProvider.userAddress!.deliveryAddress!,
-                                style: const TextStyle(fontSize: 16)),
-                            InkWell(
-                              onTap: () async {
-                                await Navigator.pushNamed(context, "/address");
-                              },
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Выбрать адрес',
-                                  style: TextStyle(
-                                    color: AppColors.primaryColor,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        )
-                      : InkWell(
-                          onTap: () async {
-                            await Navigator.pushNamed(context, "/address");
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              'Выбрать адрес',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ),
-                  const Spacer(),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _setOrder(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.red,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12),
-                        textStyle: const TextStyle(fontSize: 16),
-                      ),
-                      child: const Text('Оформить заказ'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
+        return PromoCodeBottomSheet(cartItems: cartItems);
       },
     );
   }
