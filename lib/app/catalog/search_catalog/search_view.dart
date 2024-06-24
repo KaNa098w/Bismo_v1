@@ -141,7 +141,10 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title ?? 'Результаты поиска'),
+        title: Text(
+          widget.title ?? 'Результаты поиска',
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 19),
+        ),
       ),
       body: _isLoadingResults
           ? const Center(child: CircularProgressIndicator())

@@ -19,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class CartView extends StatefulWidget {
@@ -259,6 +258,19 @@ class _CartViewState extends State<CartView> {
     }
   }
 
+  String getCategoryName(String parent) {
+    switch (parent) {
+      case 'MA100001878':
+        return '1000 мелочей';
+      case '00000018150':
+        return 'Китайская косметика';
+      case 'MA100001883':
+        return 'Оригинальная косметика';
+      default:
+        return 'Другие';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -375,147 +387,188 @@ class _CartViewState extends State<CartView> {
             );
           }
 
-          return ListView.separated(
-            itemCount: snapshot.data!.length,
-            separatorBuilder: (BuildContext context, int index) =>
-                const Divider(),
-            itemBuilder: (context, index) {
-              PersistentShoppingCartItem cartItem = snapshot.data![index];
+          // Группировка товаров по parent
+          Map<String, List<PersistentShoppingCartItem>> groupedItems = {};
+          for (var item in snapshot.data!) {
+            String parent =
+                item.productDetails?['parent']?.toString() ?? 'other';
+            if (groupedItems[parent] == null) {
+              groupedItems[parent] = [];
+            }
+            groupedItems[parent]!.add(item);
+          }
 
-              if (!_controllers.asMap().containsKey(index)) {
-                return const SizedBox();
-              }
+          return ListView(
+            children: groupedItems.entries.map((entry) {
+              String parent = entry.key;
+              String categoryName = getCategoryName(parent);
+              List<PersistentShoppingCartItem> items = entry.value;
 
-              double itemTotal = cartItem.unitPrice *
-                  (cartItem.productDetails?['step'] ?? 1) *
-                  cartItem.quantity;
-
-              return ListTile(
-                leading: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/product_goods',
-                      arguments: GoodsArguments(
-                        cartItem.productName ?? '',
-                        cartItem.productId ?? '',
-                        cartItem.productName ?? '',
-                        0,
-                        cartItem.productId ?? '',
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      categoryName,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryColor,
                       ),
-                    );
-                  },
-                  child: CircleAvatar(
-                    radius: 25,
-                    backgroundColor: Colors.transparent,
-                    child: CachedNetworkImage(
-                      imageUrl: cartItem.productThumbnail ?? "",
-                      placeholder: (context, url) =>
-                          const CircularProgressIndicator(),
-                      errorWidget: (context, url, error) => Image.asset(
-                        'assets/images/no_image.png',
-                        fit: BoxFit.cover,
-                      ),
-                      fit: BoxFit.cover,
                     ),
                   ),
-                ),
-                title: Text(cartItem.productName),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Цена: ${CustomNumberFormat.format(cartItem.unitPrice)}₸/шт',
-                      style: TextStyle(fontSize: 13),
-                    ),
-                    Text(
-                        'В упаковке: ${CustomNumberFormat.format(cartItem.productDetails!['step'])}шт x ${cartItem.quantity}',
-                        style: TextStyle(fontSize: 13)),
-                    Text(
-                      (cartItem.unitPrice != null &&
-                              cartItem.productDetails?['step'] != null)
-                          ? 'Сумма: ${CustomNumberFormat.format(cartItem.unitPrice * cartItem.productDetails!['step'] * cartItem.quantity)}₸'
-                          : '0₸',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (cartItem.quantity > 1)
-                      GestureDetector(
-                        onLongPress: () {
-                          _showDeleteConfirmationDialog(context,
-                              cartItem.productName, cartItem.productId);
-                        },
-                        child: IconButton(
-                          color: Colors.red,
-                          iconSize: 30,
-                          icon: const Icon(Icons.remove_circle),
-                          onPressed: () {
-                            setState(() {
-                              cartItem.quantity--;
-                              _controllers[index].text =
-                                  cartItem.quantity.toString();
-                            });
-                            PersistentShoppingCart()
-                                .removeFromCart(cartItem.productId);
-                            PersistentShoppingCart().addToCart(cartItem);
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: items.length,
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(),
+                    itemBuilder: (context, index) {
+                      PersistentShoppingCartItem cartItem = items[index];
+
+                      if (!_controllers.asMap().containsKey(index)) {
+                        return const SizedBox();
+                      }
+
+                      double itemTotal = cartItem.unitPrice *
+                          (cartItem.productDetails?['step'] ?? 1) *
+                          cartItem.quantity;
+
+                      return ListTile(
+                        leading: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/product_goods',
+                              arguments: GoodsArguments(
+                                cartItem.productName ?? '',
+                                cartItem.productId ?? '',
+                                cartItem.productName ?? '',
+                                0,
+                                cartItem.productId ?? '',
+                              ),
+                            );
                           },
+                          child: CircleAvatar(
+                            radius: 25,
+                            backgroundColor: Colors.transparent,
+                            child: CachedNetworkImage(
+                              imageUrl: cartItem.productThumbnail ?? "",
+                              placeholder: (context, url) =>
+                                  const CircularProgressIndicator(),
+                              errorWidget: (context, url, error) => Image.asset(
+                                'assets/images/no_image.png',
+                                fit: BoxFit.cover,
+                              ),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
-                      )
-                    else
-                      IconButton(
-                        iconSize: 30,
-                        color: Colors.red,
-                        icon: const Icon(Icons.delete_outline_rounded),
-                        onPressed: () {
-                          _showDeleteConfirmationDialog(context,
-                              cartItem.productName, cartItem.productId);
-                        },
-                      ),
-                    const SizedBox(width: 5),
-                    SizedBox(
-                      width: 40,
-                      height: 30,
-                      child: TextFormField(
-                        keyboardType: TextInputType.number,
-                        controller: _controllers[index],
-                        textAlign: TextAlign.center,
-                        decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.zero,
-                          border: OutlineInputBorder(),
+                        title: Text(
+                          cartItem.productName,
+                          style: TextStyle(fontSize: 14),
                         ),
-                        onChanged: (value) {
-                          setState(() {
-                            cartItem.quantity = int.parse(value);
-                          });
-                        },
-                      ),
-                    ),
-                    IconButton(
-                      iconSize: 30,
-                      color: AppColors.primaryColor,
-                      icon: const Icon(Icons.add_box),
-                      onPressed: () {
-                        setState(() {
-                          cartItem.quantity++;
-                          _controllers[index].text =
-                              cartItem.quantity.toString();
-                        });
-                        PersistentShoppingCart()
-                            .removeFromCart(cartItem.productId);
-                        PersistentShoppingCart().addToCart(cartItem);
-                      },
-                    ),
-                  ],
-                ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Цена: ${CustomNumberFormat.format(cartItem.unitPrice)}₸/шт',
+                              style: TextStyle(fontSize: 13),
+                            ),
+                            Text(
+                                'В упаковке: ${CustomNumberFormat.format(cartItem.productDetails!['step'])}шт x ${cartItem.quantity}',
+                                style: TextStyle(fontSize: 12)),
+                            Text(
+                              (cartItem.unitPrice != null &&
+                                      cartItem.productDetails?['step'] != null)
+                                  ? 'Сумма: ${CustomNumberFormat.format(cartItem.unitPrice * cartItem.productDetails!['step'] * cartItem.quantity)}₸'
+                                  : '0₸',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (cartItem.quantity > 1)
+                              GestureDetector(
+                                onLongPress: () {
+                                  _showDeleteConfirmationDialog(context,
+                                      cartItem.productName, cartItem.productId);
+                                },
+                                child: IconButton(
+                                  color: Colors.red,
+                                  iconSize: 30,
+                                  icon: const Icon(Icons.remove_circle),
+                                  onPressed: () {
+                                    setState(() {
+                                      cartItem.quantity--;
+                                      _controllers[index].text =
+                                          cartItem.quantity.toString();
+                                    });
+                                    PersistentShoppingCart()
+                                        .removeFromCart(cartItem.productId);
+                                    PersistentShoppingCart()
+                                        .addToCart(cartItem);
+                                  },
+                                ),
+                              )
+                            else
+                              IconButton(
+                                iconSize: 30,
+                                color: Colors.red,
+                                icon: const Icon(Icons.delete_outline_rounded),
+                                onPressed: () {
+                                  _showDeleteConfirmationDialog(context,
+                                      cartItem.productName, cartItem.productId);
+                                },
+                              ),
+                            const SizedBox(width: 5),
+                            SizedBox(
+                              width: 40,
+                              height: 30,
+                              child: TextFormField(
+                                keyboardType: TextInputType.number,
+                                controller: _controllers[index],
+                                textAlign: TextAlign.center,
+                                decoration: const InputDecoration(
+                                  contentPadding: EdgeInsets.zero,
+                                  border: OutlineInputBorder(),
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    cartItem.quantity = int.parse(value);
+                                  });
+                                },
+                              ),
+                            ),
+                            IconButton(
+                              iconSize: 30,
+                              color: AppColors.primaryColor,
+                              icon: const Icon(Icons.add_box),
+                              onPressed: () {
+                                setState(() {
+                                  cartItem.quantity++;
+                                  _controllers[index].text =
+                                      cartItem.quantity.toString();
+                                });
+                                PersistentShoppingCart()
+                                    .removeFromCart(cartItem.productId);
+                                PersistentShoppingCart().addToCart(cartItem);
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
               );
-            },
+            }).toList(),
           );
         },
       ),
@@ -566,45 +619,45 @@ class _CartViewState extends State<CartView> {
             )
           : null,
     );
-
-    // child: Text(
-    //   'Итого: ${CustomNumberFormat.format(
-    //     cartItems.fold<double>(
-    //       0,
-    //       (total, item) =>
-    //           total +
-    //           (item.unitPrice *
-    //               (item.productDetails?['step'] ?? 1) *
-    //               item.quantity),
-    //     ),
-    //   )}₸',
-    //                 // ),
-    //               ),
-    //               ElevatedButton(
-    //                 onPressed: () {
-    //                   if (isDeliverySelected) {
-    //                     _showBottomSheet(context);
-    //                   } else {
-    //                     _setOrder(context);
-    //                   }
-    //                 },
-    //                 style: ElevatedButton.styleFrom(
-    //                   foregroundColor: Colors.white,
-    //                   backgroundColor: Colors.red,
-    //                   padding: const EdgeInsets.symmetric(
-    //                       horizontal: 20, vertical: 12),
-    //                   textStyle: const TextStyle(fontSize: 16),
-    //                 ),
-    //                 child: const Text(
-    //                   'Оформить заказ',
-    //                   style: TextStyle(color: Colors.white),
-    //                 ),
-    //               ),
-    //             ],
-    //           ),
-    //         )
-    //       : null,
   }
+
+  // child: Text(
+  //   'Итого: ${CustomNumberFormat.format(
+  //     cartItems.fold<double>(
+  //       0,
+  //       (total, item) =>
+  //           total +
+  //           (item.unitPrice *
+  //               (item.productDetails?['step'] ?? 1) *
+  //               item.quantity),
+  //     ),
+  //   )}₸',
+  //                 // ),
+  //               ),
+  //               ElevatedButton(
+  //                 onPressed: () {
+  //                   if (isDeliverySelected) {
+  //                     _showBottomSheet(context);
+  //                   } else {
+  //                     _setOrder(context);
+  //                   }
+  //                 },
+  //                 style: ElevatedButton.styleFrom(
+  //                   foregroundColor: Colors.white,
+  //                   backgroundColor: Colors.red,
+  //                   padding: const EdgeInsets.symmetric(
+  //                       horizontal: 20, vertical: 12),
+  //                   textStyle: const TextStyle(fontSize: 16),
+  //                 ),
+  //                 child: const Text(
+  //                   'Оформить заказ',
+  //                   style: TextStyle(color: Colors.white),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         )
+  //       : null,
 
   void _showBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -616,7 +669,11 @@ class _CartViewState extends State<CartView> {
             topLeft: Radius.circular(15), topRight: Radius.circular(15)),
       ),
       builder: (context) {
-        return PromoCodeBottomSheet(cartItems: cartItems);
+        return PromoCodeBottomSheet(
+          cartItems: cartItems,
+          setOrder:
+              _setOrder, // Передаем функцию _setOrder в PromoCodeBottomSheet
+        );
       },
     );
   }

@@ -173,8 +173,8 @@ class _GoodsViewState extends State<GoodsView> {
     }
   }
 
-  void addToCart(
-      BuildContext context, SetOrderGoods goods, int quantity) async {
+  void addToCart(BuildContext context, SetOrderGoods goods, int quantity,
+      String parent) async {
     await PersistentShoppingCart().addToCart(PersistentShoppingCartItem(
       productId: goods.nomenklaturaKod ?? "",
       productName: goods.nomenklatura ?? "",
@@ -187,6 +187,7 @@ class _GoodsViewState extends State<GoodsView> {
         "producer": goods.kontragent,
         "step": goods.step,
         "count": goods.count,
+        "parent": parent, // Добавьте parent в детали продукта
       },
     ));
     _loadCartItems();
@@ -233,7 +234,8 @@ class _GoodsViewState extends State<GoodsView> {
     filteredGoods.forEach((goods) {
       int quantity = quantities[goods.nomenklaturaKod ?? ""] ?? 0;
       if (quantity > 0) {
-        addToCart(context, convertToSetOrderGoods(goods), quantity);
+        addToCart(context, convertToSetOrderGoods(goods), quantity,
+            goods.parent ?? "");
       }
     });
 
@@ -367,51 +369,53 @@ class _GoodsViewState extends State<GoodsView> {
                                     Row(
                                       children: [
                                         const Text('Цена: '),
-                                        Text(
-                                          '${goods.price?.toInt()}₸/шт',
-                                          style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500),
+                                        Flexible(
+                                          child: Text(
+                                            '${goods.price?.toInt()}₸/шт',
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500),
+                                            overflow: TextOverflow.visible,
+                                          ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 4),
+                                    const SizedBox(height: 2),
                                     Row(
                                       children: [
                                         const Text(
                                           'В упаковке: ',
-                                          style: TextStyle(fontSize: 12),
+                                          style: TextStyle(fontSize: 11),
                                         ),
-                                        quantity > 0
-                                            ? Text(
-                                                '${goods.step}шт х $quantity',
-                                                style: const TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight:
-                                                        FontWeight.w500),
-                                              )
-                                            : Text(
-                                                '${goods.step}шт',
-                                                style: const TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight:
-                                                        FontWeight.w500),
-                                              ),
+                                        Flexible(
+                                          child: Text(
+                                            quantity > 0
+                                                ? '${goods.step}шт х $quantity'
+                                                : '${goods.step}шт',
+                                            style: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500),
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                    const SizedBox(height: 4),
+                                    const SizedBox(height: 0),
                                     if (quantity > 0)
                                       Row(
                                         children: [
                                           const Text('Сумма: '),
-                                          Text(
-                                            (goods.price != null &&
-                                                    goods.step != null)
-                                                ? '${CustomNumberFormat.format(goods.price! * goods.step! * quantity)}₸'
-                                                : '0₸',
-                                            style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500),
+                                          Flexible(
+                                            child: Text(
+                                              (goods.price != null &&
+                                                      goods.step != null)
+                                                  ? '${CustomNumberFormat.format(goods.price! * goods.step! * quantity)}₸'
+                                                  : '0₸',
+                                              style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500),
+                                              overflow: TextOverflow.visible,
+                                            ),
                                           ),
                                         ],
                                       )
@@ -455,7 +459,7 @@ class _GoodsViewState extends State<GoodsView> {
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: 10),
+                                    const SizedBox(width: 2),
                                     SizedBox(
                                       width: 38,
                                       height: 30,
@@ -479,7 +483,7 @@ class _GoodsViewState extends State<GoodsView> {
                                         },
                                       ),
                                     ),
-                                    const SizedBox(width: 10),
+                                    const SizedBox(width: 2),
                                     InkWell(
                                       onTap: () {
                                         setState(() {

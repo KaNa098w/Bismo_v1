@@ -32,9 +32,11 @@ class ProductGoodsView extends StatefulWidget {
 
 class _ProductGoodsViewState extends State<ProductGoodsView> {
   int quantity = 1;
+  int starClickCount = 0;
   List<String> productImages = [];
   List<String> productVideos = [];
   Goods? goods;
+  bool showSecretButtons = false;
 
   @override
   void initState() {
@@ -431,14 +433,96 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
                       children: List.generate(5, (index) {
-                        return Icon(
-                          index < 4 ? Icons.star : Icons.star_border,
-                          color: Colors.amber,
-                          size: 24,
+                        return InkWell(
+                          onTap: () {
+                            setState(() {
+                              starClickCount++;
+                              if (starClickCount >= 10) {
+                                showSecretButtons =
+                                    true; // Показать кнопки после 10 кликов
+                              }
+                            });
+                          },
+                          child: Icon(
+                            index < 4 ? Icons.star : Icons.star_border,
+                            color: Colors.amber,
+                            size: 24,
+                          ),
                         );
                       }),
                     ),
                   ),
+                  if (showSecretButtons)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          TextButton.icon(
+                            onPressed: () {
+                              uploadPhoto(
+                                  context,
+                                  '7783734209',
+                                  goods?.nomenklaturaKod ?? "",
+                                  goods?.catId ?? "", () {
+                                _fetchGoods(widget.arguments.nomenklaturaKod);
+                                loadProductImages(
+                                    widget.arguments.nomenklaturaKod);
+                              }, (newPhotoUrl) {
+                                // Обновление URL фото
+                                // Пример: goods!.photo = newPhotoUrl;
+                              });
+                            },
+                            icon: const Icon(Icons.add_photo_alternate_outlined,
+                                color: Colors.blue),
+                            label: const Text(
+                              'Загрузить фото',
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          TextButton.icon(
+                            onPressed: () async {
+                              await Navigator.pushNamed(
+                                context,
+                                '/media_delete_page',
+                                arguments: GoodsArguments(
+                                  'Медиафайлы',
+                                  '',
+                                  '',
+                                  0,
+                                  goods?.nomenklaturaKod ?? "",
+                                ),
+                              );
+
+                              _fetchGoods(goods?.nomenklaturaKod ?? "");
+                              loadProductImages(goods?.nomenklaturaKod ?? "");
+                            },
+                            icon: const Icon(Icons.delete_outline_rounded,
+                                color: Colors.red),
+                            label: const Text(
+                              'Удалить',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 10),
+                  if (showSecretButtons)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TextButton.icon(
+                        onPressed: () {
+                          uploadVideo(context, goods?.nomenklaturaKod ?? "");
+                        },
+                        icon: const Icon(Icons.video_chat_outlined,
+                            color: Colors.blue),
+                        label: const Text(
+                          'Загрузить видео',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
+                    ),
                   const SizedBox(height: 20),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -452,79 +536,79 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Row(
-                      children: [
-                        TextButton.icon(
-                          onPressed: () {
-                            uploadPhoto(
-                              context,
-                              '7783734209',
-                              goods?.nomenklaturaKod ?? "",
-                              goods?.catId ?? "",
-                              () {
-                                // _fetchGoods(widget.arguments.nomenklaturaKod);
-                              },
-                              (newPhotoUrl) {
-                                // setState(() {
-                                //   goods!.photo = newPhotoUrl;
-                                // });
-                                _fetchGoods(goods?.nomenklaturaKod ?? "");
-                                loadProductImages(goods?.nomenklaturaKod ?? "");
-                              },
-                            );
-                          },
-                          icon: const Icon(Icons.add_photo_alternate_outlined,
-                              color: Colors.blue),
-                          label: const Text(
-                            'Загрузить фото',
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        TextButton.icon(
-                          onPressed: () async {
-                            await Navigator.pushNamed(
-                              context,
-                              '/media_delete_page',
-                              arguments: GoodsArguments(
-                                'Медиафайлы',
-                                '',
-                                '',
-                                0,
-                                goods?.nomenklaturaKod ?? "",
-                              ),
-                            );
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  //   child: Row(
+                  //     children: [
+                  //       TextButton.icon(
+                  //         onPressed: () {
+                  //           uploadPhoto(
+                  //             context,
+                  //             '7783734209',
+                  //             goods?.nomenklaturaKod ?? "",
+                  //             goods?.catId ?? "",
+                  //             () {
+                  //               // _fetchGoods(widget.arguments.nomenklaturaKod);
+                  //             },
+                  //             (newPhotoUrl) {
+                  //               // setState(() {
+                  //               //   goods!.photo = newPhotoUrl;
+                  //               // });
+                  //               _fetchGoods(goods?.nomenklaturaKod ?? "");
+                  //               loadProductImages(goods?.nomenklaturaKod ?? "");
+                  //             },
+                  //           );
+                  //         },
+                  //         icon: const Icon(Icons.add_photo_alternate_outlined,
+                  //             color: Colors.blue),
+                  //         label: const Text(
+                  //           'Загрузить фото',
+                  //           style: TextStyle(color: Colors.blue),
+                  //         ),
+                  //       ),
+                  //       const SizedBox(width: 10),
+                  //       TextButton.icon(
+                  //         onPressed: () async {
+                  //           await Navigator.pushNamed(
+                  //             context,
+                  //             '/media_delete_page',
+                  //             arguments: GoodsArguments(
+                  //               'Медиафайлы',
+                  //               '',
+                  //               '',
+                  //               0,
+                  //               goods?.nomenklaturaKod ?? "",
+                  //             ),
+                  //           );
 
-                            _fetchGoods(goods?.nomenklaturaKod ?? "");
-                            loadProductImages(goods?.nomenklaturaKod ?? "");
-                          },
-                          icon: const Icon(Icons.delete_outline_rounded,
-                              color: Colors.red),
-                          label: const Text(
-                            'Удалить',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: TextButton.icon(
-                      onPressed: () {
-                        uploadVideo(context, goods?.nomenklaturaKod ?? "");
-                      },
-                      icon: const Icon(Icons.video_chat_outlined,
-                          color: Colors.blue),
-                      label: const Text(
-                        'Загрузить видео',
-                        style: TextStyle(color: Colors.blue),
-                      ),
-                    ),
-                  ),
+                  //           _fetchGoods(goods?.nomenklaturaKod ?? "");
+                  //           loadProductImages(goods?.nomenklaturaKod ?? "");
+                  //         },
+                  //         icon: const Icon(Icons.delete_outline_rounded,
+                  //             color: Colors.red),
+                  //         label: const Text(
+                  //           'Удалить',
+                  //           style: TextStyle(color: Colors.red),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 10),
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  //   child: TextButton.icon(
+                  //     onPressed: () {
+                  //       uploadVideo(context, goods?.nomenklaturaKod ?? "");
+                  //     },
+                  //     icon: const Icon(Icons.video_chat_outlined,
+                  //         color: Colors.blue),
+                  //     label: const Text(
+                  //       'Загрузить видео',
+                  //       style: TextStyle(color: Colors.blue),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             )

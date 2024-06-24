@@ -11,8 +11,12 @@ import 'package:confetti/confetti.dart';
 
 class PromoCodeBottomSheet extends StatefulWidget {
   final List<PersistentShoppingCartItem> cartItems;
+  final Function(BuildContext) setOrder;
 
-  const PromoCodeBottomSheet({Key? key, required this.cartItems})
+  const PromoCodeBottomSheet(
+      {Key? key,
+      required this.cartItems,
+      required this.setOrder}) // Измените конструктор
       : super(key: key);
 
   @override
@@ -150,8 +154,10 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text('Адрес доставки',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    style: TextStyle(
+                        color: AppColors.primaryColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
                 userProvider.userAddress?.deliveryAddress != null
                     ? Column(
                         children: [
@@ -196,7 +202,7 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
                                         ),
                                       ),
                                       Text(
-                                        'Цена со 25% скидкой: ${CustomNumberFormat.format(totalAmount)}₸',
+                                        'Цена 25% со скидкой: ${CustomNumberFormat.format(totalAmount)}₸🔥',
                                         style: TextStyle(
                                             fontSize: 16,
                                             color: AppColors.primaryColor,
@@ -310,7 +316,7 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
                           child: Text(
                             'Выбрать адрес',
                             style: TextStyle(
-                              color: AppColors.primary,
+                              color: AppColors.primaryColor,
                               fontSize: 16,
                             ),
                           ),
@@ -323,17 +329,27 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
                     color: AppColors.primaryColor,
                     borderRadius: BorderRadius.all(Radius.circular(16)),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Text(
-                            'Оформить заказ',
-                            style: TextStyle(color: Colors.white),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          widget.setOrder(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors
+                              .primaryColor, // Задайте основной цвет кнопки
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 32.0), // Увеличьте отступы для кнопки
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                16), // Задайте радиус скругления для кнопки
                           ),
-                        ],
+                        ),
+                        child: const Text(
+                          'Оформить заказ',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                   ),
@@ -345,11 +361,11 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
               child: ConfettiWidget(
                 confettiController: _confettiController,
                 blastDirection: -3.14 / 2,
-                emissionFrequency: 0.5,
-                numberOfParticles: 10,
+                emissionFrequency: 1,
+                numberOfParticles: 4,
                 gravity: 0.1,
                 shouldLoop: false,
-                canvas: Size(MediaQuery.of(context).size.width - 44, 300),
+                canvas: Size(MediaQuery.of(context).size.width - 50, 2500),
               ),
             ),
           ],

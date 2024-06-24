@@ -80,6 +80,7 @@ class SetOrderGoods {
   String? catId;
   double? oldPrice;
   String? newsPhoto;
+  String? parent;
 
   SetOrderGoods({
     this.nomenklatura,
@@ -95,6 +96,7 @@ class SetOrderGoods {
     this.catId,
     this.oldPrice,
     this.newsPhoto,
+    this.parent,
     required comment,
     required int basketCount,
   });
@@ -113,6 +115,7 @@ class SetOrderGoods {
     catId = json['cat_id'];
     oldPrice = convertStringToDouble(json['old_price']);
     newsPhoto = json['news_photo'];
+    parent = json['parent'];
   }
 
   Map<String, dynamic> toJson() {
@@ -130,6 +133,7 @@ class SetOrderGoods {
     data['cat_id'] = catId;
     data['old_price'] = oldPrice;
     data['news_photo'] = newsPhoto;
+    data['parent'] = parent;
     return data;
   }
 }
