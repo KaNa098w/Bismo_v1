@@ -45,7 +45,7 @@ class OrderDetailsProductTile extends StatelessWidget {
           ),
         ),
         Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
               '${data.price}₸',
@@ -53,7 +53,7 @@ class OrderDetailsProductTile extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '${data.basketCount}x',
+              '${data.step}шт в упаковке',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ],

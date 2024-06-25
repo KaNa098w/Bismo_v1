@@ -6,9 +6,14 @@ import 'package:bismo/core/presentation/components/orders_comp/order_details_tot
 import 'package:flutter/material.dart';
 
 class OrderDetailsPage extends StatelessWidget {
-  const OrderDetailsPage({Key? key, required this.order}) : super(key: key);
+  const OrderDetailsPage({
+    Key? key,
+    required this.order,
+    required this.categoryTotalSum,
+  }) : super(key: key);
 
   final DetalizationOrderResponse? order;
+  final double categoryTotalSum;
 
   @override
   Widget build(BuildContext context) {

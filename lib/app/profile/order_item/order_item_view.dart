@@ -24,6 +24,7 @@ class OrderItemView extends StatefulWidget {
 class _OrderItemViewState extends State<OrderItemView> {
   DetalizationOrderResponse? orderItemResponse;
   bool isLoading = true;
+  double categoryTotalSum = 0.0; // Добавлено
 
   @override
   void initState() {
@@ -42,11 +43,10 @@ class _OrderItemViewState extends State<OrderItemView> {
       var res =
           await OrderService().getDetalizationsOrder(phoneNumber, orderId);
 
-      // log(res?.toJson().toString() ?? "");
-
       setState(() {
         orderItemResponse = res;
         isLoading = false;
+        categoryTotalSum = calculateCategoryTotalSum(res); // Расчет суммы
       });
 
       return res;
@@ -59,6 +59,17 @@ class _OrderItemViewState extends State<OrderItemView> {
 
       return null;
     }
+  }
+
+  double calculateCategoryTotalSum(DetalizationOrderResponse? order) {
+    // Реализуйте расчет суммы товаров внутри категории
+    double totalSum = 0.0;
+    if (order != null && order.factSum != null) {
+      for (var item in order.goods!) {
+        totalSum += (item.price ?? 0) * (item.basketCount ?? 0);
+      }
+    }
+    return totalSum;
   }
 
   @override
@@ -79,48 +90,12 @@ class _OrderItemViewState extends State<OrderItemView> {
     } else if (orderItemResponse == null) {
       body = const CustomErrorWidget();
     } else {
-      body = OrderDetailsPage(order: orderItemResponse);
+      body = OrderDetailsPage(
+        order: orderItemResponse,
+        categoryTotalSum: categoryTotalSum, // Передача рассчитанной суммы
+      );
     }
 
-    // !isLoading
-    //     ? orderItemResponse != null
-    //         ? Container(
-    //             child: (orderItemResponse?.body ?? []).isNotEmpty
-    //                 ? GridView.count(
-    //                     crossAxisCount: 3,
-    //                     children: List.generate(
-    //                         ((orderItemResponse?.body) ?? []).length, (index) {
-    //                       return CategoryTile(
-    //                         imageLink:
-    //                             orderItemResponse?.body?[index].photo ?? "",
-    //                         label:
-    //                             orderItemResponse?.body?[index].catName ?? "",
-    //                         onTap: () {
-    //                           Navigator.pushNamed(
-    //                             context,
-    //                             "/goods",
-    //                             arguments: GoodsArguments(
-    //                                 orderItemResponse?.body?[index].catName ??
-    //                                     "",
-    //                                 orderItemResponse?.body?[index].catId ??
-    //                                     ""),
-    //                           );
-    //                         },
-    //                       );
-    //                     }),
-    //                   )
-    //                 : const CustomEmpty())
-    //     : const SizedBox(child: CustomErrorWidget())
-    // : const Center(
-    //     child: SizedBox(
-    //       height: 50.0,
-    //       width: 50.0,
-    //       child: Center(
-    //           child: CircularProgressIndicator(
-    //         color: AppColors.primaryColor,
-    //       )),
-    //     ),
-    //   );
     return DefaultTabController(
       length: 3,
       child: Scaffold(

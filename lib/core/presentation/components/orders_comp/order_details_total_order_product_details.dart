@@ -33,7 +33,7 @@ class TotalOrderProductDetails extends StatelessWidget {
               return OrderDetailsProductTile(data: order!.goods![index]);
             },
             separatorBuilder: (context, index) => const Divider(
-              thickness: 0.2,
+              thickness: 1,
             ),
             itemCount: order!.goods!.length,
             shrinkWrap: true,

@@ -36,12 +36,13 @@ class _CartViewState extends State<CartView> {
   bool isDeliverySelected = false;
   GetAddressResponse? userAddress;
   Future<List<PersistentShoppingCartItem>>? _futureCartItems;
+  String? selectedCategory;
 
   @override
   void initState() {
     super.initState();
     _futureCartItems = _loadCartItems();
-    isDeliverySelected = true; // Добавьте эту строку
+    isDeliverySelected = true;
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       var userProvider = context.read<UserProvider>();
@@ -74,8 +75,6 @@ class _CartViewState extends State<CartView> {
   void removeFromCart(String productId) async {
     await PersistentShoppingCart().removeFromCart(productId);
     _futureCartItems = _loadCartItems();
-    // setState(() {});
-    // _loadCartItems();
   }
 
   void _showClearCartConfirmationDialog(BuildContext context) {
@@ -164,24 +163,25 @@ class _CartViewState extends State<CartView> {
     }
   }
 
-  Future<void> _setOrder(BuildContext ctx) async {
+  Future<void> _setOrder(
+      BuildContext ctx, List<PersistentShoppingCartItem> items) async {
     var userProvider = context.read<UserProvider>();
     showLoader(ctx);
     try {
       if (userAddress == null) {}
 
-      int totalPrice = cartItems
+      int totalPrice = items
           .fold<double>(
               0, (total, item) => total + (item.unitPrice * item.quantity))
           .toInt();
 
-      var goods = cartItems.map((item) {
+      var goods = items.map((item) {
         return SetOrderGoods(
           nomenklaturaKod: item.productDetails?['nomenklaturaKod'],
           producer: item.productDetails?['producer'] ?? "",
           price: item.unitPrice,
           count: item.productDetails?['count'] ?? 0,
-          step: item.productDetails?['step'], // Извлекаем значение поля step
+          step: item.productDetails?['step'],
           nomenklatura: item.productDetails?['nomenklatura'],
           comment: item.productDetails?['comment'] ?? "Нет комментарии",
           basketCount: item.quantity ?? 1,
@@ -217,8 +217,9 @@ class _CartViewState extends State<CartView> {
             actions: <Widget>[
               CupertinoDialogAction(
                 onPressed: () {
-                  PersistentShoppingCart().clearCart();
                   setState(() {
+                    cartItems.removeWhere((item) => items.contains(
+                        item)); // Удаляем только товары из выбранной категории
                     isLoaded = false;
                   });
                   _loadCartItems();
@@ -566,100 +567,85 @@ class _CartViewState extends State<CartView> {
                       );
                     },
                   ),
+                  Center(
+                    child: SizedBox(
+                      width: 350, // Установите необходимую ширину
+                      height: 45, // Установите необходимую высоту
+                      child: ElevatedButton(
+                        onPressed: () {
+                          selectedCategory = parent;
+                          _showBottomSheet(context, items);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.purple, // Цвет кнопки
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                10), // Установите радиус для закругления углов
+                          ),
+                        ),
+                        child: Text('Итого: ${CustomNumberFormat.format(
+                          items.fold<double>(
+                            0,
+                            (total, item) =>
+                                total +
+                                (item.unitPrice *
+                                    (item.productDetails?['step'] ?? 1) *
+                                    item.quantity),
+                          ),
+                        )}₸, Оформить заказ'),
+                      ),
+                    ),
+                  )
                 ],
               );
             }).toList(),
           );
         },
       ),
-      bottomNavigationBar: cartItems.isNotEmpty
-          ? BottomAppBar(
-              color: Colors.white,
-              child: InkWell(
-                onTap: () {
-                  if (isDeliverySelected) {
-                    _showBottomSheet(context);
-                  } else {
-                    _setOrder(context);
-                  }
-                },
-                child: Container(
-                  height: 50,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primaryColor,
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Итого: ${CustomNumberFormat.format(
-                              cartItems.fold<double>(
-                                0,
-                                (total, item) =>
-                                    total +
-                                    (item.unitPrice *
-                                        (item.productDetails?['step'] ?? 1) *
-                                        item.quantity),
-                              ),
-                            )}₸',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            )
-          : null,
+      // bottomNavigationBar: cartItems.isNotEmpty
+      //     ? BottomAppBar(
+      //         color: Colors.white,
+      //         child: InkWell(
+      //           onTap: () {
+      //             ScaffoldMessenger.of(context).showSnackBar(
+      //               SnackBar(
+      //                 content: Text('Выберите категорию для оформления.'),
+      //               ),
+      //             );
+      //           },
+      // child: Container(
+      //   height: 50,
+      //   decoration: const BoxDecoration(
+      //     color: AppColors.primaryColor,
+      //     borderRadius: BorderRadius.all(Radius.circular(10)),
+      //   ),
+      //   child: Center(
+      //     child: Padding(
+      //       padding: const EdgeInsets.all(8.0),
+      //       child: Column(
+      //         mainAxisSize: MainAxisSize.min,
+      //         children: [
+      //           Text(
+      //             'Выберите категорию для оформления',
+      //             style: TextStyle(
+      //                 color: Colors.white,
+      //                 fontWeight: FontWeight.bold),
+      //           ),
+      //         ],
+      //       ),
+      //     ),
+      //   ),
+      // ),
+      //           ),
+      //         )
+      //       : null,
     );
+    //
   }
 
-  // child: Text(
-  //   'Итого: ${CustomNumberFormat.format(
-  //     cartItems.fold<double>(
-  //       0,
-  //       (total, item) =>
-  //           total +
-  //           (item.unitPrice *
-  //               (item.productDetails?['step'] ?? 1) *
-  //               item.quantity),
-  //     ),
-  //   )}₸',
-  //                 // ),
-  //               ),
-  //               ElevatedButton(
-  //                 onPressed: () {
-  //                   if (isDeliverySelected) {
-  //                     _showBottomSheet(context);
-  //                   } else {
-  //                     _setOrder(context);
-  //                   }
-  //                 },
-  //                 style: ElevatedButton.styleFrom(
-  //                   foregroundColor: Colors.white,
-  //                   backgroundColor: Colors.red,
-  //                   padding: const EdgeInsets.symmetric(
-  //                       horizontal: 20, vertical: 12),
-  //                   textStyle: const TextStyle(fontSize: 16),
-  //                 ),
-  //                 child: const Text(
-  //                   'Оформить заказ',
-  //                   style: TextStyle(color: Colors.white),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         )
-  //       : null,
-
-  void _showBottomSheet(BuildContext context) {
+  void _showBottomSheet(
+      BuildContext context, List<PersistentShoppingCartItem> items) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -670,9 +656,8 @@ class _CartViewState extends State<CartView> {
       ),
       builder: (context) {
         return PromoCodeBottomSheet(
-          cartItems: cartItems,
-          setOrder:
-              _setOrder, // Передаем функцию _setOrder в PromoCodeBottomSheet
+          cartItems: items,
+          setOrder: (ctx) => _setOrder(ctx, items),
         );
       },
     );

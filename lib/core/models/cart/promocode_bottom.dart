@@ -36,7 +36,6 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
   bool isValidPromo = false;
   late ConfettiController _confettiController;
   late AnimationController _animationController;
-  late Animation<double> _animation;
 
   @override
   void initState() {
@@ -60,10 +59,6 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
-    );
-    _animation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
     );
   }
 
@@ -202,7 +197,7 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
                                         ),
                                       ),
                                       Text(
-                                        'Цена 25% со скидкой: ${CustomNumberFormat.format(totalAmount)}₸🔥',
+                                        'Цена 25% скидкой: ${CustomNumberFormat.format(totalAmount)}₸🔥',
                                         style: TextStyle(
                                             fontSize: 16,
                                             color: AppColors.primaryColor,

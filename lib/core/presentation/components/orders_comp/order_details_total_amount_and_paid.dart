@@ -3,8 +3,10 @@ import 'package:bismo/core/models/order/detalization_order_response.dart';
 import 'package:flutter/material.dart';
 
 class TotalAmountAndPaidData extends StatelessWidget {
-  const TotalAmountAndPaidData({Key? key, required this.order})
-      : super(key: key);
+  const TotalAmountAndPaidData({
+    Key? key,
+    required this.order,
+  }) : super(key: key);
 
   final DetalizationOrderResponse? order;
 
@@ -30,21 +32,6 @@ class TotalAmountAndPaidData extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          // Expanded(
-          //   child: Row(
-          //     children: [
-          //       Text(
-          //         'Адрес доставки',
-          //         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-          //             fontWeight: FontWeight.bold, color: Colors.black),
-          //       ),
-          //       const Spacer(),
-          //       RichText(
-          //         text: TextSpan(text: '${order?.deliveryAddress}'),
-          //       ),
-          //     ],
-          //   ),
-          // ),
           Row(
             children: [
               Text(
