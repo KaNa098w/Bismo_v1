@@ -3,6 +3,7 @@ import 'package:bismo/core/presentation/widgets/network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart' hide CarouselController;
 
 class AdSpace extends StatelessWidget {
   List<String> imagePaths = [

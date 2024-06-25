@@ -163,100 +163,117 @@ class _CartViewState extends State<CartView> {
     }
   }
 
-  Future<void> _setOrder(
+  // Future<void> _setOrder(BuildContext ctx,
+  //     List<PersistentShoppingCartItem> items, bool isPromocodeActive) async {
+  //   var userProvider = context.read<UserProvider>();
+  //   showLoader(ctx);
+  //   try {
+  //     if (userAddress == null) {}
+
+  //     int totalPrice = items
+  //         .fold<double>(
+  //             0,
+  //             (total, item) =>
+  //                 total +
+  //                 (item.unitPrice *
+  //                     item.quantity *
+  //                     item.productDetails?['step']))
+  //         .toInt();
+
+  //     var goods = items.map((item) {
+  //       return SetOrderGoods(
+  //         nomenklaturaKod: item.productDetails?['nomenklaturaKod'],
+  //         producer: item.productDetails?['producer'] ?? "",
+  //         price: item.unitPrice,
+  //         count: item.productDetails?['count'] ?? 0,
+  //         step: item.productDetails?['step'],
+  //         nomenklatura: item.productDetails?['nomenklatura'],
+  //         comment: item.productDetails?['comment'] ?? "Нет комментарии",
+  //         basketCount: item.quantity ?? 1,
+  //       );
+  //     }).toList();
+
+  //     SetOrderRequest setOrderRequest = SetOrderRequest(
+  //       provider: "7757499451",
+  //       orderSum: totalPrice,
+  //       providerName: "",
+  //       deliveryAddress: userProvider.userAddress?.deliveryAddress,
+  //       comment: "",
+  //       counterparty: "7757499451",
+  //       dolgota: userProvider.userAddress?.dolgota,
+  //       type: isDeliverySelected ? "0" : "1",
+  //       providerPhoto:
+  //           "https://bismo-products.object.pscloud.io/Bismocounterparties/%D0%96%D0%B0%D1%81%D0%9D%D1%83%D1%80.png",
+  //       shirota: userProvider.userAddress?.shirota,
+  //       user: userProvider.user?.phoneNumber,
+  //       goods: goods,
+  //     );
+
+  //     Navigator.pop(ctx);
+
+  //     // var res = await CartService().setOrder(setOrderRequest);
+
+  //     // if (res != null) {
+  //     //   if (ctx.mounted) {
+  //     //     hideLoader(ctx);
+  //     //     showAlertDialog(
+  //     //       context: ctx,
+  //     //       barrierDismissible: false,
+  //     //       title: "Уведомление",
+  //     //       content: res.message ?? "",
+  //     //       actions: <Widget>[
+  //     //         CupertinoDialogAction(
+  //     //           onPressed: () {
+  //     //             setState(() {
+  //     //               cartItems.removeWhere((item) => items.contains(
+  //     //                   item)); // Удаляем только товары из выбранной категории
+  //     //               isLoaded = false;
+  //     //             });
+  //     //             _loadCartItems();
+  //     //             Navigator.pop(ctx);
+  //     //             if (isDeliverySelected) {
+  //     //               Navigator.pop(ctx);
+  //     //             }
+  //     //             Navigator.pushNamed(ctx, "/orders");
+  //     //           },
+  //     //           textStyle: const TextStyle(color: AppColors.primaryColor),
+  //     //           child: const Text("Перейти в мои заказы"),
+  //     //         ),
+  //     //       ],
+  //     //     );
+  //     //   }
+  //     // }
+  //   } on DioException catch (e) {
+  //     log(e.toString());
+  //     final errorMessage = DioExceptions.fromDioError(e).toString();
+
+  //     if (ctx.mounted) {
+  //       hideLoader(ctx);
+  //       showAlertDialog(
+  //         context: ctx,
+  //         barrierDismissible: true,
+  //         title: "Ошибка",
+  //         content: errorMessage,
+  //         actions: <Widget>[
+  //           CupertinoDialogAction(
+  //             onPressed: () => Navigator.of(ctx).pop(),
+  //             textStyle: const TextStyle(color: AppColors.primaryColor),
+  //             child: const Text("OK"),
+  //           ),
+  //         ],
+  //       );
+  //     }
+  //   }
+  // }
+
+  Future<void> _afterOrderCreate(
       BuildContext ctx, List<PersistentShoppingCartItem> items) async {
-    var userProvider = context.read<UserProvider>();
-    showLoader(ctx);
-    try {
-      if (userAddress == null) {}
-
-      int totalPrice = items
-          .fold<double>(
-              0, (total, item) => total + (item.unitPrice * item.quantity))
-          .toInt();
-
-      var goods = items.map((item) {
-        return SetOrderGoods(
-          nomenklaturaKod: item.productDetails?['nomenklaturaKod'],
-          producer: item.productDetails?['producer'] ?? "",
-          price: item.unitPrice,
-          count: item.productDetails?['count'] ?? 0,
-          step: item.productDetails?['step'],
-          nomenklatura: item.productDetails?['nomenklatura'],
-          comment: item.productDetails?['comment'] ?? "Нет комментарии",
-          basketCount: item.quantity ?? 1,
-        );
-      }).toList();
-
-      SetOrderRequest setOrderRequest = SetOrderRequest(
-        provider: "7757499451",
-        orderSum: totalPrice,
-        providerName: "",
-        deliveryAddress: userProvider.userAddress?.deliveryAddress,
-        comment: "",
-        counterparty: "7757499451",
-        dolgota: userProvider.userAddress?.dolgota,
-        type: isDeliverySelected ? "0" : "1",
-        providerPhoto:
-            "https://bismo-products.object.pscloud.io/Bismocounterparties/%D0%96%D0%B0%D1%81%D0%9D%D1%83%D1%80.png",
-        shirota: userProvider.userAddress?.shirota,
-        user: userProvider.user?.phoneNumber,
-        goods: goods,
-      );
-
-      var res = await CartService().setOrder(setOrderRequest);
-
-      if (res != null) {
-        if (ctx.mounted) {
-          hideLoader(ctx);
-          showAlertDialog(
-            context: ctx,
-            barrierDismissible: false,
-            title: "Уведомление",
-            content: res.message ?? "",
-            actions: <Widget>[
-              CupertinoDialogAction(
-                onPressed: () {
-                  setState(() {
-                    cartItems.removeWhere((item) => items.contains(
-                        item)); // Удаляем только товары из выбранной категории
-                    isLoaded = false;
-                  });
-                  _loadCartItems();
-                  Navigator.pop(ctx);
-                  if (isDeliverySelected) {
-                    Navigator.pop(ctx);
-                  }
-                  Navigator.pushNamed(ctx, "/orders");
-                },
-                textStyle: const TextStyle(color: AppColors.primaryColor),
-                child: const Text("Перейти в мои заказы"),
-              ),
-            ],
-          );
-        }
-      }
-    } on DioException catch (e) {
-      log(e.toString());
-      final errorMessage = DioExceptions.fromDioError(e).toString();
-
-      if (ctx.mounted) {
-        hideLoader(ctx);
-        showAlertDialog(
-          context: ctx,
-          barrierDismissible: true,
-          title: "Ошибка",
-          content: errorMessage,
-          actions: <Widget>[
-            CupertinoDialogAction(
-              onPressed: () => Navigator.of(ctx).pop(),
-              textStyle: const TextStyle(color: AppColors.primaryColor),
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      }
-    }
+    setState(() {
+      cartItems.removeWhere((item) =>
+          items.contains(item)); // Удаляем только товары из выбранной категории
+      isLoaded = false;
+    });
+    _loadCartItems();
   }
 
   String getCategoryName(String parent) {
@@ -338,7 +355,7 @@ class _CartViewState extends State<CartView> {
         actions: cartItems.isNotEmpty
             ? [
                 IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.delete_sweep_outlined,
                     color: AppColors.primaryColor,
                     size: 33,
@@ -412,7 +429,7 @@ class _CartViewState extends State<CartView> {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       categoryName,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: AppColors.primaryColor,
@@ -421,7 +438,7 @@ class _CartViewState extends State<CartView> {
                   ),
                   ListView.separated(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: items.length,
                     separatorBuilder: (BuildContext context, int index) =>
                         const Divider(),
@@ -468,21 +485,20 @@ class _CartViewState extends State<CartView> {
                         ),
                         title: Text(
                           cartItem.productName,
-                          style: TextStyle(fontSize: 14),
+                          style: const TextStyle(fontSize: 14),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Цена: ${CustomNumberFormat.format(cartItem.unitPrice)}₸/шт',
-                              style: TextStyle(fontSize: 13),
+                              style: const TextStyle(fontSize: 13),
                             ),
                             Text(
                                 'В упаковке: ${CustomNumberFormat.format(cartItem.productDetails!['step'])}шт x ${cartItem.quantity}',
-                                style: TextStyle(fontSize: 12)),
+                                style: const TextStyle(fontSize: 12)),
                             Text(
-                              (cartItem.unitPrice != null &&
-                                      cartItem.productDetails?['step'] != null)
+                              (cartItem.productDetails?['step'] != null)
                                   ? 'Сумма: ${CustomNumberFormat.format(cartItem.unitPrice * cartItem.productDetails!['step'] * cartItem.quantity)}₸'
                                   : '0₸',
                               style: const TextStyle(
@@ -574,7 +590,7 @@ class _CartViewState extends State<CartView> {
                       child: ElevatedButton(
                         onPressed: () {
                           selectedCategory = parent;
-                          _showBottomSheet(context, items);
+                          _showBottomSheet(context, items, _afterOrderCreate);
                         },
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
@@ -645,7 +661,10 @@ class _CartViewState extends State<CartView> {
   }
 
   void _showBottomSheet(
-      BuildContext context, List<PersistentShoppingCartItem> items) {
+      BuildContext context,
+      List<PersistentShoppingCartItem> items,
+      Function(BuildContext ctx, List<PersistentShoppingCartItem> items)
+          afterOrderCreate) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -656,9 +675,10 @@ class _CartViewState extends State<CartView> {
       ),
       builder: (context) {
         return PromoCodeBottomSheet(
-          cartItems: items,
-          setOrder: (ctx) => _setOrder(ctx, items),
-        );
+            cartItems: items,
+            // setOrder: _setOrder,
+            afterOrderCreate: afterOrderCreate,
+            isDeliverySelected: isDeliverySelected);
       },
     );
   }
