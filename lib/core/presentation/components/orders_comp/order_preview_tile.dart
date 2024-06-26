@@ -64,26 +64,39 @@ class _OrderPreviewTileState extends State<OrderPreviewTile> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
                       'Номер заказа:',
                       style:
-                          TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                     ),
                     const SizedBox(width: 5),
                     Text(
                       widget.orderNumber,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Colors.black,
-                          fontSize: 13,
+                          fontSize: 14,
                           fontWeight: FontWeight.w500),
                     ),
-                    const Spacer(),
+                    // const Spacer(),
+                    // Text(
+                    //   formatDateWithTime(widget.date, 'ru'),
+                    //   style:
+                    //       TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+                    // ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     Text(
-                      formatDateWithTime(widget.date, 'ru'),
+                      'Дата заказа:',
                       style:
-                          TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                     ),
+                    Text(widget.date)
                   ],
                 ),
                 const SizedBox(height: 8),

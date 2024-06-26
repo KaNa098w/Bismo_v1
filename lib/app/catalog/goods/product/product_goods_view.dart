@@ -98,8 +98,8 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
     }
   }
 
-  void addToCart(
-      BuildContext context, SetOrderGoods goods, int quantity) async {
+  void addToCart(BuildContext context, SetOrderGoods goods, int quantity,
+      String? parent) async {
     await PersistentShoppingCart().addToCart(PersistentShoppingCartItem(
       productId: goods.nomenklaturaKod ?? "",
       productName: goods.nomenklatura ?? "",
@@ -112,13 +112,9 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
         "producer": goods.kontragent,
         "step": goods.step,
         "count": goods.count,
+        "parent": parent, // Передаем значение parent
       },
     ));
-    // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-    //   content: Text('Товар добавлен в корзину'),
-    //   backgroundColor: Colors.green,
-    //   duration: Duration(milliseconds: 500),
-    // ));
   }
 
   SetOrderGoods convertToSetOrderGoods(Goods goods) {
@@ -648,10 +644,10 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                     child: ElevatedButton(
                       onPressed: () async {
                         addToCart(
-                          context,
-                          convertToSetOrderGoods(goods ?? widget.goods),
-                          quantity,
-                        );
+                            context,
+                            convertToSetOrderGoods(goods ?? widget.goods),
+                            quantity,
+                            goods?.parent);
 
                         showAlertDialog(
                           context: context,

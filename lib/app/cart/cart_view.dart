@@ -216,7 +216,7 @@ class _CartViewState extends State<CartView> {
       case 'MA100001883':
         return 'Оригинальная косметика';
       default:
-        return 'Другие';
+        return '$parent';
     }
   }
 
@@ -344,7 +344,7 @@ class _CartViewState extends State<CartView> {
           Map<String, List<PersistentShoppingCartItem>> groupedItems = {};
           for (var item in snapshot.data!) {
             String parent =
-                item.productDetails?['parent']?.toString() ?? 'other';
+                item.productDetails?['parent']?.toString() ?? 'Другие';
             if (groupedItems[parent] == null) {
               groupedItems[parent] = [];
             }
