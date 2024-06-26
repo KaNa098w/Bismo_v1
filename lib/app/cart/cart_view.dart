@@ -3,6 +3,7 @@ import 'package:bismo/app/catalog/goods/goods_arguments.dart';
 import 'package:bismo/app/product_details/product_details.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/exceptions.dart';
+import 'package:bismo/core/models/cart/get_min_sum_response.dart';
 import 'package:bismo/core/models/cart/promocode_bottom.dart';
 import 'package:bismo/core/models/cart/set_order_request.dart';
 import 'package:bismo/core/models/user/get_address_response.dart';
@@ -12,6 +13,7 @@ import 'package:bismo/core/presentation/widgets/custom_error_widget.dart';
 import 'package:bismo/core/presentation/widgets/custom_number_format.dart';
 import 'package:bismo/core/providers/user_provider.dart';
 import 'package:bismo/core/services/cart_service.dart';
+import 'package:bismo/core/services/min_sum_service.dart';
 import 'package:bismo/core/services/user_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,6 +22,11 @@ import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
+import 'package:flutter/material.dart';
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 
 class CartView extends StatefulWidget {
   final String? title;
@@ -37,6 +44,7 @@ class _CartViewState extends State<CartView> {
   GetAddressResponse? userAddress;
   Future<List<PersistentShoppingCartItem>>? _futureCartItems;
   String? selectedCategory;
+  Map<String, int> minSumm = {};
 
   @override
   void initState() {
@@ -52,6 +60,29 @@ class _CartViewState extends State<CartView> {
         userAddress = res;
       });
     });
+
+    // Загрузка минимальных сумм
+    _loadMinSumm();
+  }
+
+  Future<void> _loadMinSumm() async {
+    print('Загрузка минимальных сумм...');
+    MinSummService service = MinSummService();
+    try {
+      GetMinSumResponse? response = await service.getMinSum('sdsd');
+      if (response != null) {
+        Map<String, int> sums = {};
+        response.body?.forEach((item) {
+          sums[item.parent ?? ''] = item.summ ?? 0;
+        });
+        setState(() {
+          minSumm = sums;
+        });
+      }
+      print('Минимальные суммы успешно загружены: $minSumm');
+    } catch (e) {
+      print('Ошибка при загрузке минимальных сумм: $e');
+    }
   }
 
   Future<List<PersistentShoppingCartItem>> _loadCartItems() async {
@@ -163,109 +194,6 @@ class _CartViewState extends State<CartView> {
     }
   }
 
-  // Future<void> _setOrder(BuildContext ctx,
-  //     List<PersistentShoppingCartItem> items, bool isPromocodeActive) async {
-  //   var userProvider = context.read<UserProvider>();
-  //   showLoader(ctx);
-  //   try {
-  //     if (userAddress == null) {}
-
-  //     int totalPrice = items
-  //         .fold<double>(
-  //             0,
-  //             (total, item) =>
-  //                 total +
-  //                 (item.unitPrice *
-  //                     item.quantity *
-  //                     item.productDetails?['step']))
-  //         .toInt();
-
-  //     var goods = items.map((item) {
-  //       return SetOrderGoods(
-  //         nomenklaturaKod: item.productDetails?['nomenklaturaKod'],
-  //         producer: item.productDetails?['producer'] ?? "",
-  //         price: item.unitPrice,
-  //         count: item.productDetails?['count'] ?? 0,
-  //         step: item.productDetails?['step'],
-  //         nomenklatura: item.productDetails?['nomenklatura'],
-  //         comment: item.productDetails?['comment'] ?? "Нет комментарии",
-  //         basketCount: item.quantity ?? 1,
-  //       );
-  //     }).toList();
-
-  //     SetOrderRequest setOrderRequest = SetOrderRequest(
-  //       provider: "7757499451",
-  //       orderSum: totalPrice,
-  //       providerName: "",
-  //       deliveryAddress: userProvider.userAddress?.deliveryAddress,
-  //       comment: "",
-  //       counterparty: "7757499451",
-  //       dolgota: userProvider.userAddress?.dolgota,
-  //       type: isDeliverySelected ? "0" : "1",
-  //       providerPhoto:
-  //           "https://bismo-products.object.pscloud.io/Bismocounterparties/%D0%96%D0%B0%D1%81%D0%9D%D1%83%D1%80.png",
-  //       shirota: userProvider.userAddress?.shirota,
-  //       user: userProvider.user?.phoneNumber,
-  //       goods: goods,
-  //     );
-
-  //     Navigator.pop(ctx);
-
-  //     // var res = await CartService().setOrder(setOrderRequest);
-
-  //     // if (res != null) {
-  //     //   if (ctx.mounted) {
-  //     //     hideLoader(ctx);
-  //     //     showAlertDialog(
-  //     //       context: ctx,
-  //     //       barrierDismissible: false,
-  //     //       title: "Уведомление",
-  //     //       content: res.message ?? "",
-  //     //       actions: <Widget>[
-  //     //         CupertinoDialogAction(
-  //     //           onPressed: () {
-  //     //             setState(() {
-  //     //               cartItems.removeWhere((item) => items.contains(
-  //     //                   item)); // Удаляем только товары из выбранной категории
-  //     //               isLoaded = false;
-  //     //             });
-  //     //             _loadCartItems();
-  //     //             Navigator.pop(ctx);
-  //     //             if (isDeliverySelected) {
-  //     //               Navigator.pop(ctx);
-  //     //             }
-  //     //             Navigator.pushNamed(ctx, "/orders");
-  //     //           },
-  //     //           textStyle: const TextStyle(color: AppColors.primaryColor),
-  //     //           child: const Text("Перейти в мои заказы"),
-  //     //         ),
-  //     //       ],
-  //     //     );
-  //     //   }
-  //     // }
-  //   } on DioException catch (e) {
-  //     log(e.toString());
-  //     final errorMessage = DioExceptions.fromDioError(e).toString();
-
-  //     if (ctx.mounted) {
-  //       hideLoader(ctx);
-  //       showAlertDialog(
-  //         context: ctx,
-  //         barrierDismissible: true,
-  //         title: "Ошибка",
-  //         content: errorMessage,
-  //         actions: <Widget>[
-  //           CupertinoDialogAction(
-  //             onPressed: () => Navigator.of(ctx).pop(),
-  //             textStyle: const TextStyle(color: AppColors.primaryColor),
-  //             child: const Text("OK"),
-  //           ),
-  //         ],
-  //       );
-  //     }
-  //   }
-  // }
-
   Future<void> _afterOrderCreate(
       BuildContext ctx, List<PersistentShoppingCartItem> items) async {
     setState(() {
@@ -287,6 +215,10 @@ class _CartViewState extends State<CartView> {
       default:
         return 'Другие';
     }
+  }
+
+  int getMinAmount(String parent) {
+    return minSumm[parent] ?? 0;
   }
 
   @override
@@ -589,8 +521,44 @@ class _CartViewState extends State<CartView> {
                       height: 45, // Установите необходимую высоту
                       child: ElevatedButton(
                         onPressed: () {
-                          selectedCategory = parent;
-                          _showBottomSheet(context, items, _afterOrderCreate);
+                          double totalAmount = items.fold<double>(
+                            0,
+                            (total, item) =>
+                                total +
+                                (item.unitPrice *
+                                    (item.productDetails?['step'] ?? 1) *
+                                    item.quantity),
+                          );
+
+                          int minAmount = getMinAmount(parent);
+                          print(
+                              'Минимальная сумма для категории $parent: $minAmount');
+
+                          if (totalAmount < minAmount) {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text(
+                                      'Ошибка',
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                    content: Text(
+                                        'Минимальный закуп в этой категории $minAmount₸'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                });
+                          } else {
+                            selectedCategory = parent;
+                            _showBottomSheet(context, items, _afterOrderCreate);
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
@@ -619,45 +587,7 @@ class _CartViewState extends State<CartView> {
           );
         },
       ),
-      // bottomNavigationBar: cartItems.isNotEmpty
-      //     ? BottomAppBar(
-      //         color: Colors.white,
-      //         child: InkWell(
-      //           onTap: () {
-      //             ScaffoldMessenger.of(context).showSnackBar(
-      //               SnackBar(
-      //                 content: Text('Выберите категорию для оформления.'),
-      //               ),
-      //             );
-      //           },
-      // child: Container(
-      //   height: 50,
-      //   decoration: const BoxDecoration(
-      //     color: AppColors.primaryColor,
-      //     borderRadius: BorderRadius.all(Radius.circular(10)),
-      //   ),
-      //   child: Center(
-      //     child: Padding(
-      //       padding: const EdgeInsets.all(8.0),
-      //       child: Column(
-      //         mainAxisSize: MainAxisSize.min,
-      //         children: [
-      //           Text(
-      //             'Выберите категорию для оформления',
-      //             style: TextStyle(
-      //                 color: Colors.white,
-      //                 fontWeight: FontWeight.bold),
-      //           ),
-      //         ],
-      //       ),
-      //     ),
-      //   ),
-      // ),
-      //           ),
-      //         )
-      //       : null,
     );
-    //
   }
 
   void _showBottomSheet(

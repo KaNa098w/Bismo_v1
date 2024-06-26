@@ -269,6 +269,14 @@ class UserProvider extends ChangeNotifier {
     return false;
   }
 
+  String? _selectedCategory;
+  String? get selectedCategory => _selectedCategory;
+
+  void setSelectedCategory(String? category) {
+    _selectedCategory = category;
+    notifyListeners();
+  }
+
   Future<bool> signUp(RegisterRequest request, BuildContext ctx) async {
     showLoader(ctx);
     try {

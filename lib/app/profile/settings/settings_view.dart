@@ -4,8 +4,10 @@ import 'package:bismo/core/constants/app_icons.dart';
 import 'package:bismo/core/helpers/login_helper.dart';
 import 'package:bismo/core/presentation/components/app_settings_tile.dart';
 import 'package:bismo/core/presentation/components/orders_comp/app_back_button.dart';
+import 'package:bismo/core/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 class SettingsView extends StatefulWidget {
   final String? title;
@@ -19,6 +21,8 @@ class SettingsView extends StatefulWidget {
 class _SettingsViewState extends State<SettingsView> {
   @override
   Widget build(BuildContext context) {
+    String? category = context.watch<UserProvider>().selectedCategory;
+
     return Scaffold(
       appBar: AppBar(
         leading: const AppBackButton(),
@@ -39,6 +43,15 @@ class _SettingsViewState extends State<SettingsView> {
         ),
         child: Column(
           children: [
+            AppSettingsListTile(
+              label: 'Категория клиента',
+              trailing: Text(
+                  category ?? 'Не выбрано'), // Отображение категории клиента
+              onTap: () {
+                // Действие при нажатии, если необходимо
+              },
+            ),
+            const SizedBox(height: 10),
             AppSettingsListTile(
               label: 'Уведомления',
               trailing: SvgPicture.asset(AppIcons.right),
@@ -80,6 +93,7 @@ class _SettingsViewState extends State<SettingsView> {
       ),
     );
   }
+
   void _showLogoutConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,

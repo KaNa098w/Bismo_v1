@@ -21,6 +21,8 @@ class ApiEndpoint {
   static const search = '$api/product/searching';
   static const newGoods = '$api/product/newgoods';
   static const promocode = '$api/all/promokod';
+  static const userCategory = '$api/all/category';
+  static const getMinSum = '$api/all/minsumm';
 
   static const List<String> urlsWithoutAuthorization = [];
 }
