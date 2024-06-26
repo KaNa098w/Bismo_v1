@@ -196,11 +196,14 @@ class _CartViewState extends State<CartView> {
 
   Future<void> _afterOrderCreate(
       BuildContext ctx, List<PersistentShoppingCartItem> items) async {
+    for (var item in items) {
+      await PersistentShoppingCart().removeFromCart(item.productId);
+    }
     setState(() {
-      cartItems.removeWhere((item) =>
-          items.contains(item)); // Удаляем только товары из выбранной категории
+      cartItems.removeWhere((item) => items.contains(item));
       isLoaded = false;
     });
+
     _loadCartItems();
   }
 
