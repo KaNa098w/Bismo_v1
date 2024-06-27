@@ -3,6 +3,7 @@ import 'package:bismo/core/api_endpoints.dart';
 import 'package:bismo/core/app_http.dart';
 import 'package:bismo/core/models/user/SignInOtpResponse.dart';
 import 'package:bismo/core/models/user/auth_response.dart';
+import 'package:bismo/core/models/user/get_my_profile_response.dart';
 import 'package:bismo/core/models/user/get_profile_response.dart';
 import 'package:bismo/core/models/user/register_request.dart';
 import 'package:bismo/core/models/user/register_response.dart';

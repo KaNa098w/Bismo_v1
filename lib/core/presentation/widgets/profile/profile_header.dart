@@ -129,7 +129,7 @@ class __UserDataState extends State<_UserData> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                userProvider.user?.storeName ?? "",
+                '${userProvider.user?.storeName ?? ""}',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold, color: Colors.white),
               ),

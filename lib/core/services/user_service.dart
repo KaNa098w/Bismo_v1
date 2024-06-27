@@ -2,6 +2,7 @@ import 'package:bismo/core/api_endpoints.dart';
 import 'package:bismo/core/app_http.dart';
 import 'package:bismo/core/models/user/get_address_response.dart';
 import 'package:bismo/core/models/user/get_category_user_response.dart';
+import 'package:bismo/core/models/user/get_my_profile_response.dart';
 import 'package:dio/dio.dart';
 
 class UserService {

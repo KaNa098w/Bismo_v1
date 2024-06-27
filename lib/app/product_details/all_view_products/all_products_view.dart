@@ -18,6 +18,7 @@ class AllProductsView extends StatefulWidget {
 class _AllProductsViewState extends State<AllProductsView> {
   late Future<GetNewGoodsResponse?> _newGoodsFuture;
   bool _isSorted = false;
+  List<Goods> _goods = [];
 
   @override
   void initState() {
@@ -28,6 +29,12 @@ class _AllProductsViewState extends State<AllProductsView> {
   void _toggleSort() {
     setState(() {
       _isSorted = !_isSorted;
+      if (_isSorted) {
+        _goods.sort((a, b) => a.nomenklatura!.compareTo(b.nomenklatura!));
+      } else {
+        // Optionally, you can shuffle or reset the list if needed.
+        _goods = List.from(_goods); // Just reassigning to trigger rebuild.
+      }
     });
   }
 
@@ -49,14 +56,14 @@ class _AllProductsViewState extends State<AllProductsView> {
           future: _newGoodsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return Center(child: Text('Ошибка загрузки данных'));
+              return const Center(child: Text('Ошибка загрузки данных'));
             } else if (!snapshot.hasData || snapshot.data!.goods == null) {
-              return Center(child: Text('Нет данных'));
+              return const Center(child: Text('Нет данных'));
             }
 
-            final goods = snapshot.data!.goods!;
+            _goods = snapshot.data!.goods!;
 
             return Column(
               children: [
@@ -72,10 +79,10 @@ class _AllProductsViewState extends State<AllProductsView> {
                         crossAxisSpacing: 20,
                         mainAxisSpacing: 16,
                       ),
-                      itemCount: goods.length,
+                      itemCount: _goods.length,
                       itemBuilder: (context, index) {
                         return ProductTileSquare(
-                          data: goods[index],
+                          data: _goods[index],
                           newGoodsFuture: _newGoodsFuture,
                         );
                       },

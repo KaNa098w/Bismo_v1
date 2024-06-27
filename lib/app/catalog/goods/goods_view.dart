@@ -175,6 +175,15 @@ class _GoodsViewState extends State<GoodsView> {
 
   void addToCart(BuildContext context, SetOrderGoods goods, int quantity,
       String parent) async {
+    bool itemExists =
+        cartItems.any((item) => item.productId == goods.nomenklaturaKod);
+
+    if (itemExists) {
+      // Если товар существует, удалите его
+      await PersistentShoppingCart()
+          .removeFromCart(goods.nomenklaturaKod ?? "");
+    }
+
     await PersistentShoppingCart().addToCart(PersistentShoppingCartItem(
       productId: goods.nomenklaturaKod ?? "",
       productName: goods.nomenklatura ?? "",
@@ -187,7 +196,7 @@ class _GoodsViewState extends State<GoodsView> {
         "producer": goods.kontragent,
         "step": goods.step,
         "count": goods.count,
-        "parent": parent, // Добавьте parent в детали продукта
+        "parent": parent,
       },
     ));
     _loadCartItems();

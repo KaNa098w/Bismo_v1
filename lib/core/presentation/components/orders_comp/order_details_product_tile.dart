@@ -21,8 +21,8 @@ class OrderDetailsProductTile extends StatelessWidget {
             child: CachedNetworkImage(
               imageUrl: data.photo ?? "",
               placeholder: (context, url) => const CircularProgressIndicator(),
-              errorWidget: (context, url, error) => Image.network(
-                'https://images.satu.kz/197787004_w200_h200_pomada-dlya-gub.jpg',
+              errorWidget: (context, url, error) => Image.asset(
+                'assets/images/no_image.png',
                 fit: BoxFit.contain,
               ),
               fit: BoxFit.contain,

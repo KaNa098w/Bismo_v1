@@ -32,17 +32,19 @@ class _NotificationViewState extends State<NotificationView> {
                 Text(message.data.toString()),
               ],
             )
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.notifications_none,
-                  size: 200,
-                  color: AppColors.primaryColor,
-                ),
-                SizedBox(height: 20.0),
-                Text('Пока что здесь пусто :)'),
-              ],
+          : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.notifications_none,
+                    size: 200,
+                    color: Colors.purple[200],
+                  ),
+                  SizedBox(height: 20.0),
+                  Text('Пока что здесь пусто :)'),
+                ],
+              ),
             ),
     );
   }

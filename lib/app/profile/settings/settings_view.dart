@@ -43,15 +43,15 @@ class _SettingsViewState extends State<SettingsView> {
         ),
         child: Column(
           children: [
-            AppSettingsListTile(
-              label: 'Категория клиента',
-              trailing: Text(
-                  category ?? 'Не выбрано'), // Отображение категории клиента
-              onTap: () {
-                // Действие при нажатии, если необходимо
-              },
-            ),
-            const SizedBox(height: 10),
+            // AppSettingsListTile(
+            //   label: 'Категория клиента',
+            //   trailing: Text(
+            //       category ?? 'Не выбрано'), // Отображение категории клиента
+            //   onTap: () {
+            //     // Действие при нажатии, если необходимо
+            //   },
+            // ),
+            // const SizedBox(height: 10),
             AppSettingsListTile(
               label: 'Уведомления',
               trailing: SvgPicture.asset(AppIcons.right),

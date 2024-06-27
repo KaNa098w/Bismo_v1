@@ -73,21 +73,22 @@ class ProductTileSquare extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const Spacer(),
                 Text(
-                  data.count ?? '',
+                  'Количество :${data.count ?? 0}шт',
+                  style: TextStyle(fontSize: 12),
                 ),
+                Spacer(),
                 const SizedBox(height: 4),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '${data.price ?? 0}₸',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(color: Colors.black),
+                      'Цена : ${data.price ?? 0}₸',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: Colors.black,
+                            fontSize: 16, // Specify your desired font size here
+                          ),
                     ),
                     const SizedBox(width: 4),
                     Text(

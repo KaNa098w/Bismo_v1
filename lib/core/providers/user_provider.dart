@@ -6,6 +6,8 @@ import 'package:bismo/core/helpers/login_helper.dart';
 import 'package:bismo/core/models/user/SignInOtpResponse.dart';
 import 'package:bismo/core/models/user/address_request.dart';
 import 'package:bismo/core/models/user/auth_response.dart';
+import 'package:bismo/core/models/user/get_my_profile_response.dart';
+import 'package:bismo/core/models/user/get_profile_response.dart';
 import 'package:bismo/core/models/user/oauth2_token_info.dart';
 import 'package:bismo/core/models/user/register_request.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
@@ -30,6 +32,9 @@ class UserProvider extends ChangeNotifier {
   AddressRequest? get userAddress => _userAddress;
   AuthResponse? _user;
   AuthResponse? get user => _user;
+  GetMyProfileResponse? _profile;
+
+  GetMyProfileResponse? get profile => _profile;
 
   late Oauth2TokenInfo? _oauth2TokenInfo;
   Oauth2TokenInfo? get oauth2TokenInfo => _oauth2TokenInfo;
@@ -44,6 +49,11 @@ class UserProvider extends ChangeNotifier {
   void dispose() {
     _timer?.cancel();
     super.dispose();
+  }
+
+  void setProfile(GetMyProfileResponse? profile) {
+    _profile = profile;
+    notifyListeners();
   }
 
   void setUserAddress(AddressRequest? value) async {

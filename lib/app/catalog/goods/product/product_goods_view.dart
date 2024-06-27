@@ -43,6 +43,21 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
     super.initState();
     _fetchGoods(widget.arguments.nomenklaturaKod);
     loadProductImages(widget.arguments.nomenklaturaKod);
+    _initializeQuantity();
+  }
+
+  Future<void> _initializeQuantity() async {
+    Map<String, dynamic> cartData = PersistentShoppingCart().getCartData();
+    List<PersistentShoppingCartItem> cartItems =
+        (cartData['cartItems'] ?? []) as List<PersistentShoppingCartItem>;
+    for (var item in cartItems) {
+      if (item.productId == widget.arguments.nomenklaturaKod) {
+        setState(() {
+          quantity = item.quantity;
+        });
+        break;
+      }
+    }
   }
 
   Future<void> _fetchGoods(String nomenklaturaKod) async {
@@ -100,6 +115,13 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
 
   void addToCart(BuildContext context, SetOrderGoods goods, int quantity,
       String? parent) async {
+    bool itemExists = await PersistentShoppingCart()
+        .removeFromCart(goods.nomenklaturaKod ?? "");
+    if (itemExists) {
+      // Если товар существует, удалите его
+      await PersistentShoppingCart()
+          .removeFromCart(goods.nomenklaturaKod ?? "");
+    }
     await PersistentShoppingCart().addToCart(PersistentShoppingCartItem(
       productId: goods.nomenklaturaKod ?? "",
       productName: goods.nomenklatura ?? "",

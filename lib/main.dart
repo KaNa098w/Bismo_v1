@@ -2,6 +2,7 @@ import 'package:bismo/app/config_screen/config_screen_view.dart';
 import 'package:bismo/core/app_routes.dart';
 import 'package:bismo/core/presentation/theme.dart';
 import 'package:bismo/core/providers/app_providers.dart';
+import 'package:bismo/core/services/auth_service.dart';
 import 'package:bismo/firebase_api.dart';
 import 'package:bismo/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,7 +21,11 @@ void main() async {
   initializeDateFormatting();
 
   runApp(MultiProvider(
-    providers: providers,
+    providers: [
+      ...providers,
+      Provider<AuthService>(
+          create: (_) => AuthService()), // Добавьте этот провайдер
+    ],
     child: const MyApp(),
   ));
 }

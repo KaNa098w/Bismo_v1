@@ -96,9 +96,9 @@ class _CartViewState extends State<CartView> {
       return newController;
     });
 
-    setState(() {});
-
-    isLoaded = true;
+    setState(() {
+      isLoaded = true;
+    });
 
     return cartItems;
   }
@@ -124,11 +124,11 @@ class _CartViewState extends State<CartView> {
             ),
             TextButton(
               onPressed: () {
+                Navigator.of(context).pop(); // Закрыть диалоговое окно
+                PersistentShoppingCart().clearCart();
                 setState(() {
-                  PersistentShoppingCart().clearCart();
                   _futureCartItems = _loadCartItems();
                 });
-                Navigator.of(context).pop(); // Закрыть диалоговое окно
               },
               child: const Text('Очистить'),
             ),
