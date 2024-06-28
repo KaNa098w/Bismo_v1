@@ -138,6 +138,18 @@ class _CartViewState extends State<CartView> {
     );
   }
 
+  void updateQuantity(
+      PersistentShoppingCartItem cartItem, int index, int newQuantity) {
+    Future.delayed(Duration.zero, () {
+      setState(() {
+        cartItem.quantity = newQuantity;
+        _controllers[index].text = cartItem.quantity.toString();
+      });
+      PersistentShoppingCart().removeFromCart(cartItem.productId);
+      PersistentShoppingCart().addToCart(cartItem);
+    });
+  }
+
   void _showDeleteConfirmationDialog(
       BuildContext context, String productName, String productId) {
     showDialog(
@@ -388,6 +400,9 @@ class _CartViewState extends State<CartView> {
                           (cartItem.productDetails?['step'] ?? 1) *
                           cartItem.quantity;
 
+                      // Обновление текста контроллера при изменении количества товара
+                      _controllers[index].text = cartItem.quantity.toString();
+
                       return ListTile(
                         leading: GestureDetector(
                           onTap: () {
@@ -457,15 +472,11 @@ class _CartViewState extends State<CartView> {
                                   iconSize: 30,
                                   icon: const Icon(Icons.remove_circle),
                                   onPressed: () {
-                                    setState(() {
-                                      cartItem.quantity--;
-                                      _controllers[index].text =
-                                          cartItem.quantity.toString();
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback((_) {
+                                      updateQuantity(cartItem, index,
+                                          cartItem.quantity - 1);
                                     });
-                                    PersistentShoppingCart()
-                                        .removeFromCart(cartItem.productId);
-                                    PersistentShoppingCart()
-                                        .addToCart(cartItem);
                                   },
                                 ),
                               )
@@ -492,9 +503,12 @@ class _CartViewState extends State<CartView> {
                                   border: OutlineInputBorder(),
                                 ),
                                 onChanged: (value) {
-                                  setState(() {
-                                    cartItem.quantity = int.parse(value);
-                                  });
+                                  if (value.isNotEmpty) {
+                                    Future.delayed(Duration.zero, () {
+                                      updateQuantity(
+                                          cartItem, index, int.parse(value));
+                                    });
+                                  }
                                 },
                               ),
                             ),
@@ -503,14 +517,8 @@ class _CartViewState extends State<CartView> {
                               color: AppColors.primaryColor,
                               icon: const Icon(Icons.add_box),
                               onPressed: () {
-                                setState(() {
-                                  cartItem.quantity++;
-                                  _controllers[index].text =
-                                      cartItem.quantity.toString();
-                                });
-                                PersistentShoppingCart()
-                                    .removeFromCart(cartItem.productId);
-                                PersistentShoppingCart().addToCart(cartItem);
+                                updateQuantity(
+                                    cartItem, index, cartItem.quantity + 1);
                               },
                             ),
                           ],
@@ -571,16 +579,8 @@ class _CartViewState extends State<CartView> {
                                 10), // Установите радиус для закругления углов
                           ),
                         ),
-                        child: Text('Итого: ${CustomNumberFormat.format(
-                          items.fold<double>(
-                            0,
-                            (total, item) =>
-                                total +
-                                (item.unitPrice *
-                                    (item.productDetails?['step'] ?? 1) *
-                                    item.quantity),
-                          ),
-                        )}₸, Оформить заказ'),
+                        child: Text(
+                            'Итого: ${CustomNumberFormat.format(items.fold<double>(0, (total, item) => total + (item.unitPrice * (item.productDetails?['step'] ?? 1) * item.quantity)))}₸, Оформить заказ'),
                       ),
                     ),
                   )

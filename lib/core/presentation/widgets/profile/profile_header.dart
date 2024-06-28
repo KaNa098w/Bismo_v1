@@ -114,7 +114,7 @@ class __UserDataState extends State<_UserData> {
         children: [
           const SizedBox(width: AppDefaults.padding),
           GestureDetector(
-            onTap: () => _showOptions(context),
+            // onTap: () => _showOptions(context),
             child: CircleAvatar(
               radius: 50,
               backgroundImage: _image != null

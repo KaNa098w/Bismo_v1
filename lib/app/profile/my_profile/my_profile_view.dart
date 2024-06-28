@@ -1,3 +1,4 @@
+import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/models/user/get_my_profile_response.dart';
 import 'package:bismo/core/services/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,14 @@ class _MyProfileViewState extends State<MyProfileView> {
     super.initState();
   }
 
+  String formatPhoneNumber(String phoneNumber) {
+    // Assuming phoneNumber is in the format '7777017100'
+    if (phoneNumber.length == 10) {
+      return "+7 (${phoneNumber.substring(0, 3)}) ${phoneNumber.substring(3, 6)} - ${phoneNumber.substring(6, 8)} - ${phoneNumber.substring(8, 10)}";
+    }
+    return phoneNumber; // Return the original phone number if it doesn't match the expected format
+  }
+
   @override
   Widget build(BuildContext context) {
     var userProvider = context.watch<UserProvider>();
@@ -30,49 +39,39 @@ class _MyProfileViewState extends State<MyProfileView> {
         title: const Text('Профиль'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Имя профиля:',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w500, color: Colors.black),
+                Icon(
+                  Icons.account_circle,
+                  size: 65,
+                  color: AppColors.primaryColor,
                 ),
-                Text(
-                  '${userProvider.user?.storeName ?? ""}',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black),
+                SizedBox(width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${userProvider.user?.storeName ?? ""}',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      formatPhoneNumber(userProvider.user?.phoneNumber ?? ""),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black),
+                    ),
+                  ],
                 ),
               ],
             ),
-            SizedBox(
-              height: 16,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Номер телефона: ',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black),
-                ),
-                Text(
-                  '${userProvider.user?.phoneNumber ?? ""} ',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black),
-                ),
-              ],
-            )
-
             // Другие данные профиля, которые вы хотите отобразить
           ],
         ),

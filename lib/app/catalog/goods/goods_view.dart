@@ -54,13 +54,13 @@ class _GoodsViewState extends State<GoodsView> {
   void initState() {
     super.initState();
     _initializeHive();
-    _fetchGoods(widget.catId ?? "");
     searchController.addListener(_filterGoods);
   }
 
   Future<void> _initializeHive() async {
     await Hive.openBox('shopping_cart');
-    _loadCartItems();
+    await _loadCartItems();
+    await _fetchGoods(widget.catId ?? "");
   }
 
   @override
@@ -122,6 +122,7 @@ class _GoodsViewState extends State<GoodsView> {
       cartItems =
           (cartData['cartItems'] ?? []) as List<PersistentShoppingCartItem>;
     });
+    _refreshGoodsQuantities();
   }
 
   void _filterGoods() {
@@ -143,17 +144,31 @@ class _GoodsViewState extends State<GoodsView> {
 
     try {
       GoodsResponse? res = await getGoods(catId);
-      setState(() {
-        goodsResponse = res;
-        filteredGoods = res?.goods ?? [];
-        isLoading = false;
-        // Инициализация количества и контроллеров для каждого товара
-        filteredGoods.forEach((goods) {
-          quantities[goods.nomenklaturaKod ?? ""] = 0;
-          controllers[goods.nomenklaturaKod ?? ""] =
-              TextEditingController(text: "0");
+      Future.delayed(Duration.zero, () {
+        setState(() {
+          goodsResponse = res;
+          filteredGoods = res?.goods ?? [];
+          isLoading = false;
+
+          // Инициализация количества и контроллеров для каждого товара
+          filteredGoods.forEach((goods) {
+            quantities[goods.nomenklaturaKod ?? ""] = 0;
+            controllers[goods.nomenklaturaKod ?? ""] =
+                TextEditingController(text: "0");
+
+            // Проверка, находится ли товар уже в корзине, и обновление количества
+            for (var cartItem in cartItems) {
+              if (goods.nomenklaturaKod == cartItem.productId) {
+                quantities[goods.nomenklaturaKod ?? ""] = cartItem.quantity;
+                controllers[goods.nomenklaturaKod ?? ""]?.text =
+                    cartItem.quantity.toString();
+                break;
+              }
+            }
+          });
+
+          _updateTotalAmount();
         });
-        _updateTotalAmount();
       });
     } catch (e) {
       setState(() {

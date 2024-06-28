@@ -59,18 +59,12 @@ class _SettingsViewState extends State<SettingsView> {
                 Navigator.pushNamed(context, '/notification');
               },
             ),
+
             AppSettingsListTile(
-              label: 'Изменить пароль',
+              label: 'Изменить профиль ',
               trailing: SvgPicture.asset(AppIcons.right),
               onTap: () {
-                // Navigator.pushNamed(context, AppRoutes.changePassword);
-              },
-            ),
-            AppSettingsListTile(
-              label: 'Изменить номер телефона',
-              trailing: SvgPicture.asset(AppIcons.right),
-              onTap: () {
-                // Navigator.pushNamed(context, AppRoutes.changePhoneNumber);
+                Navigator.pushNamed(context, '/my_profile');
               },
             ),
             AppSettingsListTile(

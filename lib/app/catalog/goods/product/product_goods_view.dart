@@ -46,6 +46,12 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
     _initializeQuantity();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _initializeQuantity();
+  }
+
   Future<void> _initializeQuantity() async {
     Map<String, dynamic> cartData = PersistentShoppingCart().getCartData();
     List<PersistentShoppingCartItem> cartItems =
@@ -117,11 +123,13 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
       String? parent) async {
     bool itemExists = await PersistentShoppingCart()
         .removeFromCart(goods.nomenklaturaKod ?? "");
+
     if (itemExists) {
       // Если товар существует, удалите его
       await PersistentShoppingCart()
           .removeFromCart(goods.nomenklaturaKod ?? "");
     }
+
     await PersistentShoppingCart().addToCart(PersistentShoppingCartItem(
       productId: goods.nomenklaturaKod ?? "",
       productName: goods.nomenklatura ?? "",
@@ -134,7 +142,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
         "producer": goods.kontragent,
         "step": goods.step,
         "count": goods.count,
-        "parent": parent, // Передаем значение parent
+        "parent": parent,
       },
     ));
   }
@@ -635,97 +643,58 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
             ),
       bottomNavigationBar: goods != null
           ? BottomAppBar(
-              child: PersistentShoppingCart().showAndUpdateCartItemWidget(
-                  inCartWidget: Container(
-                    height: 40,
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        await Navigator.pushNamed(context, "/cart");
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'Перейти в корзину',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  notInCartWidget: Container(
-                    height: 40,
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        addToCart(
-                            context,
-                            convertToSetOrderGoods(goods ?? widget.goods),
-                            quantity,
-                            goods?.parent);
+              child: Container(
+                height: 40,
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    addToCart(
+                        context,
+                        convertToSetOrderGoods(goods ?? widget.goods),
+                        quantity,
+                        goods?.parent);
 
-                        showAlertDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          title: "Уведомление",
-                          content: "Товар успешно добавлен в корзину!",
-                          actions: <Widget>[
-                            CupertinoDialogAction(
-                              onPressed: () async {
-                                Navigator.pop(context);
-                                await Navigator.pushNamed(context, "/cart");
-                              },
-                              textStyle: const TextStyle(
-                                  color: AppColors.primaryColor),
-                              child: const Text("Перейти в корзину"),
-                            ),
-                            CupertinoDialogAction(
-                              onPressed: () => Navigator.of(context).pop(),
-                              textStyle:
-                                  const TextStyle(color: AppColors.textBlack),
-                              child: const Text("Назад"),
-                            ),
-                          ],
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                    showAlertDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      title: "Уведомление",
+                      content: "Товар успешно добавлен в корзину!",
+                      actions: <Widget>[
+                        CupertinoDialogAction(
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            await Navigator.pushNamed(context, "/cart");
+                          },
+                          textStyle:
+                              const TextStyle(color: AppColors.primaryColor),
+                          child: const Text("Перейти в корзину"),
                         ),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'Добавить в корзину',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                          ),
+                        CupertinoDialogAction(
+                          onPressed: () => Navigator.of(context).pop(),
+                          textStyle:
+                              const TextStyle(color: AppColors.primaryColor),
+                          child: const Text("OK"),
                         ),
+                      ],
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Добавить в корзину',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
                       ),
                     ),
                   ),
-                  product: PersistentShoppingCartItem(
-                    productId: goods?.nomenklaturaKod ?? "",
-                    productName: goods?.nomenklatura ?? "",
-                    unitPrice: goods?.price?.toDouble() ?? 0,
-                    quantity: quantity,
-                    productThumbnail: goods?.photo,
-                    productDetails: {
-                      "nomenklatura": goods?.nomenklatura,
-                      "nomenklaturaKod": goods?.nomenklaturaKod,
-                      "producer": goods?.kontragent,
-                      "step": goods?.step,
-                      "count": goods?.count,
-                    },
-                  )),
+                ),
+              ),
             )
           : null,
     );
