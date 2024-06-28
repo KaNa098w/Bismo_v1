@@ -93,6 +93,9 @@ class _CartViewState extends State<CartView> {
     _controllers = List.generate(cartItems.length, (index) {
       var newController = TextEditingController();
       newController.text = "${cartItems[index].quantity}";
+      newController.addListener(() {
+        cartItems[index].quantity = int.parse(newController.text);
+      });
       return newController;
     });
 
@@ -136,18 +139,6 @@ class _CartViewState extends State<CartView> {
         );
       },
     );
-  }
-
-  void updateQuantity(
-      PersistentShoppingCartItem cartItem, int index, int newQuantity) {
-    Future.delayed(Duration.zero, () {
-      setState(() {
-        cartItem.quantity = newQuantity;
-        _controllers[index].text = cartItem.quantity.toString();
-      });
-      PersistentShoppingCart().removeFromCart(cartItem.productId);
-      PersistentShoppingCart().addToCart(cartItem);
-    });
   }
 
   void _showDeleteConfirmationDialog(
@@ -251,8 +242,7 @@ class _CartViewState extends State<CartView> {
                       isSelected: [isDeliverySelected, !isDeliverySelected],
                       onPressed: (int index) {
                         setState(() {
-                          isDeliverySelected =
-                              index == 0; // Обновление существующей переменной
+                          isDeliverySelected = index == 0;
                         });
                       },
                       selectedColor: Colors.white,
@@ -400,9 +390,6 @@ class _CartViewState extends State<CartView> {
                           (cartItem.productDetails?['step'] ?? 1) *
                           cartItem.quantity;
 
-                      // Обновление текста контроллера при изменении количества товара
-                      _controllers[index].text = cartItem.quantity.toString();
-
                       return ListTile(
                         leading: GestureDetector(
                           onTap: () {
@@ -472,11 +459,15 @@ class _CartViewState extends State<CartView> {
                                   iconSize: 30,
                                   icon: const Icon(Icons.remove_circle),
                                   onPressed: () {
-                                    WidgetsBinding.instance
-                                        .addPostFrameCallback((_) {
-                                      updateQuantity(cartItem, index,
-                                          cartItem.quantity - 1);
+                                    setState(() {
+                                      cartItem.quantity--;
+                                      _controllers[index].text =
+                                          cartItem.quantity.toString();
                                     });
+                                    PersistentShoppingCart()
+                                        .removeFromCart(cartItem.productId);
+                                    PersistentShoppingCart()
+                                        .addToCart(cartItem);
                                   },
                                 ),
                               )
@@ -496,7 +487,8 @@ class _CartViewState extends State<CartView> {
                               height: 30,
                               child: TextFormField(
                                 keyboardType: TextInputType.number,
-                                controller: _controllers[index],
+                                controller: TextEditingController(
+                                    text: cartItem.quantity.toString()),
                                 textAlign: TextAlign.center,
                                 decoration: const InputDecoration(
                                   contentPadding: EdgeInsets.zero,
@@ -504,11 +496,24 @@ class _CartViewState extends State<CartView> {
                                 ),
                                 onChanged: (value) {
                                   if (value.isNotEmpty) {
-                                    Future.delayed(Duration.zero, () {
-                                      updateQuantity(
-                                          cartItem, index, int.parse(value));
-                                    });
+                                    int newQuantity = int.parse(value);
+                                    if (newQuantity > 0) {
+                                      setState(() {
+                                        cartItem.quantity = newQuantity;
+                                      });
+                                      PersistentShoppingCart()
+                                          .removeFromCart(cartItem.productId);
+                                      PersistentShoppingCart()
+                                          .addToCart(cartItem);
+                                    }
                                   }
+                                },
+                                onEditingComplete: () {
+                                  FocusScope.of(context).unfocus();
+                                  setState(() {
+                                    _controllers[index].text =
+                                        cartItem.quantity.toString();
+                                  });
                                 },
                               ),
                             ),
@@ -517,8 +522,14 @@ class _CartViewState extends State<CartView> {
                               color: AppColors.primaryColor,
                               icon: const Icon(Icons.add_box),
                               onPressed: () {
-                                updateQuantity(
-                                    cartItem, index, cartItem.quantity + 1);
+                                setState(() {
+                                  cartItem.quantity++;
+                                  _controllers[index].text =
+                                      cartItem.quantity.toString();
+                                });
+                                PersistentShoppingCart()
+                                    .removeFromCart(cartItem.productId);
+                                PersistentShoppingCart().addToCart(cartItem);
                               },
                             ),
                           ],
@@ -579,8 +590,16 @@ class _CartViewState extends State<CartView> {
                                 10), // Установите радиус для закругления углов
                           ),
                         ),
-                        child: Text(
-                            'Итого: ${CustomNumberFormat.format(items.fold<double>(0, (total, item) => total + (item.unitPrice * (item.productDetails?['step'] ?? 1) * item.quantity)))}₸, Оформить заказ'),
+                        child: Text('Итого: ${CustomNumberFormat.format(
+                          items.fold<double>(
+                            0,
+                            (total, item) =>
+                                total +
+                                (item.unitPrice *
+                                    (item.productDetails?['step'] ?? 1) *
+                                    item.quantity),
+                          ),
+                        )}₸, Оформить заказ'),
                       ),
                     ),
                   )
