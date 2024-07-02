@@ -445,6 +445,18 @@ class _GoodsViewState extends State<GoodsView> {
                                       )
                                     else
                                       const SizedBox.shrink(),
+                                    Row(
+                                      children: [
+                                        const Text('Категория: '),
+                                        Flexible(child: Text(('sss'
+
+                                            // style: const TextStyle(
+                                            //     fontSize: 14,
+                                            //     fontWeight: FontWeight.w500),
+                                            // overflow: TextOverflow.visible,
+                                            ))),
+                                      ],
+                                    )
                                   ],
                                 ),
                                 trailing: Row(
