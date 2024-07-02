@@ -215,6 +215,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

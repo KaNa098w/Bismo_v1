@@ -67,7 +67,9 @@ class _GoodsViewState extends State<GoodsView> {
   void dispose() {
     searchController.removeListener(_filterGoods);
     searchController.dispose();
-    controllers.values.forEach((controller) => controller.dispose());
+    for (var controller in controllers.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -151,7 +153,7 @@ class _GoodsViewState extends State<GoodsView> {
           isLoading = false;
 
           // Инициализация количества и контроллеров для каждого товара
-          filteredGoods.forEach((goods) {
+          for (var goods in filteredGoods) {
             quantities[goods.nomenklaturaKod ?? ""] = 0;
             controllers[goods.nomenklaturaKod ?? ""] =
                 TextEditingController(text: "0");
@@ -165,7 +167,7 @@ class _GoodsViewState extends State<GoodsView> {
                 break;
               }
             }
-          });
+          }
 
           _updateTotalAmount();
         });
@@ -255,13 +257,13 @@ class _GoodsViewState extends State<GoodsView> {
       return;
     }
 
-    filteredGoods.forEach((goods) {
+    for (var goods in filteredGoods) {
       int quantity = quantities[goods.nomenklaturaKod ?? ""] ?? 0;
       if (quantity > 0) {
         addToCart(context, convertToSetOrderGoods(goods), quantity,
             goods.parent ?? "");
       }
-    });
+    }
 
     showAlertDialog(
       context: context,
@@ -390,20 +392,20 @@ class _GoodsViewState extends State<GoodsView> {
                                       ],
                                     ),
                                     const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        const Text('Цена: '),
-                                        Flexible(
-                                          child: Text(
-                                            '${goods.price?.toInt()}₸/шт',
-                                            style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500),
-                                            overflow: TextOverflow.visible,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                    // Row(
+                                    //   children: [
+                                    //     const Text('Цена: '),
+                                    //     Flexible(
+                                    //       child: Text(
+                                    //         '${goods.price?.toInt()}₸/шт',
+                                    //         style: const TextStyle(
+                                    //             fontSize: 14,
+                                    //             fontWeight: FontWeight.w500),
+                                    //         overflow: TextOverflow.visible,
+                                    //       ),
+                                    //     ),
+                                    //   ],
+                                    // ),
                                     const SizedBox(height: 2),
                                     Row(
                                       children: [
@@ -426,6 +428,23 @@ class _GoodsViewState extends State<GoodsView> {
                                     ),
                                     const SizedBox(height: 0),
                                     if (quantity > 0)
+                                      // Row(
+                                      //     children: [
+                                      //       const Text('Сумма: '),
+                                      //       Flexible(
+                                      //         child: Text(
+                                      //           (goods.price != null &&
+                                      //                   goods.step != null)
+                                      //               ? '${CustomNumberFormat.format(goods.price! * goods.step! * quantity)}₸'
+                                      //               : '0₸',
+                                      //           style: const TextStyle(
+                                      //               fontSize: 14,
+                                      //               fontWeight: FontWeight.w500),
+                                      //           overflow: TextOverflow.visible,
+                                      //         ),
+                                      //       ),
+                                      //     ],
+                                      //   )
                                       Row(
                                         children: [
                                           const Text('Сумма: '),
@@ -433,7 +452,38 @@ class _GoodsViewState extends State<GoodsView> {
                                             child: Text(
                                               (goods.price != null &&
                                                       goods.step != null)
-                                                  ? '${CustomNumberFormat.format(goods.price! * goods.step! * quantity)}₸'
+                                                  ? () {
+                                                      int totalAmount =
+                                                          (goods.price! *
+                                                              goods.step! *
+                                                              quantity) as int;
+                                                      int? categoryPrice;
+
+                                                      // Find the appropriate typePrice based on totalAmount
+                                                      if (goods.typePrice !=
+                                                          null) {
+                                                        for (var type in goods
+                                                            .typePrice!) {
+                                                          int typePriceValue =
+                                                              type.price ?? 0;
+                                                          int typeNameValue =
+                                                              int.tryParse(type
+                                                                          .name ??
+                                                                      '0') ??
+                                                                  0;
+                                                          if (totalAmount >=
+                                                              typeNameValue) {
+                                                            categoryPrice =
+                                                                typePriceValue *
+                                                                    goods
+                                                                        .step! *
+                                                                    quantity;
+                                                          }
+                                                        }
+                                                      }
+
+                                                      return '${CustomNumberFormat.format(categoryPrice ?? totalAmount)}₸';
+                                                    }()
                                                   : '0₸',
                                               style: const TextStyle(
                                                   fontSize: 14,
@@ -445,17 +495,66 @@ class _GoodsViewState extends State<GoodsView> {
                                       )
                                     else
                                       const SizedBox.shrink(),
-                                    Row(
-                                      children: [
-                                        const Text('Категория: '),
-                                        Flexible(child: Text(('sss'
+                                    // const Row(
+                                    //   children: [
+                                    //     Text('Категория: '),
+                                    //     Flexible(child: Text(('sss'
 
-                                            // style: const TextStyle(
-                                            //     fontSize: 14,
-                                            //     fontWeight: FontWeight.w500),
-                                            // overflow: TextOverflow.visible,
-                                            ))),
-                                      ],
+                                    //         // style: const TextStyle(
+                                    //         //     fontSize: 14,
+                                    //         //     fontWeight: FontWeight.w500),
+                                    //         // overflow: TextOverflow.visible,
+                                    //         ))),
+                                    //   ],
+                                    // ),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: goods.typePrice != null
+                                          ? goods.typePrice!.map((typePrice) {
+                                              String formattedName = typePrice
+                                                      .name
+                                                      ?.replaceAllMapped(
+                                                          RegExp(
+                                                              r'(\d)(?=(\d{3})+(?!\d))'),
+                                                          (Match m) =>
+                                                              '${m[1]} ') ??
+                                                  '0';
+                                              String formattedPrice = typePrice
+                                                  .price
+                                                  .toString()
+                                                  .replaceAllMapped(
+                                                      RegExp(
+                                                          r'(\d)(?=(\d{3})+(?!\d))'),
+                                                      (Match m) => '${m[1]} ');
+                                              return typePrice.name != ""
+                                                  ? Text(
+                                                      'От $formattedNameт - $formattedPrice₸/шт',
+                                                      style: const TextStyle(
+                                                          fontSize: 10),
+                                                    )
+                                                  : Row(
+                                                      children: [
+                                                        const Text('Цена: '),
+                                                        Flexible(
+                                                          child: Text(
+                                                            '$formattedPrice₸/шт',
+                                                            style: const TextStyle(
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .visible,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                            }).toList()
+                                          : [const SizedBox()],
                                     )
                                   ],
                                 ),
@@ -582,7 +681,7 @@ class _GoodsViewState extends State<GoodsView> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '${totalAmount.toStringAsFixed(2)}₸, $totalUniqueItems товар',
+                      '${CustomNumberFormat.format(totalAmount)}₸, $totalUniqueItems товар',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,

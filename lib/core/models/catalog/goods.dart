@@ -1,10 +1,10 @@
 class GoodsResponse {
   String? success;
   String? dateLoading;
-  num? deliverySumm;
+  num? deliverySumm; // Изменено с int? на num?
+  List<Goods>? goods;
   String? categoryClient;
   String? categoryCodeClient;
-  List<Goods>? goods;
 
   GoodsResponse(
       {this.success,
@@ -29,7 +29,7 @@ class GoodsResponse {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['success'] = success;
     data['date_loading'] = dateLoading;
     data['delivery_summ'] = deliverySumm;
@@ -46,52 +46,57 @@ class Goods {
   String? nomenklatura;
   String? nomenklaturaKod;
   String? count;
-  double? price;
-  double? optPrice;
+  num? price; // Изменено с int? на num?
+  num? optPrice; // Изменено с int? на num?
   String? kontragent;
   int? step;
   int? newProduct;
   String? photo;
   String? catId;
-  double? oldPrice;
+  num? oldPrice; // Изменено с int? на num?
   String? newsPhoto;
   String? parent;
   String? parentName;
   List<TypePrice>? typePrice;
 
-  Goods({
-    this.nomenklatura,
-    this.nomenklaturaKod,
-    this.count,
-    this.price,
-    this.optPrice,
-    this.kontragent,
-    this.step,
-    this.newProduct,
-    this.photo,
-    this.catId,
-    this.oldPrice,
-    this.parent,
-    this.newsPhoto,
-    this.typePrice,
-  });
+  Goods(
+      {this.nomenklatura,
+      this.nomenklaturaKod,
+      this.count,
+      this.price,
+      this.optPrice,
+      this.kontragent,
+      this.step,
+      this.newProduct,
+      this.photo,
+      this.catId,
+      this.oldPrice,
+      this.parent,
+      this.newsPhoto,
+      this.parentName,
+      this.typePrice});
 
   Goods.fromJson(Map<String, dynamic> json) {
     nomenklatura = json['nomenklatura'];
     nomenklaturaKod = json['nomenklatura_kod'];
     count = json['count'];
-    price = (json['price'] != null) ? json['price'].toDouble() : null;
-    optPrice =
-        (json['opt_price'] != null) ? json['opt_price'].toDouble() : null;
+    price = json['price'] is int
+        ? json['price']
+        : (json['price'] as double).toInt();
+    optPrice = json['opt_price'] is int
+        ? json['opt_price']
+        : (json['opt_price'] as double).toInt();
     kontragent = json['kontragent'];
     step = json['step'];
     newProduct = json['new_product'];
     photo = json['photo'];
     catId = json['cat_id'];
-    oldPrice =
-        (json['old_price'] != null) ? json['old_price'].toDouble() : null;
+    oldPrice = json['old_price'] is int
+        ? json['old_price']
+        : (json['old_price'] as double).toInt();
     newsPhoto = json['news_photo'];
     parent = json['parent'];
+    parentName = json['parent_name'];
     if (json['type_price'] != null) {
       typePrice = <TypePrice>[];
       json['type_price'].forEach((v) {
@@ -101,7 +106,7 @@ class Goods {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['nomenklatura'] = nomenklatura;
     data['nomenklatura_kod'] = nomenklaturaKod;
     data['count'] = count;
@@ -125,7 +130,7 @@ class Goods {
 
 class TypePrice {
   String? name;
-  double? price;
+  int? price;
   String? category;
   String? categoryCode;
 
@@ -133,13 +138,15 @@ class TypePrice {
 
   TypePrice.fromJson(Map<String, dynamic> json) {
     name = json['name'];
-    price = (json['price'] != null) ? json['price'].toDouble() : null;
+    price = json['price'] is int
+        ? json['price']
+        : (json['price'] as double).toInt();
     category = json['category'];
     categoryCode = json['category_code'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['name'] = name;
     data['price'] = price;
     data['category'] = category;
