@@ -49,6 +49,7 @@ class _GoodsViewState extends State<GoodsView> {
   double totalAmount = 0.0; // Общая сумма выбранных товаров
   int totalQuantity = 0;
   int totalUniqueItems = 0; // Общее количество уникальных выбранных товаров
+  String? categoryClient;
 
   @override
   void initState() {
@@ -150,15 +151,16 @@ class _GoodsViewState extends State<GoodsView> {
         setState(() {
           goodsResponse = res;
           filteredGoods = res?.goods ?? [];
+          categoryClient = res?.categoryClient; // Store categoryClient value
           isLoading = false;
 
-          // Инициализация количества и контроллеров для каждого товара
+          // Initialize quantities and controllers for each goods
           for (var goods in filteredGoods) {
             quantities[goods.nomenklaturaKod ?? ""] = 0;
             controllers[goods.nomenklaturaKod ?? ""] =
                 TextEditingController(text: "0");
 
-            // Проверка, находится ли товар уже в корзине, и обновление количества
+            // Check if the goods is already in the cart and update quantity
             for (var cartItem in cartItems) {
               if (goods.nomenklaturaKod == cartItem.productId) {
                 quantities[goods.nomenklaturaKod ?? ""] = cartItem.quantity;
@@ -428,23 +430,6 @@ class _GoodsViewState extends State<GoodsView> {
                                     ),
                                     const SizedBox(height: 0),
                                     if (quantity > 0)
-                                      // Row(
-                                      //     children: [
-                                      //       const Text('Сумма: '),
-                                      //       Flexible(
-                                      //         child: Text(
-                                      //           (goods.price != null &&
-                                      //                   goods.step != null)
-                                      //               ? '${CustomNumberFormat.format(goods.price! * goods.step! * quantity)}₸'
-                                      //               : '0₸',
-                                      //           style: const TextStyle(
-                                      //               fontSize: 14,
-                                      //               fontWeight: FontWeight.w500),
-                                      //           overflow: TextOverflow.visible,
-                                      //         ),
-                                      //       ),
-                                      //     ],
-                                      //   )
                                       Row(
                                         children: [
                                           const Text('Сумма: '),
@@ -452,38 +437,7 @@ class _GoodsViewState extends State<GoodsView> {
                                             child: Text(
                                               (goods.price != null &&
                                                       goods.step != null)
-                                                  ? () {
-                                                      int totalAmount =
-                                                          (goods.price! *
-                                                              goods.step! *
-                                                              quantity) as int;
-                                                      int? categoryPrice;
-
-                                                      // Find the appropriate typePrice based on totalAmount
-                                                      if (goods.typePrice !=
-                                                          null) {
-                                                        for (var type in goods
-                                                            .typePrice!) {
-                                                          int typePriceValue =
-                                                              type.price ?? 0;
-                                                          int typeNameValue =
-                                                              int.tryParse(type
-                                                                          .name ??
-                                                                      '0') ??
-                                                                  0;
-                                                          if (totalAmount >=
-                                                              typeNameValue) {
-                                                            categoryPrice =
-                                                                typePriceValue *
-                                                                    goods
-                                                                        .step! *
-                                                                    quantity;
-                                                          }
-                                                        }
-                                                      }
-
-                                                      return '${CustomNumberFormat.format(categoryPrice ?? totalAmount)}₸';
-                                                    }()
+                                                  ? '${CustomNumberFormat.format(goods.price! * goods.step! * quantity)}₸'
                                                   : '0₸',
                                               style: const TextStyle(
                                                   fontSize: 14,
@@ -493,8 +447,57 @@ class _GoodsViewState extends State<GoodsView> {
                                           ),
                                         ],
                                       )
+                                    // Row(
+                                    //   children: [
+                                    //     const Text('Сумма: '),
+                                    //     Flexible(
+                                    //       child: Text(
+                                    //         (goods.price != null &&
+                                    //                 goods.step != null)
+                                    //             ? () {
+                                    //                 int totalAmount =
+                                    //                     (goods.price! *
+                                    //                         goods.step! *
+                                    //                         quantity) as int;
+                                    //                 int? categoryPrice;
+
+                                    //                 // Find the appropriate typePrice based on totalAmount
+                                    //                 if (goods.typePrice !=
+                                    //                     null) {
+                                    //                   for (var type in goods
+                                    //                       .typePrice!) {
+                                    //                     int typePriceValue =
+                                    //                         type.price ?? 0;
+                                    //                     int typeNameValue =
+                                    //                         int.tryParse(type
+                                    //                                     .name ??
+                                    //                                 '0') ??
+                                    //                             0;
+                                    //                     if (totalAmount >=
+                                    //                         typeNameValue) {
+                                    //                       categoryPrice =
+                                    //                           typePriceValue *
+                                    //                               goods
+                                    //                                   .step! *
+                                    //                               quantity;
+                                    //                     }
+                                    //                   }
+                                    //                 }
+
+                                    //                 return '${CustomNumberFormat.format(categoryPrice ?? totalAmount)}₸';
+                                    //               }()
+                                    //             : '0₸',
+                                    //         style: const TextStyle(
+                                    //             fontSize: 14,
+                                    //             fontWeight: FontWeight.w500),
+                                    //         overflow: TextOverflow.visible,
+                                    //       ),
+                                    //     ),
+                                    //   ],
+                                    // )
                                     else
                                       const SizedBox.shrink(),
+
                                     // const Row(
                                     //   children: [
                                     //     Text('Категория: '),
@@ -529,11 +532,23 @@ class _GoodsViewState extends State<GoodsView> {
                                                       RegExp(
                                                           r'(\d)(?=(\d{3})+(?!\d))'),
                                                       (Match m) => '${m[1]} ');
+                                              String formattedCategory =
+                                                  typePrice.category.toString();
+
+                                              bool isBold = categoryClient ==
+                                                  formattedCategory;
+
+                                              TextStyle textStyle = TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: isBold
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                              );
+
                                               return typePrice.name != ""
                                                   ? Text(
-                                                      'От $formattedNameт - $formattedPrice₸/шт',
-                                                      style: const TextStyle(
-                                                          fontSize: 10),
+                                                      '$formattedCategory] $formattedNameт - $formattedPrice₸/шт',
+                                                      style: textStyle,
                                                     )
                                                   : Row(
                                                       children: [
@@ -541,11 +556,14 @@ class _GoodsViewState extends State<GoodsView> {
                                                         Flexible(
                                                           child: Text(
                                                             '$formattedPrice₸/шт',
-                                                            style: const TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500),
+                                                            style: TextStyle(
+                                                              fontSize: 14,
+                                                              fontWeight: isBold
+                                                                  ? FontWeight
+                                                                      .bold
+                                                                  : FontWeight
+                                                                      .w500,
+                                                            ),
                                                             overflow:
                                                                 TextOverflow
                                                                     .visible,
@@ -555,7 +573,22 @@ class _GoodsViewState extends State<GoodsView> {
                                                     );
                                             }).toList()
                                           : [const SizedBox()],
-                                    )
+                                    ),
+
+                                    Row(
+                                      children: [
+                                        Text('Ваша категория: '),
+                                        Flexible(
+                                          child: Text(
+                                            categoryClient.toString(),
+                                            style: TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w500),
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
                                 trailing: Row(

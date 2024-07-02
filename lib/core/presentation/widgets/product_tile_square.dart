@@ -91,12 +91,12 @@ class ProductTileSquare extends StatelessWidget {
                           ),
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      '${data.oldPrice ?? 0}₸',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            decoration: TextDecoration.lineThrough,
-                          ),
-                    ),
+                    // Text(
+                    //   '${data.oldPrice ?? 0}₸',
+                    //   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    //         decoration: TextDecoration.lineThrough,
+                    //       ),
+                    // ),
                   ],
                 ),
               ],
