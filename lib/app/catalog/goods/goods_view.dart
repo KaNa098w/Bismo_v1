@@ -11,7 +11,6 @@ import 'package:bismo/core/services/goods_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -59,7 +58,6 @@ class _GoodsViewState extends State<GoodsView> {
   }
 
   Future<void> _initializeHive() async {
-    await Hive.openBox('shopping_cart');
     await _loadCartItems();
     await _fetchGoods(widget.catId ?? "");
   }
@@ -545,7 +543,7 @@ class _GoodsViewState extends State<GoodsView> {
                                                     : FontWeight.normal,
                                               );
 
-                                              return typePrice.name != ""
+                                              return typePrice.name != " "
                                                   ? Text(
                                                       '$formattedCategory] $formattedNameт - $formattedPrice₸/шт',
                                                       style: textStyle,

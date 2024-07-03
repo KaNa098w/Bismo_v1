@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/exceptions.dart';
@@ -16,6 +17,7 @@ import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:provider/provider.dart';
 import 'package:bismo/core/models/cart/promocode_response.dart';
 import 'package:confetti/confetti.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PromoCodeBottomSheet extends StatefulWidget {
   final List<PersistentShoppingCartItem> cartItems;
@@ -41,6 +43,7 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
     with SingleTickerProviderStateMixin {
   bool showPromoInput = false;
   bool expandContainer = false;
+  bool isPaid = false; // Add this line
   final TextEditingController promoController = TextEditingController();
   final PromocodeServices _promocodeServices = PromocodeServices();
   double totalAmount = 0.0;
@@ -51,21 +54,19 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
   late ConfettiController _confettiController;
   late AnimationController _animationController;
 
+  Future<void> _launchURL(String url) async {
+    try {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } catch (e) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    }
+  }
+
   Future<void> _setOrder(
       BuildContext ctx, List<PersistentShoppingCartItem> items) async {
     var userProvider = context.read<UserProvider>();
     showLoader(ctx);
     try {
-      // int totalPrice = items
-      //     .fold<double>(
-      //         0,
-      //         (total, item) =>
-      //             total +
-      //             (item.unitPrice *
-      //                 item.quantity *
-      //                 item.productDetails?['step']))
-      //     .toInt();
-
       int totalPrice = totalAmount.toInt();
 
       var goods = items.map((item) {
@@ -82,12 +83,12 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
       }).toList();
 
       SetOrderRequest setOrderRequest = SetOrderRequest(
-        provider: "7757499451",
+        provider: "provider_code",
         orderSum: totalPrice,
         providerName: "",
         deliveryAddress: userProvider.userAddress?.deliveryAddress,
         comment: "",
-        counterparty: "7757499451",
+        counterparty: "provider_code",
         dolgota: userProvider.userAddress?.dolgota,
         type: widget.isDeliverySelected ? "0" : "1",
         providerPhoto:
@@ -96,8 +97,6 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
         user: userProvider.user?.phoneNumber,
         goods: goods,
       );
-
-      // Navigator.pop(ctx);
 
       var res = await CartService().setOrder(setOrderRequest);
 
@@ -110,23 +109,43 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
             title: "Уведомление",
             content: res.message ?? "",
             actions: <Widget>[
-              CupertinoDialogAction(
-                onPressed: () {
-                  // setState(() {
-                  //   cartItems.removeWhere((item) => items.contains(
-                  //       item)); // Удаляем только товары из выбранной категории
-                  //   isLoaded = false;
-                  // });
-                  // _loadCartItems();
-                  widget.afterOrderCreate(ctx, items);
-                  Navigator.pop(ctx);
-                  if (widget.isDeliverySelected) {
-                    Navigator.pop(ctx);
-                  }
-                  Navigator.pushNamed(ctx, "/orders");
+              StatefulBuilder(
+                builder: (context, setState) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CupertinoDialogAction(
+                        onPressed: () async {
+                          if (!isPaid) {
+                            await _launchURL(
+                                'https://pay.kaspi.kz/pay/nie157f3');
+                            setState(() {
+                              isPaid = true;
+                            });
+                          }
+                        },
+                        textStyle:
+                            const TextStyle(color: AppColors.primaryColor),
+                        child: Text(
+                            isPaid ? "Оплата ожидается" : "Оплатить заказ"),
+                      ),
+                      if (isPaid)
+                        CupertinoDialogAction(
+                          onPressed: () {
+                            widget.afterOrderCreate(ctx, items);
+                            Navigator.pop(ctx);
+                            if (widget.isDeliverySelected) {
+                              Navigator.pop(ctx);
+                            }
+                            Navigator.pushNamed(ctx, "/orders");
+                          },
+                          textStyle:
+                              const TextStyle(color: AppColors.primaryColor),
+                          child: const Text("Перейти в мои заказы"),
+                        ),
+                    ],
+                  );
                 },
-                textStyle: const TextStyle(color: AppColors.primaryColor),
-                child: const Text("Перейти в мои заказы"),
               ),
             ],
           );

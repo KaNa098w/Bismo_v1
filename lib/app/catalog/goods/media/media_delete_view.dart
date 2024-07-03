@@ -116,7 +116,7 @@ class _MediaDeleteViewState extends State<MediaDeleteView> {
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Text('No media found');
+              return const Text('Нет медифайлы');
             } else {
               return Padding(
                 padding: const EdgeInsets.only(right: 20, left: 20),

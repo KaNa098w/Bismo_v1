@@ -41,7 +41,7 @@ class GoodsService {
 
     try {
       final url =
-          '${ApiEndpoint.getGoods}?nomenklature_kod=$nomenklaturaKod&user=${authResponse?.phoneNumber}';
+          '${ApiEndpoint.getGoods}?nomenklatura_kod=$nomenklaturaKod&user=${authResponse?.phoneNumber}';
       print('*** Request ***');
       print('uri: $url');
       print('method: GET');
