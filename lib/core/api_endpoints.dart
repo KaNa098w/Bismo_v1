@@ -24,5 +24,7 @@ class ApiEndpoint {
   static const userCategory = '$api/all/category';
   static const getMinSum = '$api/all/minsumm';
   static const getNotifications = '$api/message/push';
+  static const deleteUserAccount = '$api/all/delete_acaunt';
+
   static const List<String> urlsWithoutAuthorization = [];
 }

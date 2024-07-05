@@ -29,12 +29,11 @@ class ProductTileSquare extends StatelessWidget {
               context,
               '/product_goods',
               arguments: GoodsArguments(
-                data.nomenklatura ?? '',
-                data.catId ?? '',
-                data.kontragent ?? '',
-                data.price ?? 0,
-                data.nomenklaturaKod ?? '',
-              ),
+                  data.nomenklatura ?? '',
+                  data.catId ?? '',
+                  data.kontragent ?? '',
+                  data.price ?? 0,
+                  data.nomenklaturaKod ?? ''),
             );
           },
           child: Container(

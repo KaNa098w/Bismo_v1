@@ -37,6 +37,10 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
   List<String> productVideos = [];
   Goods? goods;
   bool showSecretButtons = false;
+  GoodsResponse? goodsResponse;
+  String? categoryClient;
+
+  get textStyle => null;
 
   @override
   void initState() {
@@ -129,6 +133,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
       await PersistentShoppingCart()
           .removeFromCart(goods.nomenklaturaKod ?? "");
     }
+    categoryClient = goods?.categoryClient;
 
     await PersistentShoppingCart().addToCart(PersistentShoppingCartItem(
       productId: goods.nomenklaturaKod ?? "",
@@ -306,7 +311,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                   ),
                   const SizedBox(height: 10),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.only(left: 16.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -319,6 +324,80 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: goods?.typePrice != null
+                          ? goods!.typePrice!.map((typePrice) {
+                              String formattedName = typePrice.name
+                                      ?.replaceAllMapped(
+                                          RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+                                          (Match m) => '${m[1]} ') ??
+                                  '0';
+                              String formattedPrice = typePrice.price
+                                  .toString()
+                                  .replaceAllMapped(
+                                      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+                                      (Match m) => '${m[1]} ');
+                              String formattedCategory =
+                                  typePrice.category.toString();
+
+                              bool isBold = categoryClient == formattedCategory;
+
+                              TextStyle textStyle = TextStyle(
+                                fontSize: isBold ? 16 : 15,
+                                fontWeight: isBold
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              );
+
+                              return typePrice.name != ""
+                                  ? Text(
+                                      '$formattedCategory] от $formattedName Цена: $formattedPrice₸/шт',
+                                      style: textStyle,
+                                    )
+                                  : Row(
+                                      children: [
+                                        const Text('А] Цена: '),
+                                        Flexible(
+                                          child: Text(
+                                            '$formattedPrice₸/шт',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: isBold
+                                                  ? FontWeight.bold
+                                                  : FontWeight.w500,
+                                            ),
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                            }).toList()
+                          : [const SizedBox()],
+                    ),
+                  ),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
+                    child: Row(
+                      children: [
+                        Text('Ваша категория: '),
+                        Flexible(
+                          child: Text(
+                            categoryClient.toString(),
+                            style: TextStyle(
+                                fontSize: 11, fontWeight: FontWeight.w500),
+                            overflow: TextOverflow.visible,
                           ),
                         ),
                       ],

@@ -244,7 +244,7 @@ class UserProvider extends ChangeNotifier {
             context: ctx,
             barrierDismissible: true,
             title: "Ошибка",
-            content: "Неправильный номер телефона или код из смс",
+            content: "У вас нет аккаунта? Пожалуйста, зарегистрируйтесь",
             actions: <Widget>[
               CupertinoDialogAction(
                 onPressed: () => Navigator.of(ctx).pop(),

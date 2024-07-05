@@ -5,6 +5,7 @@ import 'package:bismo/core/helpers/login_helper.dart';
 import 'package:bismo/core/presentation/components/app_settings_tile.dart';
 import 'package:bismo/core/presentation/components/orders_comp/app_back_button.dart';
 import 'package:bismo/core/providers/user_provider.dart';
+import 'package:bismo/core/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,8 @@ class SettingsView extends StatefulWidget {
 }
 
 class _SettingsViewState extends State<SettingsView> {
+  final UserService _userService = UserService();
+
   @override
   Widget build(BuildContext context) {
     String? category = context.watch<UserProvider>().selectedCategory;
@@ -43,15 +46,6 @@ class _SettingsViewState extends State<SettingsView> {
         ),
         child: Column(
           children: [
-            // AppSettingsListTile(
-            //   label: 'Категория клиента',
-            //   trailing: Text(
-            //       category ?? 'Не выбрано'), // Отображение категории клиента
-            //   onTap: () {
-            //     // Действие при нажатии, если необходимо
-            //   },
-            // ),
-            // const SizedBox(height: 10),
             AppSettingsListTile(
               label: 'Уведомления',
               trailing: SvgPicture.asset(AppIcons.right),
@@ -59,7 +53,6 @@ class _SettingsViewState extends State<SettingsView> {
                 Navigator.pushNamed(context, '/notification');
               },
             ),
-
             AppSettingsListTile(
               label: 'Изменить профиль ',
               trailing: SvgPicture.asset(AppIcons.right),
@@ -106,15 +99,29 @@ class _SettingsViewState extends State<SettingsView> {
               },
             ),
             TextButton(
-              child: const Text('Выйти'),
+              child: const Text('Удалить'),
               onPressed: () {
                 Navigator.of(context).pop();
-                doLogout(context);
+                _deleteAccount(context);
               },
             ),
           ],
         );
       },
     );
+  }
+
+  void _deleteAccount(BuildContext context) async {
+    var response = await _userService.deleteAccount();
+
+    if (response != null) {
+      print('Account deleted successfully: ${response.toJson()}');
+      // Опционально, выполнить выход из системы и перенаправить на экран входа
+      Navigator.of(context).pop();
+      doLogout(context);
+    } else {
+      // Обработка ошибки удаления аккаунта
+      print('Failed to delete account.');
+    }
   }
 }

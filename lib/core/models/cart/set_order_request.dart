@@ -1,4 +1,12 @@
+import 'package:bismo/core/models/catalog/goods.dart';
+
 class SetOrderRequest {
+  String? success;
+  String? dateLoading;
+  num? deliverySumm; // Изменено с int? на num?
+  String? categoryClient;
+  String? categoryCodeClient;
+
   String? provider;
   int? orderSum;
   String? providerName;
@@ -27,6 +35,12 @@ class SetOrderRequest {
       this.goods});
 
   SetOrderRequest.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    dateLoading = json['date_loading'];
+    deliverySumm = json['delivery_summ'];
+    categoryClient = json['category_client'];
+    categoryCodeClient = json['category_code_client'];
+
     provider = json['provider'];
     orderSum = json['order_sum'];
     providerName = json['provider_name'];
@@ -48,6 +62,11 @@ class SetOrderRequest {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    data['success'] = success;
+    data['date_loading'] = dateLoading;
+    data['delivery_summ'] = deliverySumm;
+    data['category_client'] = categoryClient;
+    data['category_code_client'] = categoryCodeClient;
     data['provider'] = provider;
     data['order_sum'] = orderSum;
     data['provider_name'] = providerName;
@@ -81,6 +100,10 @@ class SetOrderGoods {
   double? oldPrice;
   String? newsPhoto;
   String? parent;
+  String? parentName;
+  List<TypePrice>? typePrice;
+  String? categoryClient;
+  String? categoryCodeClient;
 
   SetOrderGoods({
     this.nomenklatura,
@@ -97,6 +120,10 @@ class SetOrderGoods {
     this.oldPrice,
     this.newsPhoto,
     this.parent,
+    this.parentName,
+    this.typePrice,
+    this.categoryClient,
+    this.categoryCodeClient,
     required comment,
     required int basketCount,
   });
@@ -116,6 +143,15 @@ class SetOrderGoods {
     oldPrice = convertStringToDouble(json['old_price']);
     newsPhoto = json['news_photo'];
     parent = json['parent'];
+    parentName = json['parent_name'];
+    categoryClient = json['category_client'];
+    categoryCodeClient = json['category_code_client'];
+    if (json['type_price'] != null) {
+      typePrice = <TypePrice>[];
+      json['type_price'].forEach((v) {
+        typePrice!.add(TypePrice.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -134,6 +170,12 @@ class SetOrderGoods {
     data['old_price'] = oldPrice;
     data['news_photo'] = newsPhoto;
     data['parent'] = parent;
+    data['parent_name'] = parentName;
+    data['category_client'] = categoryClient;
+    data['category_code_client'] = categoryCodeClient;
+    if (typePrice != null) {
+      data['type_price'] = typePrice!.map((v) => v.toJson()).toList();
+    }
     return data;
   }
 }

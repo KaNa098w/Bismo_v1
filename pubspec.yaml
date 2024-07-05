@@ -51,6 +51,7 @@ dependencies:
   firebase_core: ^3.1.0
   firebase_messaging: ^15.0.1
   confetti: ^0.7.0
+  flutter_launcher_icons: ^0.13.1
   # ffmpeg_kit_flutter: ^6.0.3
   # hive: ^2.2.3
   # flutter_google_places: ^0.3.0
@@ -92,3 +93,8 @@ flutter:
               - asset: assets/fonts/static/Montserrat-SemiboldItalic.ttf
               - asset: assets/fonts/static/Montserrat-Thin.ttf
               - asset: assets/fonts/static/Montserrat-ThinItalic.ttf
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/playstore.png"
+ 

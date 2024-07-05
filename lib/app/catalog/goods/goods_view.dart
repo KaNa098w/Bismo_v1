@@ -48,7 +48,7 @@ class _GoodsViewState extends State<GoodsView> {
   double totalAmount = 0.0; // Общая сумма выбранных товаров
   int totalQuantity = 0;
   int totalUniqueItems = 0; // Общее количество уникальных выбранных товаров
-  String? categoryClient;
+  String categoryClient = 'A';
 
   @override
   void initState() {
@@ -149,7 +149,7 @@ class _GoodsViewState extends State<GoodsView> {
         setState(() {
           goodsResponse = res;
           filteredGoods = res?.goods ?? [];
-          categoryClient = res?.categoryClient; // Store categoryClient value
+          categoryClient = 'A'; // Store categoryClient value
           isLoading = false;
 
           // Initialize quantities and controllers for each goods
@@ -513,7 +513,7 @@ class _GoodsViewState extends State<GoodsView> {
                                           MainAxisAlignment.start,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                      children: goods.typePrice != null
+                                      children: goods.typePrice != 'A'
                                           ? goods.typePrice!.map((typePrice) {
                                               String formattedName = typePrice
                                                       .name
@@ -537,20 +537,20 @@ class _GoodsViewState extends State<GoodsView> {
                                                   formattedCategory;
 
                                               TextStyle textStyle = TextStyle(
-                                                fontSize: 10,
+                                                fontSize: isBold ? 11 : 10,
                                                 fontWeight: isBold
                                                     ? FontWeight.bold
                                                     : FontWeight.normal,
                                               );
 
-                                              return typePrice.name != " "
+                                              return typePrice.name != ""
                                                   ? Text(
-                                                      '$formattedCategory] $formattedNameт - $formattedPrice₸/шт',
+                                                      '$formattedCategory] от $formattedNameт - $formattedPrice₸/шт',
                                                       style: textStyle,
                                                     )
                                                   : Row(
                                                       children: [
-                                                        const Text('Цена: '),
+                                                        const Text('А] Цена: '),
                                                         Flexible(
                                                           child: Text(
                                                             '$formattedPrice₸/шт',
@@ -607,8 +607,8 @@ class _GoodsViewState extends State<GoodsView> {
                                         }
                                       },
                                       child: Container(
-                                        width: 30,
-                                        height: 30,
+                                        width: 35,
+                                        height: 35,
                                         decoration: BoxDecoration(
                                           color: quantity > 0
                                               ? AppColors.primaryColor
@@ -619,7 +619,7 @@ class _GoodsViewState extends State<GoodsView> {
                                         child: const Center(
                                           child: Icon(
                                             Icons.remove,
-                                            size: 20,
+                                            size: 28,
                                             color: Colors.white,
                                           ),
                                         ),
@@ -627,7 +627,7 @@ class _GoodsViewState extends State<GoodsView> {
                                     ),
                                     const SizedBox(width: 2),
                                     SizedBox(
-                                      width: 38,
+                                      width: 30,
                                       height: 30,
                                       child: TextFormField(
                                         keyboardType: TextInputType.number,
@@ -663,8 +663,8 @@ class _GoodsViewState extends State<GoodsView> {
                                         });
                                       },
                                       child: Container(
-                                        width: 30,
-                                        height: 30,
+                                        width: 35,
+                                        height: 35,
                                         decoration: BoxDecoration(
                                           color: AppColors.primaryColor,
                                           borderRadius:
@@ -673,7 +673,7 @@ class _GoodsViewState extends State<GoodsView> {
                                         child: const Center(
                                           child: Icon(
                                             Icons.add,
-                                            size: 20,
+                                            size: 28,
                                             color: Colors.white,
                                           ),
                                         ),

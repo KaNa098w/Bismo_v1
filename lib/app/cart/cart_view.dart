@@ -129,6 +129,7 @@ class _CartViewState extends State<CartView> {
               onPressed: () {
                 Navigator.of(context).pop(); // Закрыть диалоговое окно
                 PersistentShoppingCart().clearCart();
+
                 setState(() {
                   _futureCartItems = _loadCartItems();
                 });
@@ -538,68 +539,73 @@ class _CartViewState extends State<CartView> {
                     },
                   ),
                   Center(
-                    child: SizedBox(
-                      width: 350, // Установите необходимую ширину
-                      height: 45, // Установите необходимую высоту
-                      child: ElevatedButton(
-                        onPressed: () {
-                          double totalAmount = items.fold<double>(
-                            0,
-                            (total, item) =>
-                                total +
-                                (item.unitPrice *
-                                    (item.productDetails?['step'] ?? 1) *
-                                    item.quantity),
-                          );
+                    child: Padding(
+                      padding: EdgeInsets.all(
+                          16.0), // Добавляем отступы снаружи кнопки
+                      child: SizedBox(
+                        width: 350, // Установите необходимую ширину
+                        height: 45, // Установите необходимую высоту
+                        child: ElevatedButton(
+                          onPressed: () {
+                            double totalAmount = items.fold<double>(
+                              0,
+                              (total, item) =>
+                                  total +
+                                  (item.unitPrice *
+                                      (item.productDetails?['step'] ?? 1) *
+                                      item.quantity),
+                            );
 
-                          int minAmount = getMinAmount(parent);
-                          print(
-                              'Минимальная сумма для категории $parent: $minAmount');
+                            int minAmount = getMinAmount(parent);
+                            print(
+                                'Минимальная сумма для категории $parent: $minAmount');
 
-                          if (totalAmount < minAmount) {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: const Text(
-                                      'Ошибка',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                    content: Text(
-                                        'Минимальный закуп в этой категории $minAmount₸'),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('OK'),
+                            if (totalAmount < minAmount) {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text(
+                                        'Ошибка',
+                                        style: TextStyle(fontSize: 20),
                                       ),
-                                    ],
-                                  );
-                                });
-                          } else {
-                            selectedCategory = parent;
-                            _showBottomSheet(context, items, _afterOrderCreate);
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.purple, // Цвет кнопки
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                10), // Установите радиус для закругления углов
+                                      content: Text(
+                                          'Минимальный закуп в этой категории $minAmount₸'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  });
+                            } else {
+                              selectedCategory = parent;
+                              _showBottomSheet(
+                                  context, items, _afterOrderCreate);
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.purple, // Цвет кнопки
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  10), // Установите радиус для закругления углов
+                            ),
                           ),
+                          child: Text('Итого: ${CustomNumberFormat.format(
+                            items.fold<double>(
+                              0,
+                              (total, item) =>
+                                  total +
+                                  (item.unitPrice *
+                                      (item.productDetails?['step'] ?? 1) *
+                                      item.quantity),
+                            ),
+                          )}₸, Оформить заказ'),
                         ),
-                        child: Text('Итого: ${CustomNumberFormat.format(
-                          items.fold<double>(
-                            0,
-                            (total, item) =>
-                                total +
-                                (item.unitPrice *
-                                    (item.productDetails?['step'] ?? 1) *
-                                    item.quantity),
-                          ),
-                        )}₸, Оформить заказ'),
                       ),
                     ),
                   )

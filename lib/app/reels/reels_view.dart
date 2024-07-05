@@ -15,11 +15,18 @@ class _ReelsViewState extends State<ReelsView> {
   final List<String> _videoUrls = [];
   bool _isLoading = true;
   int _currentPage = 1;
+  bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
     _fetchVideos();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
   }
 
   Future<void> _fetchVideos() async {
@@ -28,23 +35,29 @@ class _ReelsViewState extends State<ReelsView> {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       if (data['data']?.isEmpty) {
-        setState(() {
-          _isLoading = false;
-        });
+        if (!_isDisposed) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
         return;
       }
       final newVideos = _extractVideoUrls(data['data']);
       if (newVideos.isNotEmpty) {
-        setState(() {
-          _videoUrls.addAll(newVideos);
-          _isLoading = false;
-        });
+        if (!_isDisposed) {
+          setState(() {
+            _videoUrls.addAll(newVideos);
+            _isLoading = false;
+          });
+        }
       }
     } else {
       // Обработка ошибки
-      setState(() {
-        _isLoading = false;
-      });
+      if (!_isDisposed) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 

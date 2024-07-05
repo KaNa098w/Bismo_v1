@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:bismo/app/catalog/goods/goods_arguments.dart';
 import 'package:bismo/core/models/cart/set_order_request.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:bismo/core/models/catalog/search.dart';
 import 'package:bismo/core/services/search_service.dart';
