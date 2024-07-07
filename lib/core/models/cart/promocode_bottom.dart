@@ -74,7 +74,7 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
           nomenklaturaKod: item.productDetails?['nomenklaturaKod'],
           producer: item.productDetails?['producer'] ?? "",
           price: item.unitPrice,
-          count: item.productDetails?['count'] ?? 0,
+          count: item.quantity,
           step: item.productDetails?['step'],
           nomenklatura: item.productDetails?['nomenklatura'],
           comment: item.productDetails?['comment'] ?? "Нет комментарии",

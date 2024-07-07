@@ -604,6 +604,20 @@ class _GoodsViewState extends State<GoodsView> {
                                                 (quantity - 1).toString();
                                             _updateTotalAmount();
                                           });
+                                          // Update cart if quantity is decreased
+                                          addToCart(
+                                              context,
+                                              convertToSetOrderGoods(goods),
+                                              quantity - 1,
+                                              goods.parent ?? "");
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'Количество товара не может быть меньше нуля'),
+                                            ),
+                                          );
                                         }
                                       },
                                       child: Container(
@@ -639,28 +653,67 @@ class _GoodsViewState extends State<GoodsView> {
                                           border: OutlineInputBorder(),
                                         ),
                                         onChanged: (value) {
+                                          int? maxCount =
+                                              int.tryParse(goods.count ?? '0');
                                           int newQuantity =
                                               int.tryParse(value) ?? 0;
+                                          if (newQuantity > (maxCount ?? 0)) {
+                                            newQuantity = maxCount ?? 0;
+                                            controllers[
+                                                    goods.nomenklaturaKod ?? ""]
+                                                ?.text = newQuantity.toString();
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                    'Достигнуто максимальное количество товара: ${maxCount}'),
+                                              ),
+                                            );
+                                          }
                                           setState(() {
                                             quantities[goods.nomenklaturaKod ??
                                                 ""] = newQuantity;
                                             _updateTotalAmount();
                                           });
+                                          // Update cart with new quantity
+                                          addToCart(
+                                              context,
+                                              convertToSetOrderGoods(goods),
+                                              newQuantity,
+                                              goods.parent ?? "");
                                         },
                                       ),
                                     ),
                                     const SizedBox(width: 2),
                                     InkWell(
                                       onTap: () {
-                                        setState(() {
-                                          quantities[goods.nomenklaturaKod ??
-                                              ""] = quantity + 1;
-                                          controllers[goods.nomenklaturaKod ??
-                                                      ""]
-                                                  ?.text =
-                                              (quantity + 1).toString();
-                                          _updateTotalAmount();
-                                        });
+                                        int? maxCount =
+                                            int.tryParse(goods.count ?? '0');
+                                        if (quantity < (maxCount ?? 0)) {
+                                          setState(() {
+                                            quantities[goods.nomenklaturaKod ??
+                                                ""] = quantity + 1;
+                                            controllers[goods.nomenklaturaKod ??
+                                                        ""]
+                                                    ?.text =
+                                                (quantity + 1).toString();
+                                            _updateTotalAmount();
+                                          });
+                                          // Add to cart if quantity is increased
+                                          addToCart(
+                                              context,
+                                              convertToSetOrderGoods(goods),
+                                              quantity + 1,
+                                              goods.parent ?? "");
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'Достигнуто максимальное количество товара: ${maxCount}'),
+                                            ),
+                                          );
+                                        }
                                       },
                                       child: Container(
                                         width: 35,

@@ -496,17 +496,28 @@ class _CartViewState extends State<CartView> {
                                   border: OutlineInputBorder(),
                                 ),
                                 onChanged: (value) {
-                                  if (value.isNotEmpty) {
-                                    int newQuantity = int.parse(value);
-                                    if (newQuantity > 0) {
-                                      setState(() {
-                                        cartItem.quantity = newQuantity;
-                                      });
-                                      PersistentShoppingCart()
-                                          .removeFromCart(cartItem.productId);
-                                      PersistentShoppingCart()
-                                          .addToCart(cartItem);
-                                    }
+                                  int? maxCount = int.tryParse(cartItem
+                                          .productDetails?['count']
+                                          ?.toString() ??
+                                      '0');
+                                  int newQuantity = int.tryParse(value) ?? 0;
+                                  if (newQuantity > (maxCount ?? 0)) {
+                                    newQuantity = maxCount ?? 0;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'Достигнуто максимальное количество товара: $maxCount'),
+                                      ),
+                                    );
+                                  }
+                                  if (newQuantity > 0) {
+                                    setState(() {
+                                      cartItem.quantity = newQuantity;
+                                    });
+                                    PersistentShoppingCart()
+                                        .removeFromCart(cartItem.productId);
+                                    PersistentShoppingCart()
+                                        .addToCart(cartItem);
                                   }
                                 },
                                 onEditingComplete: () {
@@ -523,14 +534,27 @@ class _CartViewState extends State<CartView> {
                               color: AppColors.primaryColor,
                               icon: const Icon(Icons.add_box),
                               onPressed: () {
-                                setState(() {
-                                  cartItem.quantity++;
-                                  _controllers[index].text =
-                                      cartItem.quantity.toString();
-                                });
-                                PersistentShoppingCart()
-                                    .removeFromCart(cartItem.productId);
-                                PersistentShoppingCart().addToCart(cartItem);
+                                int? maxCount = int.tryParse(cartItem
+                                        .productDetails?['count']
+                                        ?.toString() ??
+                                    '0');
+                                if (cartItem.quantity < (maxCount ?? 0)) {
+                                  setState(() {
+                                    cartItem.quantity++;
+                                    _controllers[index].text =
+                                        cartItem.quantity.toString();
+                                  });
+                                  PersistentShoppingCart()
+                                      .removeFromCart(cartItem.productId);
+                                  PersistentShoppingCart().addToCart(cartItem);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Достигнуто максимальное количество товара: $maxCount'),
+                                    ),
+                                  );
+                                }
                               },
                             ),
                           ],

@@ -18,21 +18,24 @@ class SetOrderRequest {
   String? providerPhoto;
   String? shirota;
   String? user;
+  String? promocode;
   List<SetOrderGoods>? goods;
 
-  SetOrderRequest(
-      {this.provider,
-      this.orderSum,
-      this.providerName,
-      this.deliveryAddress,
-      this.comment,
-      this.counterparty,
-      this.dolgota,
-      this.type,
-      this.providerPhoto,
-      this.shirota,
-      this.user,
-      this.goods});
+  SetOrderRequest({
+    this.provider,
+    this.orderSum,
+    this.providerName,
+    this.deliveryAddress,
+    this.comment,
+    this.counterparty,
+    this.dolgota,
+    this.type,
+    this.providerPhoto,
+    this.shirota,
+    this.user,
+    this.goods,
+    this.promocode,
+  });
 
   SetOrderRequest.fromJson(Map<String, dynamic> json) {
     success = json['success'];
@@ -52,6 +55,7 @@ class SetOrderRequest {
     providerPhoto = json['provider_photo'];
     shirota = json['shirota'];
     user = json['user'];
+    promocode = json['promocode'];
     if (json['goods'] != null) {
       goods = <SetOrderGoods>[];
       json['goods'].forEach((v) {

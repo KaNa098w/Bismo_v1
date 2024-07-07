@@ -76,28 +76,83 @@ class ProductTileSquare extends StatelessWidget {
                   'Количество :${data.count ?? 0}шт',
                   style: TextStyle(fontSize: 12),
                 ),
-                Spacer(),
                 const SizedBox(height: 4),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      'Цена : ${data.price ?? 0}₸',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Colors.black,
-                            fontSize: 16, // Specify your desired font size here
-                          ),
-                    ),
-                    const SizedBox(width: 4),
-                    // Text(
-                    //   '${data.oldPrice ?? 0}₸',
-                    //   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    //         decoration: TextDecoration.lineThrough,
-                    //       ),
-                    // ),
-                  ],
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: data.typePrice != 'A'
+                      ? data.typePrice!.map((typePrice) {
+                          String formattedName = typePrice.name
+                                  ?.replaceAllMapped(
+                                      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+                                      (Match m) => '${m[1]} ') ??
+                              '0';
+                          String formattedPrice = typePrice.price
+                              .toString()
+                              .replaceAllMapped(
+                                  RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+                                  (Match m) => '${m[1]} ');
+                          String formattedCategory =
+                              typePrice.category.toString();
+
+                          bool isBold = true == formattedCategory;
+
+                          TextStyle textStyle = TextStyle(
+                            fontSize: isBold ? 11 : 10,
+                            fontWeight:
+                                isBold ? FontWeight.bold : FontWeight.normal,
+                          );
+
+                          return typePrice.name != ""
+                              ?
+                              // ? Text(
+                              //     '$formattedCategory] от $formattedNameт - $formattedPrice₸/шт',
+                              //     style: textStyle,
+                              //   )
+                              Text(
+                                  'от $formattedNameт - $formattedPrice₸',
+                                  style: textStyle,
+                                )
+                              : Row(
+                                  children: [
+                                    const Text('Цена: '),
+                                    Flexible(
+                                      child: Text(
+                                        '$formattedPrice₸/шт',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: isBold
+                                              ? FontWeight.bold
+                                              : FontWeight.w500,
+                                        ),
+                                        overflow: TextOverflow.visible,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                        }).toList()
+                      : [const SizedBox()],
                 ),
+                // Row(
+                //   mainAxisSize: MainAxisSize.min,
+                //   crossAxisAlignment: CrossAxisAlignment.end,
+                //   children: [
+                //     Text(
+                //       'Цена : ${data.price ?? 0}₸',
+                //       style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                //             color: Colors.black,
+                //             fontSize: 16, // Specify your desired font size here
+                //           ),
+                //     ),
+                //     const SizedBox(width: 4),
+                //     // Text(
+                //     //   '${data.oldPrice ?? 0}₸',
+                //     //   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                //     //         decoration: TextDecoration.lineThrough,
+                //     //       ),
+                //     // ),
+                //   ],
+                // ),
               ],
             ),
           ),

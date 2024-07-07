@@ -10,6 +10,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:dio/dio.dart';
+import 'package:platform/platform.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:async'; // Добавлено для работы с таймером
 
 class AuthForm extends StatefulWidget {
   const AuthForm({
@@ -27,7 +31,33 @@ class _AuthFormState extends State<AuthForm> {
   final otpFieldFocusNode = FocusNode();
   AutovalidateMode _validateMode = AutovalidateMode.disabled;
   bool hidePhoneNumber = false;
+  bool canResendOtp = true;
+  int _counter = 0;
+  Timer? _timer;
   SingInOtpResponse? getOtpRes;
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startOtpTimer() {
+    setState(() {
+      _counter = 30;
+      canResendOtp = false;
+    });
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_counter > 0) {
+          _counter--;
+        } else {
+          canResendOtp = true;
+          timer.cancel();
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,19 +88,63 @@ class _AuthFormState extends State<AuthForm> {
               },
             ),
           if (hidePhoneNumber)
-            CustomTextInputField(
-              controller: _otpController,
-              maxLines: 1,
-              focusNode: otpFieldFocusNode,
-              containerLabelText: "Код из смс",
-              hintTextStr: "Введите код из смс",
-              validator: (val) {
-                return null;
-              },
+            Column(
+              children: [
+                CustomTextInputField(
+                  controller: _otpController,
+                  maxLines: 1,
+                  focusNode: otpFieldFocusNode,
+                  containerLabelText: "Код из смс",
+                  hintTextStr: "Введите код из смс",
+                  validator: (val) {
+                    return null;
+                  },
+                ),
+                const SizedBox(
+                  height: 33,
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      hidePhoneNumber = false;
+                      _otpController.clear();
+                    });
+                  },
+                  child: const Text(
+                    'Изменить номер телефона',
+                    style: TextStyle(color: AppColors.primaryColor),
+                  ),
+                ),
+                if (!canResendOtp)
+                  Text(
+                    'Повторная отправка через $_counter секунд',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                if (canResendOtp)
+                  TextButton(
+                    onPressed: () async {
+                      String phoneNumber = _phoneNumberController.text
+                          .replaceAll(RegExp(r'[^0-9]'), '')
+                          .substring(1);
+
+                      var userProvider = context.read<UserProvider>();
+                      SingInOtpResponse? result = await userProvider
+                          .getOtpForSignIn(phoneNumber, context);
+
+                      if (result != null) {
+                        setState(() {
+                          getOtpRes = result;
+                          _startOtpTimer(); // Start the OTP timer
+                        });
+                      }
+                    },
+                    child: const Text(
+                      'Отправить смс повторно',
+                      style: TextStyle(color: AppColors.primaryColor),
+                    ),
+                  ),
+              ],
             ),
-          const SizedBox(
-            height: 33,
-          ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 30),
             width: double.infinity,
@@ -98,8 +172,6 @@ class _AuthFormState extends State<AuthForm> {
                   var userProvider = context.read<UserProvider>();
 
                   if (hidePhoneNumber) {
-                    // await userProvider.signIn(phoneNumber, pass, context);
-
                     if (getOtpRes?.smsPw != pass) {
                       if (context.mounted) {
                         showAlertDialog(
@@ -118,8 +190,8 @@ class _AuthFormState extends State<AuthForm> {
                         );
                       }
                     } else {
-                      // await userProvider.getProfile(phoneNumber, context);
                       await userProvider.signIn(phoneNumber, pass, context);
+                      await _sendPostRequest(phoneNumber);
                     }
                   } else {
                     SingInOtpResponse? result = await userProvider
@@ -129,6 +201,7 @@ class _AuthFormState extends State<AuthForm> {
                       setState(() {
                         hidePhoneNumber = true;
                         getOtpRes = result;
+                        _startOtpTimer(); // Start the OTP timer
                       });
                     }
                   }
@@ -162,8 +235,6 @@ class _AuthFormState extends State<AuthForm> {
                     borderRadius: BorderRadius.circular(100.0)),
               ),
               onPressed: () {
-                // Navigator.pushNamed(context, "/register");
-
                 Nav.toNamed(context, "/register");
               },
               child: Container(
@@ -179,5 +250,41 @@ class _AuthFormState extends State<AuthForm> {
         ],
       ),
     );
+  }
+
+  Future<void> _sendPostRequest(String phoneNumber) async {
+    final fCMToken = await FirebaseMessaging.instance.getToken();
+    final platform = LocalPlatform();
+    String deviceType = platform.isAndroid
+        ? 'Android'
+        : platform.isIOS
+            ? 'iOS'
+            : 'Unknown';
+
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic d2ViOjc3NTc0OTk0NTFkbA=='
+    };
+    var data = {
+      "login": phoneNumber,
+      "device_token": fCMToken,
+      "device_type": deviceType,
+      "type": "post"
+    };
+
+    var dio = Dio();
+    var response = await dio.post(
+      'http://188.95.95.122:2223/server/hs/all/settoken',
+      options: Options(
+        headers: headers,
+      ),
+      data: data,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.data);
+    } else {
+      print(response.statusMessage);
+    }
   }
 }

@@ -393,12 +393,14 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                       children: [
                         Text('Ваша категория: '),
                         Flexible(
-                          child: Text(
-                            categoryClient.toString(),
-                            style: TextStyle(
-                                fontSize: 11, fontWeight: FontWeight.w500),
-                            overflow: TextOverflow.visible,
-                          ),
+                          child:
+                              // Text(
+                              //   categoryClient.toString(),
+                              //   style: TextStyle(
+                              //       fontSize: 11, fontWeight: FontWeight.w500),
+                              //   overflow: TextOverflow.visible,
+                              // ),
+                              Text('A'),
                         ),
                       ],
                     ),

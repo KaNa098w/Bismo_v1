@@ -3,6 +3,7 @@ import 'package:bismo/core/helpers/formatters.dart';
 import 'package:bismo/core/helpers/validation.dart';
 import 'package:bismo/core/models/user/SignInOtpResponse.dart';
 import 'package:bismo/core/models/user/get_category_user_response.dart';
+import 'package:bismo/core/models/user/get_my_profile_response.dart';
 import 'package:bismo/core/models/user/get_profile_response.dart';
 import 'package:bismo/core/models/user/register_request.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
@@ -13,16 +14,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-
-import 'package:bismo/core/models/user/get_my_profile_response.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:bismo/core/providers/user_provider.dart';
+import 'package:dio/dio.dart'; // Добавлено для отправки HTTP-запросов
+import 'package:platform/platform.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:async'; // Добавлено для работы с таймером
 
 class RegisterForm extends StatefulWidget {
-  const RegisterForm({
-    super.key,
-  });
+  const RegisterForm({super.key});
 
   @override
   State<RegisterForm> createState() => _RegisterFormState();
@@ -38,11 +36,44 @@ class _RegisterFormState extends State<RegisterForm> {
   final otpFieldFocusNode = FocusNode();
   AutovalidateMode _validateMode = AutovalidateMode.disabled;
   bool hidePhoneNumber = false;
+  bool canResendOtp = true;
+  int _counter = 0;
+  Timer? _timer;
   SingInOtpResponse? getOtpRes;
   List<UserCategories>? _categories;
 
   @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startOtpTimer() {
+    setState(() {
+      _counter = 30;
+      canResendOtp = false;
+    });
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_counter > 0) {
+          _counter--;
+        } else {
+          canResendOtp = true;
+          timer.cancel();
+        }
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final platform = LocalPlatform();
+    String deviceType = platform.isAndroid
+        ? 'Android'
+        : platform.isIOS
+            ? 'iOS'
+            : 'Unknown';
+
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -51,9 +82,7 @@ class _RegisterFormState extends State<RegisterForm> {
             autovalidateMode: _validateMode,
             child: Column(
               children: [
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 if (!hidePhoneNumber)
                   CustomTextInputField(
                     controller: _phoneNumberController,
@@ -62,7 +91,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     hintTextStr: "+7 (777) 777-77-77",
                     inputFormatter: <TextInputFormatter>[
                       FilteringTextInputFormatter.digitsOnly,
-                      PhoneNumberTextInputFormatter()
+                      PhoneNumberTextInputFormatter(),
                     ],
                     keyboardType: TextInputType.phone,
                     validator: (val) {
@@ -72,10 +101,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       return null;
                     },
                   ),
-                if (!hidePhoneNumber)
-                  const SizedBox(
-                    height: 11,
-                  ),
+                if (!hidePhoneNumber) const SizedBox(height: 11),
                 if (!hidePhoneNumber)
                   CustomTextInputField(
                     controller: _lastnameController,
@@ -89,10 +115,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       return null;
                     },
                   ),
-                if (!hidePhoneNumber)
-                  const SizedBox(
-                    height: 11,
-                  ),
+                if (!hidePhoneNumber) const SizedBox(height: 11),
                 if (!hidePhoneNumber)
                   CustomTextInputField(
                     controller: _nameController,
@@ -107,19 +130,62 @@ class _RegisterFormState extends State<RegisterForm> {
                     },
                   ),
                 if (hidePhoneNumber)
-                  CustomTextInputField(
-                    controller: _otpController,
-                    maxLines: 1,
-                    focusNode: otpFieldFocusNode,
-                    containerLabelText: "Код из смс",
-                    hintTextStr: "Введите код из смс",
-                    validator: (val) {
-                      return null;
-                    },
+                  Column(
+                    children: [
+                      CustomTextInputField(
+                        controller: _otpController,
+                        maxLines: 1,
+                        focusNode: otpFieldFocusNode,
+                        containerLabelText: "Код из смс",
+                        hintTextStr: "Введите код из смс",
+                        validator: (val) {
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 33),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            hidePhoneNumber = false;
+                            _otpController.clear();
+                          });
+                        },
+                        child: const Text(
+                          'Изменить номер телефона',
+                          style: TextStyle(color: AppColors.primaryColor),
+                        ),
+                      ),
+                      if (!canResendOtp)
+                        Text(
+                          'Повторная отправка через $_counter секунд',
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      if (canResendOtp)
+                        TextButton(
+                          onPressed: () async {
+                            String phoneNumber = _phoneNumberController.text
+                                .replaceAll(RegExp(r'[^0-9]'), '')
+                                .substring(1);
+
+                            var userProvider = context.read<UserProvider>();
+                            SingInOtpResponse? result = await userProvider
+                                .getOtpForSignIn(phoneNumber, context);
+
+                            if (result != null) {
+                              setState(() {
+                                getOtpRes = result;
+                                _startOtpTimer(); // Запуск таймера для повторной отправки кода
+                              });
+                            }
+                          },
+                          child: const Text(
+                            'Отправить смс повторно',
+                            style: TextStyle(color: AppColors.primaryColor),
+                          ),
+                        ),
+                    ],
                   ),
-                const SizedBox(
-                  height: 11,
-                ),
+                const SizedBox(height: 11),
                 GestureDetector(
                   onTap: () => _showCategorySelectionDialog(context),
                   child: AbsorbPointer(
@@ -134,9 +200,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 14,
-                ),
+                const SizedBox(height: 14),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
@@ -195,6 +259,8 @@ class _RegisterFormState extends State<RegisterForm> {
                                 login: phoneNumber,
                               );
                               userProvider.setProfile(profile);
+                              // Отправка POST-запроса
+                              await _sendPostRequest(phoneNumber, deviceType);
                             }
                           } else {
                             RegisterRequest request = RegisterRequest(
@@ -215,6 +281,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                 setState(() {
                                   hidePhoneNumber = true;
                                   getOtpRes = result;
+                                  _startOtpTimer(); // Запуск таймера для повторной отправки кода
                                 });
                               }
                             }
@@ -297,5 +364,36 @@ class _RegisterFormState extends State<RegisterForm> {
         );
       },
     );
+  }
+
+  Future<void> _sendPostRequest(String phoneNumber, String deviceType) async {
+    // Получение токена FCM
+    final fCMToken = await FirebaseMessaging.instance.getToken();
+
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic d2ViOjc3NTc0OTk0NTFkbA=='
+    };
+    var data = {
+      "login": phoneNumber,
+      "device_token": fCMToken,
+      "device_type": deviceType,
+      "type": "post"
+    };
+
+    var dio = Dio();
+    var response = await dio.post(
+      'http://188.95.95.122:2223/server/hs/all/settoken',
+      options: Options(
+        headers: headers,
+      ),
+      data: data,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.data);
+    } else {
+      print(response.statusMessage);
+    }
   }
 }
