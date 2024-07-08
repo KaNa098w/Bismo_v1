@@ -34,9 +34,9 @@ class _LoginViewState extends State<LoginView> {
         children: [
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.3,
-            child: const AspectRatio(
+            child: AspectRatio(
               aspectRatio: 1 / 1,
-              child: NetworkImageWithLoader(AppImages.roundedLogo),
+              child: Image.asset('assets/icons/appstore.png'),
             ),
           ),
           Text(

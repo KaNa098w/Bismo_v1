@@ -582,7 +582,8 @@ class _GoodsViewState extends State<GoodsView> {
                                         const Text('Ваша категория: '),
                                         Flexible(
                                           child: Text(
-                                            categoryClient.toString(),
+                                            goodsResponse!.categoryClient
+                                                .toString(),
                                             style: const TextStyle(
                                                 fontSize: 11,
                                                 fontWeight: FontWeight.w500),

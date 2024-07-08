@@ -19,23 +19,24 @@ class SetOrderRequest {
   String? shirota;
   String? user;
   String? promocode;
+  int? promocode_persent;
   List<SetOrderGoods>? goods;
 
-  SetOrderRequest({
-    this.provider,
-    this.orderSum,
-    this.providerName,
-    this.deliveryAddress,
-    this.comment,
-    this.counterparty,
-    this.dolgota,
-    this.type,
-    this.providerPhoto,
-    this.shirota,
-    this.user,
-    this.goods,
-    this.promocode,
-  });
+  SetOrderRequest(
+      {this.provider,
+      this.orderSum,
+      this.providerName,
+      this.deliveryAddress,
+      this.comment,
+      this.counterparty,
+      this.dolgota,
+      this.type,
+      this.providerPhoto,
+      this.shirota,
+      this.user,
+      this.goods,
+      this.promocode,
+      this.promocode_persent});
 
   SetOrderRequest.fromJson(Map<String, dynamic> json) {
     success = json['success'];
@@ -56,6 +57,7 @@ class SetOrderRequest {
     shirota = json['shirota'];
     user = json['user'];
     promocode = json['promocode'];
+    promocode_persent = json['promocode_persent'];
     if (json['goods'] != null) {
       goods = <SetOrderGoods>[];
       json['goods'].forEach((v) {
@@ -108,6 +110,7 @@ class SetOrderGoods {
   List<TypePrice>? typePrice;
   String? categoryClient;
   String? categoryCodeClient;
+  String? comment;
 
   SetOrderGoods({
     this.nomenklatura,
@@ -128,7 +131,7 @@ class SetOrderGoods {
     this.typePrice,
     this.categoryClient,
     this.categoryCodeClient,
-    required comment,
+    this.comment,
     required int basketCount,
   });
 

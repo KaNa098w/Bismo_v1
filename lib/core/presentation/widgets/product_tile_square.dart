@@ -98,7 +98,7 @@ class ProductTileSquare extends StatelessWidget {
                           bool isBold = true == formattedCategory;
 
                           TextStyle textStyle = TextStyle(
-                            fontSize: isBold ? 11 : 10,
+                            fontSize: isBold ? 9 : 8,
                             fontWeight:
                                 isBold ? FontWeight.bold : FontWeight.normal,
                           );

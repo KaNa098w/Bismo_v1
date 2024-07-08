@@ -53,6 +53,7 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
   bool isValidPromo = false;
   late ConfettiController _confettiController;
   late AnimationController _animationController;
+  PromocodeResponse? promocodeResponse;
 
   Future<void> _launchURL(String url) async {
     try {
@@ -69,7 +70,7 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
     try {
       int totalPrice = totalAmount.toInt();
 
-      var goods = items.map((item) {
+      var goods1 = items.map((item) {
         return SetOrderGoods(
           nomenklaturaKod: item.productDetails?['nomenklaturaKod'],
           producer: item.productDetails?['producer'] ?? "",
@@ -87,7 +88,7 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
         orderSum: totalPrice,
         providerName: "",
         deliveryAddress: userProvider.userAddress?.deliveryAddress,
-        comment: "",
+        comment: '',
         counterparty: "provider_code",
         dolgota: userProvider.userAddress?.dolgota,
         type: widget.isDeliverySelected ? "0" : "1",
@@ -95,7 +96,9 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
             "https://bismo-products.object.pscloud.io/Bismocounterparties/%D0%96%D0%B0%D1%81%D0%9D%D1%83%D1%80.png",
         shirota: userProvider.userAddress?.shirota,
         user: userProvider.user?.phoneNumber,
-        goods: goods,
+        goods: goods1,
+        promocode: promoController.text,
+        promocode_persent: promocodeResponse?.discount,
       );
 
       var res = await CartService().setOrder(setOrderRequest);
@@ -226,6 +229,8 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
       try {
         PromocodeResponse? response =
             await _promocodeServices.getPromoCode(promocodeText);
+
+        promocodeResponse = response;
         if (response != null) {
           if (response.success == true) {
             setState(() {

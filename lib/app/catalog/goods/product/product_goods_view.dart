@@ -33,6 +33,7 @@ class ProductGoodsView extends StatefulWidget {
 }
 
 class _ProductGoodsViewState extends State<ProductGoodsView> {
+  TextEditingController _commentController = TextEditingController();
   int quantity = 1;
   int starClickCount = 0;
   List<String> productImages = [];
@@ -56,6 +57,12 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _initializeQuantity();
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
   }
 
   Future<void> _initializeQuantity() async {
@@ -151,6 +158,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
         "step": goods.step,
         "count": goods.count,
         "parent": parent,
+        "comment": _commentController.text,
       },
     ));
   }
@@ -634,9 +642,10 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                       ),
                     ),
                   const SizedBox(height: 20),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: TextField(
+                      controller: _commentController,
                       decoration: InputDecoration(
                         labelText: 'Комментария, пожелания',
                         border: OutlineInputBorder(),

@@ -87,6 +87,9 @@ class _AuthFormState extends State<AuthForm> {
                 return null;
               },
             ),
+          SizedBox(
+            height: 12,
+          ),
           if (hidePhoneNumber)
             Column(
               children: [
