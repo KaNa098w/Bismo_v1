@@ -85,10 +85,13 @@ class _CartViewState extends State<CartView> {
     }
   }
 
-  Future<List<PersistentShoppingCartItem>> _loadCartItems() async {
+  Future<List<PersistentShoppingCartItem>> _loadCartItems(
+      [bool isClear = false]) async {
     Map<String, dynamic> cartData = PersistentShoppingCart().getCartData();
     cartItems =
         (cartData['cartItems'] ?? []) as List<PersistentShoppingCartItem>;
+
+    if (isClear) cartItems = [];
     _controllers.clear();
     _controllers = List.generate(cartItems.length, (index) {
       var newController = TextEditingController();
@@ -129,10 +132,8 @@ class _CartViewState extends State<CartView> {
               onPressed: () {
                 Navigator.of(context).pop(); // Закрыть диалоговое окно
                 PersistentShoppingCart().clearCart();
-
-                setState(() {
-                  _futureCartItems = _loadCartItems();
-                });
+                _futureCartItems = _loadCartItems(true);
+                setState(() {});
               },
               child: const Text('Очистить'),
             ),
@@ -220,7 +221,7 @@ class _CartViewState extends State<CartView> {
       case 'MA100001883':
         return 'Оригинальная косметика';
       default:
-        return '$parent';
+        return parent;
     }
   }
 
@@ -564,7 +565,7 @@ class _CartViewState extends State<CartView> {
                   ),
                   Center(
                     child: Padding(
-                      padding: EdgeInsets.all(
+                      padding: const EdgeInsets.all(
                           16.0), // Добавляем отступы снаружи кнопки
                       child: SizedBox(
                         width: 350, // Установите необходимую ширину

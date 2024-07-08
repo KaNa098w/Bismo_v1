@@ -7,6 +7,7 @@ import 'package:bismo/core/models/catalog/goods.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
 import 'package:bismo/core/presentation/widgets/custom_empty_widget.dart';
 import 'package:bismo/core/presentation/widgets/custom_number_format.dart';
+import 'package:bismo/core/providers/theme_provider.dart';
 import 'package:bismo/core/services/goods_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,6 +16,7 @@ import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class GoodsView extends StatefulWidget {
   final String? title;
@@ -274,7 +276,9 @@ class _GoodsViewState extends State<GoodsView> {
         CupertinoDialogAction(
           onPressed: () async {
             Navigator.pop(context);
-            await Navigator.pushNamed(context, "/cart");
+            var tm = context.read<ThemeProvider>();
+            tm.setNavIndex(3);
+            await Navigator.pushNamed(context, "/");
           },
           textStyle: const TextStyle(color: AppColors.primaryColor),
           child: const Text("Перейти в корзину"),
@@ -575,11 +579,11 @@ class _GoodsViewState extends State<GoodsView> {
 
                                     Row(
                                       children: [
-                                        Text('Ваша категория: '),
+                                        const Text('Ваша категория: '),
                                         Flexible(
                                           child: Text(
                                             categoryClient.toString(),
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontSize: 11,
                                                 fontWeight: FontWeight.w500),
                                             overflow: TextOverflow.visible,
@@ -613,7 +617,7 @@ class _GoodsViewState extends State<GoodsView> {
                                         } else {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
-                                            SnackBar(
+                                            const SnackBar(
                                               content: Text(
                                                   'Количество товара не может быть меньше нуля'),
                                             ),
@@ -666,7 +670,7 @@ class _GoodsViewState extends State<GoodsView> {
                                                 .showSnackBar(
                                               SnackBar(
                                                 content: Text(
-                                                    'Достигнуто максимальное количество товара: ${maxCount}'),
+                                                    'Достигнуто максимальное количество товара: $maxCount'),
                                               ),
                                             );
                                           }
@@ -710,7 +714,7 @@ class _GoodsViewState extends State<GoodsView> {
                                               .showSnackBar(
                                             SnackBar(
                                               content: Text(
-                                                  'Достигнуто максимальное количество товара: ${maxCount}'),
+                                                  'Достигнуто максимальное количество товара: $maxCount'),
                                             ),
                                           );
                                         }

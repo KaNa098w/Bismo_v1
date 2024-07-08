@@ -6,6 +6,7 @@ import 'package:bismo/core/models/cart/set_order_request.dart';
 import 'package:bismo/core/models/catalog/fullscreenimage.dart';
 import 'package:bismo/core/presentation/dialogs/cupertino_dialog.dart';
 import 'package:bismo/core/presentation/widgets/video_player_product.dart';
+import 'package:bismo/core/providers/theme_provider.dart';
 import 'package:bismo/core/services/goods_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'dart:developer';
 
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class ProductGoodsView extends StatefulWidget {
@@ -77,6 +79,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
       setState(() {
         goods = response?.goods?.firstWhere(
             (element) => element.nomenklaturaKod == nomenklaturaKod);
+        categoryClient = response?.categoryClient;
       });
     } catch (e) {
       log("Error fetching goods: $e");
@@ -133,7 +136,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
       await PersistentShoppingCart()
           .removeFromCart(goods.nomenklaturaKod ?? "");
     }
-    categoryClient = goods?.categoryClient;
+    // categoryClient = goods.categoryClient;
 
     await PersistentShoppingCart().addToCart(PersistentShoppingCartItem(
       productId: goods.nomenklaturaKod ?? "",
@@ -384,23 +387,22 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           : [const SizedBox()],
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
                     child: Row(
                       children: [
-                        Text('Ваша категория: '),
+                        const Text('Ваша категория: '),
                         Flexible(
-                          child:
-                              // Text(
-                              //   categoryClient.toString(),
-                              //   style: TextStyle(
-                              //       fontSize: 11, fontWeight: FontWeight.w500),
-                              //   overflow: TextOverflow.visible,
-                              // ),
-                              Text('A'),
+                          child: Text(
+                            categoryClient.toString(),
+                            style: const TextStyle(
+                                fontSize: 11, fontWeight: FontWeight.w500),
+                            overflow: TextOverflow.visible,
+                          ),
+                          // Text('A'),
                         ),
                       ],
                     ),
@@ -745,7 +747,9 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                         CupertinoDialogAction(
                           onPressed: () async {
                             Navigator.pop(context);
-                            await Navigator.pushNamed(context, "/cart");
+                            var tm = context.read<ThemeProvider>();
+                            tm.setNavIndex(3);
+                            await Navigator.pushNamed(context, "/");
                           },
                           textStyle:
                               const TextStyle(color: AppColors.primaryColor),
