@@ -6,7 +6,6 @@ import 'package:bismo/core/presentation/widgets/bundle_tile_square.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-
 class PopularPackPage extends StatelessWidget {
   const PopularPackPage({Key? key}) : super(key: key);
 

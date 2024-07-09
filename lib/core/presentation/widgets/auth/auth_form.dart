@@ -87,6 +87,11 @@ class _AuthFormState extends State<AuthForm> {
                 return null;
               },
             ),
+          if (hidePhoneNumber)
+            Text(
+              'SMS отправлено на номер: ${_phoneNumberController.text}',
+              style: TextStyle(color: Colors.grey),
+            ),
           SizedBox(
             height: 12,
           ),

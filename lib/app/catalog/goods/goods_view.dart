@@ -434,7 +434,10 @@ class _GoodsViewState extends State<GoodsView> {
                                     if (quantity > 0)
                                       Row(
                                         children: [
-                                          const Text('Сумма: '),
+                                          const Text(
+                                            'Сумма: ',
+                                            style: TextStyle(fontSize: 12),
+                                          ),
                                           Flexible(
                                             child: Text(
                                               (goods.price != null &&
@@ -442,7 +445,7 @@ class _GoodsViewState extends State<GoodsView> {
                                                   ? '${CustomNumberFormat.format(goods.price! * goods.step! * quantity)}₸'
                                                   : '0₸',
                                               style: const TextStyle(
-                                                  fontSize: 14,
+                                                  fontSize: 12,
                                                   fontWeight: FontWeight.w500),
                                               overflow: TextOverflow.visible,
                                             ),
@@ -541,7 +544,7 @@ class _GoodsViewState extends State<GoodsView> {
                                                   formattedCategory;
 
                                               TextStyle textStyle = TextStyle(
-                                                fontSize: isBold ? 11 : 10,
+                                                fontSize: isBold ? 10 : 9,
                                                 fontWeight: isBold
                                                     ? FontWeight.bold
                                                     : FontWeight.normal,
@@ -554,12 +557,16 @@ class _GoodsViewState extends State<GoodsView> {
                                                     )
                                                   : Row(
                                                       children: [
-                                                        const Text('А] Цена: '),
+                                                        const Text(
+                                                          'А] Цена: ',
+                                                          style: TextStyle(
+                                                              fontSize: 11),
+                                                        ),
                                                         Flexible(
                                                           child: Text(
                                                             '$formattedPrice₸/шт',
                                                             style: TextStyle(
-                                                              fontSize: 14,
+                                                              fontSize: 11,
                                                               fontWeight: isBold
                                                                   ? FontWeight
                                                                       .bold

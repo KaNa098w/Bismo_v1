@@ -383,8 +383,10 @@ class _CartViewState extends State<CartView> {
                         const Divider(),
                     itemBuilder: (context, index) {
                       PersistentShoppingCartItem cartItem = items[index];
+                      int globalIndex =
+                          cartItems.indexOf(cartItem); // Get the global index
 
-                      if (!_controllers.asMap().containsKey(index)) {
+                      if (!_controllers.asMap().containsKey(globalIndex)) {
                         return const SizedBox();
                       }
 
@@ -463,7 +465,7 @@ class _CartViewState extends State<CartView> {
                                   onPressed: () {
                                     setState(() {
                                       cartItem.quantity--;
-                                      _controllers[index].text =
+                                      _controllers[globalIndex].text =
                                           cartItem.quantity.toString();
                                     });
                                     PersistentShoppingCart()
@@ -489,8 +491,7 @@ class _CartViewState extends State<CartView> {
                               height: 30,
                               child: TextFormField(
                                 keyboardType: TextInputType.number,
-                                controller: TextEditingController(
-                                    text: cartItem.quantity.toString()),
+                                controller: _controllers[globalIndex],
                                 textAlign: TextAlign.center,
                                 decoration: const InputDecoration(
                                   contentPadding: EdgeInsets.zero,
@@ -504,10 +505,13 @@ class _CartViewState extends State<CartView> {
                                   int newQuantity = int.tryParse(value) ?? 0;
                                   if (newQuantity > (maxCount ?? 0)) {
                                     newQuantity = maxCount ?? 0;
+                                    _controllers[globalIndex].text = newQuantity
+                                        .toString(); // Update the text field
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
                                             'Достигнуто максимальное количество товара: $maxCount'),
+                                        duration: Duration(seconds: 1),
                                       ),
                                     );
                                   }
@@ -524,7 +528,7 @@ class _CartViewState extends State<CartView> {
                                 onEditingComplete: () {
                                   FocusScope.of(context).unfocus();
                                   setState(() {
-                                    _controllers[index].text =
+                                    _controllers[globalIndex].text =
                                         cartItem.quantity.toString();
                                   });
                                 },
@@ -542,17 +546,20 @@ class _CartViewState extends State<CartView> {
                                 if (cartItem.quantity < (maxCount ?? 0)) {
                                   setState(() {
                                     cartItem.quantity++;
-                                    _controllers[index].text =
+                                    _controllers[globalIndex].text =
                                         cartItem.quantity.toString();
                                   });
                                   PersistentShoppingCart()
                                       .removeFromCart(cartItem.productId);
                                   PersistentShoppingCart().addToCart(cartItem);
                                 } else {
+                                  _controllers[globalIndex].text = maxCount
+                                      .toString(); // Update the text field
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
                                           'Достигнуто максимальное количество товара: $maxCount'),
+                                      duration: Duration(seconds: 1),
                                     ),
                                   );
                                 }

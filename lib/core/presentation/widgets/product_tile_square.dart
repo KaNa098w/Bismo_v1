@@ -72,11 +72,11 @@ class ProductTileSquare extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Text(
-                  'Количество :${data.count ?? 0}шт',
-                  style: TextStyle(fontSize: 12),
-                ),
-                const SizedBox(height: 4),
+                // Text(
+                //   'Количество :${data.count ?? 0}шт',
+                //   style: TextStyle(fontSize: 12),
+                // ),
+                // const SizedBox(height: 4),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,7 +98,7 @@ class ProductTileSquare extends StatelessWidget {
                           bool isBold = true == formattedCategory;
 
                           TextStyle textStyle = TextStyle(
-                            fontSize: isBold ? 9 : 8,
+                            fontSize: isBold ? 10 : 9,
                             fontWeight:
                                 isBold ? FontWeight.bold : FontWeight.normal,
                           );
@@ -131,7 +131,11 @@ class ProductTileSquare extends StatelessWidget {
                                   ],
                                 );
                         }).toList()
-                      : [const SizedBox()],
+                      : [
+                          const SizedBox(
+                            height: 1,
+                          )
+                        ],
                 ),
                 // Row(
                 //   mainAxisSize: MainAxisSize.min,

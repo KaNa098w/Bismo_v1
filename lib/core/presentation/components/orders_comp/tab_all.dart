@@ -123,6 +123,7 @@ class _AllTabState extends State<AllTab> {
                           orderNumber: item.number ?? "",
                           date: item.date ?? "",
                           status: _getStatus(item.status as int),
+                          sumOrder: item.sumOrder ?? '',
                         );
                       } else {
                         return hasMore

@@ -90,7 +90,7 @@ class _AllProductsViewState extends State<AllProductsView> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(AppDefaults.padding * 2),
+                  padding: const EdgeInsets.all(AppDefaults.padding * 1),
                   decoration: const BoxDecoration(
                     color: Colors.white60,
                   ),

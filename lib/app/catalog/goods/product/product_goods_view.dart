@@ -330,11 +330,14 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           'Цена: ',
                           style: TextStyle(fontSize: 20),
                         ),
-                        Text(
-                          '${goods?.price}₸/шт',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
+                        Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: Text(
+                            '${goods?.price}₸/шт',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ],

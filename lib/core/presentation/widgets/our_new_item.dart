@@ -32,7 +32,7 @@ class _OurNewItemState extends State<OurNewItem> {
           },
         ),
         SizedBox(
-          height: 300,
+          height: 350,
           child: FutureBuilder<GetNewGoodsResponse?>(
             future: _newGoodsFuture,
             builder: (context, snapshot) {

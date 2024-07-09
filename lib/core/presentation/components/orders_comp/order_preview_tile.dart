@@ -25,9 +25,11 @@ class OrderPreviewTile extends StatefulWidget {
     required this.onTap,
     required this.orderNumber,
     required this.refresh,
+    required this.sumOrder,
     required JSONBody order,
   }) : super(key: key);
 
+  final String sumOrder;
   final String orderID;
   final String date;
   final OrderStatus? status;
@@ -97,6 +99,22 @@ class _OrderPreviewTileState extends State<OrderPreviewTile> {
                           TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                     Text(widget.date)
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Сумма заказа:',
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      '${widget.sumOrder}₸',
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    )
                   ],
                 ),
                 const SizedBox(height: 8),

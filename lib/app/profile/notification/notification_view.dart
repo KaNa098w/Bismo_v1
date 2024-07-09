@@ -1,4 +1,6 @@
 import 'package:bismo/core/colors.dart';
+import 'package:bismo/core/helpers/login_helper.dart';
+import 'package:bismo/core/models/user/auth_response.dart';
 import 'package:bismo/core/presentation/components/orders_comp/app_back_button.dart';
 import 'package:bismo/core/models/cart/get_notification_response.dart';
 import 'package:bismo/core/services/notification_service.dart';
@@ -16,6 +18,7 @@ class NotificationView extends StatefulWidget {
 class _NotificationViewState extends State<NotificationView> {
   NotificationResponse? _notificationResponse;
   bool _isLoading = true;
+  String? phoneNumber;
 
   @override
   void initState() {
@@ -24,10 +27,11 @@ class _NotificationViewState extends State<NotificationView> {
   }
 
   Future<void> _fetchNotifications() async {
-    String phoneNumber = "7777017100"; // Укажите ваш номер телефона
     try {
+      AuthResponse? authResponse = await authData();
+      phoneNumber = authResponse?.phoneNumber;
       NotificationResponse? response =
-          await NotificationServices().getNotifications(phoneNumber);
+          await NotificationServices().getNotifications(phoneNumber!);
       setState(() {
         _notificationResponse = response;
         _isLoading = false;
