@@ -179,8 +179,17 @@ class _AuthFormState extends State<AuthForm> {
 
                   var userProvider = context.read<UserProvider>();
 
-                  if (hidePhoneNumber) {
-                    if (getOtpRes?.smsPw != pass) {
+                  // Test condition for bypassing OTP verification
+                  if (phoneNumber == "9999999999" && pass == "1234") {
+                    await userProvider.signIn(phoneNumber, pass, context);
+                    await _sendPostRequest(phoneNumber);
+                  } else if (hidePhoneNumber) {
+                    // Check for the specific OTP "1234" to bypass the SMS validation only for the specific phone number
+                    if (phoneNumber == "9999999999" && pass == "1234" ||
+                        getOtpRes?.smsPw == pass) {
+                      await userProvider.signIn(phoneNumber, pass, context);
+                      await _sendPostRequest(phoneNumber);
+                    } else {
                       if (context.mounted) {
                         showAlertDialog(
                           context: context,
@@ -197,20 +206,25 @@ class _AuthFormState extends State<AuthForm> {
                           ],
                         );
                       }
-                    } else {
-                      await userProvider.signIn(phoneNumber, pass, context);
-                      await _sendPostRequest(phoneNumber);
                     }
                   } else {
-                    SingInOtpResponse? result = await userProvider
-                        .getOtpForSignIn(phoneNumber, context);
-
-                    if (result != null) {
+                    // Skip SMS sending for the specific phone number
+                    if (phoneNumber == "9999999999") {
                       setState(() {
                         hidePhoneNumber = true;
-                        getOtpRes = result;
                         _startOtpTimer(); // Start the OTP timer
                       });
+                    } else {
+                      SingInOtpResponse? result = await userProvider
+                          .getOtpForSignIn(phoneNumber, context);
+
+                      if (result != null) {
+                        setState(() {
+                          hidePhoneNumber = true;
+                          getOtpRes = result;
+                          _startOtpTimer(); // Start the OTP timer
+                        });
+                      }
                     }
                   }
                 }

@@ -40,11 +40,11 @@ class _LoginViewState extends State<LoginView> {
             ),
           ),
           Text(
-            'Добро пожаловать ',
+            'Добро пожаловать в BEENKAI',
             style: Theme.of(context)
                 .textTheme
                 .titleLarge
-                ?.copyWith(fontWeight: FontWeight.bold),
+                ?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
           ),
           Text(
             '',
