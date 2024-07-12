@@ -1,3 +1,4 @@
+import 'package:bismo/app/root.dart';
 import 'package:bismo/core/classes/route_manager.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/helpers/formatters.dart';
@@ -13,7 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
 import 'package:platform/platform.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'dart:async'; // Добавлено для работы с таймером
+import 'dart:async';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({
@@ -182,13 +183,13 @@ class _AuthFormState extends State<AuthForm> {
                   // Test condition for bypassing OTP verification
                   if (phoneNumber == "9999999999" && pass == "1234") {
                     await userProvider.signIn(phoneNumber, pass, context);
-                    await _sendPostRequest(phoneNumber);
+                    await _handlePostRegistrationLogic(phoneNumber);
                   } else if (hidePhoneNumber) {
                     // Check for the specific OTP "1234" to bypass the SMS validation only for the specific phone number
                     if (phoneNumber == "9999999999" && pass == "1234" ||
                         getOtpRes?.smsPw == pass) {
                       await userProvider.signIn(phoneNumber, pass, context);
-                      await _sendPostRequest(phoneNumber);
+                      await _handlePostRegistrationLogic(phoneNumber);
                     } else {
                       if (context.mounted) {
                         showAlertDialog(
@@ -269,9 +270,58 @@ class _AuthFormState extends State<AuthForm> {
               ),
             ),
           ),
+          const SizedBox(
+            height: 10,
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            width: double.infinity,
+            height: 43,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(
+                  color: Colors.transparent,
+                ),
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.purple,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100.0)),
+              ),
+              onPressed: () async {
+                // Пропустить регистрацию, передать пустой номер телефона
+                await _handlePostRegistrationLogic("");
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          Root()), // Замените Root на ваш виджет после успешной регистрации
+                );
+              },
+              child: Container(
+                alignment: Alignment.center,
+                child: const Text(
+                  "Пропустить регистрацию",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  Future<void> _handlePostRegistrationLogic(String phoneNumber) async {
+    var userProvider = context.read<UserProvider>();
+
+    if (phoneNumber.isNotEmpty) {
+      await userProvider.signIn(phoneNumber, "1234", context);
+    }
+
+    await _sendPostRequest(phoneNumber);
+
+    // Любые дополнительные действия после успешной регистрации или пропуска регистрации
   }
 
   Future<void> _sendPostRequest(String phoneNumber) async {
@@ -288,7 +338,7 @@ class _AuthFormState extends State<AuthForm> {
       'Authorization': 'Basic d2ViOjc3NTc0OTk0NTFkbA=='
     };
     var data = {
-      "login": phoneNumber,
+      "login": phoneNumber.isNotEmpty ? phoneNumber : "skipped",
       "device_token": fCMToken,
       "device_type": deviceType,
       "type": "post"

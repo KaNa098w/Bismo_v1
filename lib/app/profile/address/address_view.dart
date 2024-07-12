@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:bismo/core/app_cache.dart';
+import 'package:bismo/core/classes/route_manager.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/exceptions.dart';
 import 'package:bismo/core/models/location/screens/current_location.dart';
@@ -50,22 +51,31 @@ class _AddressViewState extends State<AddressView> {
   void initState() {
     super.initState();
     dio = Dio();
-    fetchAdressWithDio();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchAdressWithDio();
+    });
   }
 
   Future<void> fetchAdressWithDio() async {
     var userProvider = context.read<UserProvider>();
+    var phoneNumber = userProvider.user?.phoneNumber ?? "";
+
+    if (phoneNumber.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showRegistrationDialog(context);
+      });
+      return;
+    }
 
     try {
-      final response = await AddressService()
-          .getAddresses(userProvider.user?.phoneNumber ?? "");
+      final response = await AddressService().getAddresses(phoneNumber);
 
       getAddressResponse = response;
-      // final body = response.data;
-
-      // GetAddressResponse getAddressResponse =
-      //     GetAddressResponse.fromJson(child);
-
       setState(() {
         addresses = getAddressResponse?.allAdress;
         isLoading = false;
@@ -81,6 +91,36 @@ class _AddressViewState extends State<AddressView> {
         isLoading = false;
       });
     }
+  }
+
+  void _showRegistrationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Регистрация требуется'),
+          content: const Text(
+              'У вас нет регистрации. Пожалуйста, зарегистрируйтесь.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Закрыть диалоговое окно
+                Navigator.of(context).pop(); // Вернуться назад
+              },
+              child: const Text('Отмена'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Закрыть диалоговое окно
+                Nav.toNamed(
+                    context, "/register"); // Перейти на страницу регистрации
+              },
+              child: const Text('Зарегистрироваться'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

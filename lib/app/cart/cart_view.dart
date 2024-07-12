@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:bismo/app/catalog/goods/goods_arguments.dart';
 import 'package:bismo/app/product_details/product_details.dart';
+import 'package:bismo/core/classes/route_manager.dart';
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/exceptions.dart';
 import 'package:bismo/core/models/cart/get_min_sum_response.dart';
@@ -174,6 +175,11 @@ class _CartViewState extends State<CartView> {
 
   Future<GetAddressResponse?> _getUserAddress(
       String phoneNumber, BuildContext ctx) async {
+    if (phoneNumber.isEmpty) {
+      _showRegistrationDialog(ctx);
+      return null;
+    }
+
     try {
       var res = await UserService().getUserAddress(phoneNumber);
       return res;
@@ -197,6 +203,38 @@ class _CartViewState extends State<CartView> {
       }
       return null;
     }
+  }
+
+  void _showRegistrationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Регистрация требуется',
+            style: TextStyle(fontSize: 18),
+          ),
+          content: const Text(
+              'У вас нет регистрации. Пожалуйста, зарегистрируйтесь.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Закрыть диалоговое окно
+              },
+              child: const Text('Отмена'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Закрыть диалоговое окно
+                Nav.toNamed(
+                    context, "/register"); // Перейти на страницу регистрации
+              },
+              child: const Text('Зарегистрироваться'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _afterOrderCreate(
@@ -579,44 +617,52 @@ class _CartViewState extends State<CartView> {
                         height: 45, // Установите необходимую высоту
                         child: ElevatedButton(
                           onPressed: () {
-                            double totalAmount = items.fold<double>(
-                              0,
-                              (total, item) =>
-                                  total +
-                                  (item.unitPrice *
-                                      (item.productDetails?['step'] ?? 1) *
-                                      item.quantity),
-                            );
+                            var userProvider = context.read<UserProvider>();
+                            String phoneNumber =
+                                userProvider.user?.phoneNumber ?? "";
 
-                            int minAmount = getMinAmount(parent);
-                            print(
-                                'Минимальная сумма для категории $parent: $minAmount');
-
-                            if (totalAmount < minAmount) {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text(
-                                        'Ошибка',
-                                        style: TextStyle(fontSize: 20),
-                                      ),
-                                      content: Text(
-                                          'Минимальный закуп в этой категории $minAmount₸'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text('OK'),
-                                        ),
-                                      ],
-                                    );
-                                  });
+                            if (phoneNumber.isEmpty) {
+                              _showRegistrationDialog(context);
                             } else {
-                              selectedCategory = parent;
-                              _showBottomSheet(
-                                  context, items, _afterOrderCreate);
+                              double totalAmount = items.fold<double>(
+                                0,
+                                (total, item) =>
+                                    total +
+                                    (item.unitPrice *
+                                        (item.productDetails?['step'] ?? 1) *
+                                        item.quantity),
+                              );
+
+                              int minAmount = getMinAmount(parent);
+                              print(
+                                  'Минимальная сумма для категории $parent: $minAmount');
+
+                              if (totalAmount < minAmount) {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text(
+                                          'Ошибка',
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                        content: Text(
+                                            'Минимальный закуп в этой категории $minAmount₸'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    });
+                              } else {
+                                selectedCategory = parent;
+                                _showBottomSheet(
+                                    context, items, _afterOrderCreate);
+                              }
                             }
                           },
                           style: ElevatedButton.styleFrom(
