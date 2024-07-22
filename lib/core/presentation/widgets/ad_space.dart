@@ -42,10 +42,10 @@ class AdSpace extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Text(
-                        '13-19 июля',
-                        style: TextStyle(color: Colors.black.withOpacity(0.5)),
-                      )
+                      // Text(
+                      //   '13-19 июля',
+                      //   style: TextStyle(color: Colors.black.withOpacity(0.5)),
+                      // )
                     ],
                   ),
                 );

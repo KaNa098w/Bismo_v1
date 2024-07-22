@@ -20,6 +20,7 @@ class GoodsResponse {
     deliverySumm = json['delivery_summ'];
     categoryClient = json['category_client'];
     categoryCodeClient = json['category_code_client'];
+
     if (json['goods'] != null) {
       goods = <Goods>[];
       json['goods'].forEach((v) {
@@ -57,6 +58,8 @@ class Goods {
   String? newsPhoto;
   String? parent;
   String? parentName;
+  bool? calculation;
+  bool? administrator;
   List<TypePrice>? typePrice;
 
   Goods(
@@ -74,6 +77,8 @@ class Goods {
       this.parent,
       this.newsPhoto,
       this.parentName,
+      this.calculation,
+      this.administrator,
       this.typePrice});
 
   Goods.fromJson(Map<String, dynamic> json) {
@@ -97,6 +102,8 @@ class Goods {
     newsPhoto = json['news_photo'];
     parent = json['parent'];
     parentName = json['parent_name'];
+    calculation = json['calculation'];
+    administrator = json['administrator'];
     if (json['type_price'] != null) {
       typePrice = <TypePrice>[];
       json['type_price'].forEach((v) {
@@ -121,6 +128,9 @@ class Goods {
     data['news_photo'] = newsPhoto;
     data['parent'] = parent;
     data['parent_name'] = parentName;
+    data['calculation'] = calculation;
+    data['administrator'] = administrator;
+
     if (typePrice != null) {
       data['type_price'] = typePrice!.map((v) => v.toJson()).toList();
     }

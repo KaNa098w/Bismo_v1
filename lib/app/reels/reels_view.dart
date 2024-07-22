@@ -11,7 +11,8 @@ class ReelsView extends StatefulWidget {
   State<ReelsView> createState() => _ReelsViewState();
 }
 
-class _ReelsViewState extends State<ReelsView> {
+class _ReelsViewState extends State<ReelsView>
+    with AutomaticKeepAliveClientMixin {
   final List<String> _videoUrls = [];
   bool _isLoading = true;
   int _currentPage = 1;
@@ -52,7 +53,6 @@ class _ReelsViewState extends State<ReelsView> {
         }
       }
     } else {
-      // Обработка ошибки
       if (!_isDisposed) {
         setState(() {
           _isLoading = false;
@@ -73,6 +73,7 @@ class _ReelsViewState extends State<ReelsView> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -89,4 +90,7 @@ class _ReelsViewState extends State<ReelsView> {
             ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => false;
 }

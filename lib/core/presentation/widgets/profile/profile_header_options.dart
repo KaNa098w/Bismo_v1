@@ -45,7 +45,7 @@ class ProfileHeaderOptions extends StatelessWidget {
             icon: AppIcons.support,
             iconSize: 32.0, // Задайте желаемый размер иконки
             onTap: () async {
-              String contact = "77077303923";
+              String contact = "77477770088";
               String text = '';
               String androidUrl = "whatsapp://send?phone=$contact&text=$text";
               String iosUrl = "https://wa.me/$contact?text=${Uri.parse(text)}";

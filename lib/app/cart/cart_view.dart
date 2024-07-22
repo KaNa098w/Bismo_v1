@@ -528,7 +528,8 @@ class _CartViewState extends State<CartView> {
                               width: 40,
                               height: 30,
                               child: TextFormField(
-                                keyboardType: TextInputType.number,
+                                keyboardType: TextInputType.numberWithOptions(
+                                    decimal: true, signed: true),
                                 controller: _controllers[globalIndex],
                                 textAlign: TextAlign.center,
                                 decoration: const InputDecoration(

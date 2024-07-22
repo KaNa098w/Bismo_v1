@@ -12,6 +12,7 @@ import 'package:bismo/core/services/goods_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -85,7 +86,7 @@ class _GoodsViewState extends State<GoodsView> {
     int newTotalUniqueItems = 0;
     for (var goods in filteredGoods) {
       int quantity = quantities[goods.nomenklaturaKod ?? ""] ?? 0;
-      if (quantity > 0) {
+      if (quantity > 0 && (goods.calculation ?? true)) {
         newTotal +=
             (goods.price?.toDouble() ?? 0.0) * (goods.step ?? 1) * quantity;
         newTotalUniqueItems++;
@@ -223,7 +224,15 @@ class _GoodsViewState extends State<GoodsView> {
   }
 
   void removeFromCart(Goods goods) async {
+    // Удаляем товар из корзины
     await PersistentShoppingCart().removeFromCart(goods.nomenklaturaKod ?? "");
+
+    // Удаляем изображение из кэша
+    if (goods.photo != null && goods.photo!.isNotEmpty) {
+      await DefaultCacheManager().removeFile(goods.photo!);
+    }
+
+    // Обновляем корзину и общую сумму
     _loadCartItems();
     _updateTotalAmount();
   }
@@ -271,7 +280,7 @@ class _GoodsViewState extends State<GoodsView> {
       context: context,
       barrierDismissible: true,
       title: "Уведомление",
-      content: "Товар успешно добавлен в корзину!",
+      content: "Товар успешно добавлен в корзину.",
       actions: <Widget>[
         CupertinoDialogAction(
           onPressed: () async {
@@ -359,21 +368,30 @@ class _GoodsViewState extends State<GoodsView> {
                                   ),
                                 ),
                                 leading: Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: CachedNetworkImage(
-                                    imageUrl: goods.photo ?? "",
-                                    cacheManager: null, // Disable caching
-                                    placeholder: (context, url) =>
-                                        const CircularProgressIndicator(),
-                                    errorWidget: (context, url, error) =>
-                                        Image.asset(
-                                      'assets/images/no_image.png',
+                                  width: 150,
+                                  height: 200, // Увеличьте высоту контейнера
+                                  child: FittedBox(
+                                    fit: BoxFit
+                                        .cover, // Используйте BoxFit.cover для заполнения контейнера изображением
+                                    child: SizedBox(
+                                      width: 150,
+                                      height: 250 *
+                                          3 /
+                                          4, // Установите правильное соотношение сторон 3х4
+                                      child: CachedNetworkImage(
+                                        imageUrl: goods.photo ?? "",
+                                        cacheManager:
+                                            null, // Отключить кэширование
+                                        placeholder: (context, url) =>
+                                            const CircularProgressIndicator(),
+                                        errorWidget: (context, url, error) =>
+                                            Image.asset(
+                                          'assets/images/no_image.png',
+                                        ),
+                                        fit: BoxFit
+                                            .cover, // Используйте BoxFit.cover для заполнения контейнера изображением
+                                      ),
                                     ),
-                                    fit: BoxFit.cover,
                                   ),
                                 ),
                                 title: Text(
@@ -396,20 +414,6 @@ class _GoodsViewState extends State<GoodsView> {
                                       ],
                                     ),
                                     const SizedBox(height: 4),
-                                    // Row(
-                                    //   children: [
-                                    //     const Text('Цена: '),
-                                    //     Flexible(
-                                    //       child: Text(
-                                    //         '${goods.price?.toInt()}₸/шт',
-                                    //         style: const TextStyle(
-                                    //             fontSize: 14,
-                                    //             fontWeight: FontWeight.w500),
-                                    //         overflow: TextOverflow.visible,
-                                    //       ),
-                                    //     ),
-                                    //   ],
-                                    // ),
                                     const SizedBox(height: 2),
                                     Row(
                                       children: [
@@ -419,7 +423,7 @@ class _GoodsViewState extends State<GoodsView> {
                                         ),
                                         Flexible(
                                           child: Text(
-                                            quantity > 0
+                                            quantity > 1
                                                 ? '${goods.step}шт х $quantity'
                                                 : '${goods.step}шт',
                                             style: const TextStyle(
@@ -430,7 +434,8 @@ class _GoodsViewState extends State<GoodsView> {
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 0),
+
+// Убедитесь, что строка "Сумма: " также правильно обновляется
                                     if (quantity > 0)
                                       Row(
                                         children: [
@@ -452,69 +457,8 @@ class _GoodsViewState extends State<GoodsView> {
                                           ),
                                         ],
                                       )
-                                    // Row(
-                                    //   children: [
-                                    //     const Text('Сумма: '),
-                                    //     Flexible(
-                                    //       child: Text(
-                                    //         (goods.price != null &&
-                                    //                 goods.step != null)
-                                    //             ? () {
-                                    //                 int totalAmount =
-                                    //                     (goods.price! *
-                                    //                         goods.step! *
-                                    //                         quantity) as int;
-                                    //                 int? categoryPrice;
-
-                                    //                 // Find the appropriate typePrice based on totalAmount
-                                    //                 if (goods.typePrice !=
-                                    //                     null) {
-                                    //                   for (var type in goods
-                                    //                       .typePrice!) {
-                                    //                     int typePriceValue =
-                                    //                         type.price ?? 0;
-                                    //                     int typeNameValue =
-                                    //                         int.tryParse(type
-                                    //                                     .name ??
-                                    //                                 '0') ??
-                                    //                             0;
-                                    //                     if (totalAmount >=
-                                    //                         typeNameValue) {
-                                    //                       categoryPrice =
-                                    //                           typePriceValue *
-                                    //                               goods
-                                    //                                   .step! *
-                                    //                               quantity;
-                                    //                     }
-                                    //                   }
-                                    //                 }
-
-                                    //                 return '${CustomNumberFormat.format(categoryPrice ?? totalAmount)}₸';
-                                    //               }()
-                                    //             : '0₸',
-                                    //         style: const TextStyle(
-                                    //             fontSize: 14,
-                                    //             fontWeight: FontWeight.w500),
-                                    //         overflow: TextOverflow.visible,
-                                    //       ),
-                                    //     ),
-                                    //   ],
-                                    // )
                                     else
                                       const SizedBox.shrink(),
-
-                                    // const Row(
-                                    //   children: [
-                                    //     Text('Категория: '),
-                                    //     Flexible(child: Text(('sss'
-
-                                    //         // style: const TextStyle(
-                                    //         //     fontSize: 14,
-                                    //         //     fontWeight: FontWeight.w500),
-                                    //         // overflow: TextOverflow.visible,
-                                    //         ))),
-                                    //   ],
-                                    // ),
                                     Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
@@ -539,17 +483,14 @@ class _GoodsViewState extends State<GoodsView> {
                                                       (Match m) => '${m[1]} ');
                                               String formattedCategory =
                                                   typePrice.category.toString();
-
                                               bool isBold = categoryClient ==
                                                   formattedCategory;
-
                                               TextStyle textStyle = TextStyle(
-                                                fontSize: isBold ? 10 : 9,
+                                                fontSize: isBold ? 12 : 11,
                                                 fontWeight: isBold
                                                     ? FontWeight.bold
                                                     : FontWeight.normal,
                                               );
-
                                               return typePrice.name != ""
                                                   ? Text(
                                                       '$formattedCategory] от $formattedNameт - $formattedPrice₸/шт',
@@ -583,7 +524,6 @@ class _GoodsViewState extends State<GoodsView> {
                                             }).toList()
                                           : [const SizedBox()],
                                     ),
-
                                     Row(
                                       children: [
                                         const Text('Ваша категория: '),
@@ -599,150 +539,166 @@ class _GoodsViewState extends State<GoodsView> {
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        if (quantity > 0) {
-                                          setState(() {
-                                            quantities[goods.nomenklaturaKod ??
-                                                ""] = quantity - 1;
-                                            controllers[goods.nomenklaturaKod ??
-                                                        ""]
-                                                    ?.text =
-                                                (quantity - 1).toString();
-                                            _updateTotalAmount();
-                                          });
-                                          // Update cart if quantity is decreased
-                                          addToCart(
-                                              context,
-                                              convertToSetOrderGoods(goods),
-                                              quantity - 1,
-                                              goods.parent ?? "");
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                  'Количество товара не может быть меньше нуля'),
-                                            ),
-                                          );
-                                        }
-                                      },
-                                      child: Container(
-                                        width: 35,
-                                        height: 35,
-                                        decoration: BoxDecoration(
-                                          color: quantity > 0
-                                              ? AppColors.primaryColor
-                                              : Colors.grey,
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.remove,
-                                            size: 28,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 2),
                                     SizedBox(
-                                      width: 30,
-                                      height: 30,
-                                      child: TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        controller: controllers[
-                                            goods.nomenklaturaKod ?? ""],
-                                        textAlign: TextAlign.center,
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.zero,
-                                          border: OutlineInputBorder(),
-                                        ),
-                                        onChanged: (value) {
-                                          int? maxCount =
-                                              int.tryParse(goods.count ?? '0');
-                                          int newQuantity =
-                                              int.tryParse(value) ?? 0;
-                                          if (newQuantity > (maxCount ?? 0)) {
-                                            newQuantity = maxCount ?? 0;
-                                            controllers[
-                                                    goods.nomenklaturaKod ?? ""]
-                                                ?.text = newQuantity.toString();
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                    'Достигнуто максимальное количество товара: $maxCount'),
-                                              ),
-                                            );
-                                          }
-                                          setState(() {
-                                            quantities[goods.nomenklaturaKod ??
-                                                ""] = newQuantity;
-                                            _updateTotalAmount();
-                                          });
-                                          // Update cart with new quantity
-                                          addToCart(
-                                              context,
-                                              convertToSetOrderGoods(goods),
-                                              newQuantity,
-                                              goods.parent ?? "");
-                                        },
-                                      ),
+                                      height: 6,
                                     ),
-                                    const SizedBox(width: 2),
-                                    InkWell(
-                                      onTap: () {
-                                        int? maxCount =
-                                            int.tryParse(goods.count ?? '0');
-                                        if (quantity < (maxCount ?? 0)) {
-                                          setState(() {
-                                            quantities[goods.nomenklaturaKod ??
-                                                ""] = quantity + 1;
-                                            controllers[goods.nomenklaturaKod ??
-                                                        ""]
-                                                    ?.text =
-                                                (quantity + 1).toString();
-                                            _updateTotalAmount();
-                                          });
-                                          // Add to cart if quantity is increased
-                                          addToCart(
-                                              context,
-                                              convertToSetOrderGoods(goods),
-                                              quantity + 1,
-                                              goods.parent ?? "");
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  'Достигнуто максимальное количество товара: $maxCount'),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            if (quantity > 0) {
+                                              setState(() {
+                                                quantities[
+                                                    goods.nomenklaturaKod ??
+                                                        ""] = quantity - 1;
+                                                controllers[
+                                                        goods.nomenklaturaKod ??
+                                                            ""]
+                                                    ?.text = (quantity -
+                                                        1)
+                                                    .toString();
+                                                _updateTotalAmount();
+                                              });
+                                              // Update cart if quantity is decreased
+                                              addToCart(
+                                                  context,
+                                                  convertToSetOrderGoods(goods),
+                                                  quantity - 1,
+                                                  goods.parent ?? "");
+                                            } else {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                      'Количество товара не может быть меньше нуля'),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          child: Container(
+                                            width: 35,
+                                            height: 35,
+                                            decoration: BoxDecoration(
+                                              color: quantity > 0
+                                                  ? AppColors.primaryColor
+                                                  : Colors.grey,
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
                                             ),
-                                          );
-                                        }
-                                      },
-                                      child: Container(
-                                        width: 35,
-                                        height: 35,
-                                        decoration: BoxDecoration(
-                                          color: AppColors.primaryColor,
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.add,
-                                            size: 28,
-                                            color: Colors.white,
+                                            child: const Center(
+                                              child: Icon(
+                                                Icons.remove,
+                                                size: 28,
+                                                color: Colors.white,
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                        const SizedBox(width: 5),
+                                        SizedBox(
+                                          width: 33,
+                                          height: 33,
+                                          child: TextFormField(
+                                            keyboardType:
+                                                TextInputType.numberWithOptions(
+                                                    decimal: true,
+                                                    signed: true),
+                                            controller: controllers[
+                                                goods.nomenklaturaKod ?? ""],
+                                            textAlign: TextAlign.center,
+                                            decoration: const InputDecoration(
+                                              contentPadding: EdgeInsets.zero,
+                                              border: OutlineInputBorder(),
+                                            ),
+                                            onChanged: (value) {
+                                              int? maxCount = int.tryParse(
+                                                  goods.count ?? '0');
+                                              int newQuantity =
+                                                  int.tryParse(value) ?? 0;
+                                              if (newQuantity >
+                                                  (maxCount ?? 0)) {
+                                                newQuantity = maxCount ?? 0;
+                                                controllers[goods
+                                                                .nomenklaturaKod ??
+                                                            ""]
+                                                        ?.text =
+                                                    newQuantity.toString();
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                        'Достигнуто максимальное количество товара: $maxCount'),
+                                                  ),
+                                                );
+                                              }
+                                              setState(() {
+                                                quantities[
+                                                    goods.nomenklaturaKod ??
+                                                        ""] = newQuantity;
+                                                _updateTotalAmount();
+                                              });
+                                              // Update cart with new quantity
+                                              addToCart(
+                                                  context,
+                                                  convertToSetOrderGoods(goods),
+                                                  newQuantity,
+                                                  goods.parent ?? "");
+                                            },
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5),
+                                        InkWell(
+                                          onTap: () {
+                                            int? maxCount = int.tryParse(
+                                                goods.count ?? '0');
+                                            if (quantity < (maxCount ?? 0)) {
+                                              setState(() {
+                                                quantities[
+                                                    goods.nomenklaturaKod ??
+                                                        ""] = quantity + 1;
+                                                controllers[
+                                                        goods.nomenklaturaKod ??
+                                                            ""]
+                                                    ?.text = (quantity +
+                                                        1)
+                                                    .toString();
+                                                _updateTotalAmount();
+                                              });
+                                              // Add to cart if quantity is increased
+                                              addToCart(
+                                                  context,
+                                                  convertToSetOrderGoods(goods),
+                                                  quantity + 1,
+                                                  goods.parent ?? "");
+                                            } else {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                      'Достигнуто максимальное количество товара: $maxCount'),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          child: Container(
+                                            width: 35,
+                                            height: 35,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.primaryColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                            ),
+                                            child: const Center(
+                                              child: Icon(
+                                                Icons.add,
+                                                size: 28,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),

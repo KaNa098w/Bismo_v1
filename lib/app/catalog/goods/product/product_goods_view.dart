@@ -558,7 +558,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           onTap: () {
                             setState(() {
                               starClickCount++;
-                              if (starClickCount >= 10) {
+                              if (starClickCount >= 5) {
                                 showSecretButtons =
                                     true; // Показать кнопки после 10 кликов
                               }
@@ -573,7 +573,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                       }),
                     ),
                   ),
-                  if (showSecretButtons)
+                  if (goods?.administrator == true)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
@@ -595,10 +595,8 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                             },
                             icon: const Icon(Icons.add_photo_alternate_outlined,
                                 color: Colors.blue),
-                            label: const Text(
-                              'Загрузить фото',
-                              style: TextStyle(color: Colors.blue),
-                            ),
+                            label: const Text('Загрузить фото',
+                                style: TextStyle(color: Colors.blue)),
                           ),
                           const SizedBox(width: 10),
                           TextButton.icon(
@@ -620,16 +618,14 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                             },
                             icon: const Icon(Icons.delete_outline_rounded,
                                 color: Colors.red),
-                            label: const Text(
-                              'Удалить',
-                              style: TextStyle(color: Colors.red),
-                            ),
+                            label: const Text('Удалить',
+                                style: TextStyle(color: Colors.red)),
                           ),
                         ],
                       ),
                     ),
                   const SizedBox(height: 10),
-                  if (showSecretButtons)
+                  if (goods?.administrator == true)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: TextButton.icon(
@@ -638,12 +634,11 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                         },
                         icon: const Icon(Icons.video_chat_outlined,
                             color: Colors.blue),
-                        label: const Text(
-                          'Загрузить видео',
-                          style: TextStyle(color: Colors.blue),
-                        ),
+                        label: const Text('Загрузить видео',
+                            style: TextStyle(color: Colors.blue)),
                       ),
                     ),
+
                   const SizedBox(height: 20),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
