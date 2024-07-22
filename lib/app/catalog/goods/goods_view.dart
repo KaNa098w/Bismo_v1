@@ -280,7 +280,7 @@ class _GoodsViewState extends State<GoodsView> {
       context: context,
       barrierDismissible: true,
       title: "Уведомление",
-      content: "Товар успешно добавлен в корзину!",
+      content: "Товар успешно добавлен в корзину.",
       actions: <Widget>[
         CupertinoDialogAction(
           onPressed: () async {
