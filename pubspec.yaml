@@ -1,0 +1,104 @@
+name: bismo
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.6 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  # cupertino_icons: ^1.0.2
+  provider: ^6.1.2
+  flutter_svg: ^2.0.10+1
+  cached_network_image: ^3.3.1
+  carousel_slider: ^4.2.1
+  dio: ^5.4.3+1
+  shared_preferences: ^2.2.3
+  form_field_validator: ^1.1.0
+  flutter_cart: ^0.0.9
+  persistent_shopping_cart: ^0.0.7
+  intl: ^0.19.0
+  google_maps_flutter: ^2.6.1
+  flutter_polyline_points: ^2.0.0
+  location: ^6.0.2
+  geolocator: ^12.0.0
+  url_launcher: ^6.2.5
+  # visibility_detector: ^0.4.0+2S
+  video_player: ^2.6.0
+  image_picker: ^0.8.4+4
+  permission_handler: ^11.3.1
+  file_picker: ^8.0.5
+  firebase_core: ^3.1.0
+  firebase_messaging: ^15.0.1
+  confetti: ^0.7.0
+  flutter_launcher_icons: ^0.13.1
+  flutter_plugin_android_lifecycle: ^2.0.20
+  platform: ^3.0.0
+  flutter_local_notifications: ^17.2.1+1
+  flutter_cache_manager: ^3.3.2
+  # ffmpeg_kit_flutter: ^6.0.3
+  # hive: ^2.2.3
+  # flutter_google_places: ^0.3.0
+  # awesome_snackbar_content: ^0.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/fonts/
+
+  fonts:
+        - family: Montserrat
+          fonts:
+              # - asset: assets/fonts/Montserrat-VariableFont_wght.ttf
+              - asset: assets/fonts/static/Montserrat-Black.ttf
+              - asset: assets/fonts/static/Montserrat-BlackItalic.ttf
+              - asset: assets/fonts/static/Montserrat-Bold.ttf
+              - asset: assets/fonts/static/Montserrat-BoldItalic.ttf
+              - asset: assets/fonts/static/Montserrat-ExtraBold.ttf
+              - asset: assets/fonts/static/Montserrat-ExtraLight.ttf
+              - asset: assets/fonts/static/Montserrat-ExtraLightItalic.ttf
+              - asset: assets/fonts/static/Montserrat-ExtraBoldItalic.ttf
+              - asset: assets/fonts/static/Montserrat-Light.ttf
+              - asset: assets/fonts/static/Montserrat-LightItalic.ttf
+              - asset: assets/fonts/static/Montserrat-Italic.ttf
+              - asset: assets/fonts/static/Montserrat-Medium.ttf
+              - asset: assets/fonts/static/Montserrat-MediumItalic.ttf
+              - asset: assets/fonts/static/Montserrat-Regular.ttf
+              - asset: assets/fonts/static/Montserrat-Semibold.ttf
+              - asset: assets/fonts/static/Montserrat-SemiboldItalic.ttf
+              - asset: assets/fonts/static/Montserrat-Thin.ttf
+              - asset: assets/fonts/static/Montserrat-ThinItalic.ttf
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/playstore.png"
+ 
