@@ -21,8 +21,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 class PromoCodeBottomSheet extends StatefulWidget {
   final List<PersistentShoppingCartItem> cartItems;
-  // final Function(BuildContext ctx, List<PersistentShoppingCartItem> items,
-  //     bool isPromocodeActive) setOrder;
   final Function(BuildContext ctx, List<PersistentShoppingCartItem> items)
       afterOrderCreate;
   final bool isDeliverySelected;
@@ -30,9 +28,8 @@ class PromoCodeBottomSheet extends StatefulWidget {
   const PromoCodeBottomSheet(
       {Key? key,
       required this.cartItems,
-      // required this.setOrder,
       required this.isDeliverySelected,
-      required this.afterOrderCreate}) // Измените конструктор
+      required this.afterOrderCreate})
       : super(key: key);
 
   @override
@@ -42,9 +39,12 @@ class PromoCodeBottomSheet extends StatefulWidget {
 class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
     with SingleTickerProviderStateMixin {
   bool showPromoInput = false;
+  bool showDriverInput = false;
   bool expandContainer = false;
-  bool isPaid = false; // Add this line
+  bool isPaid = false;
   final TextEditingController promoController = TextEditingController();
+  final TextEditingController driverPhoneController = TextEditingController();
+  final TextEditingController carNumberController = TextEditingController();
   final PromocodeServices _promocodeServices = PromocodeServices();
   double totalAmount = 0.0;
   double discountAmount = 0.0;
@@ -99,6 +99,8 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
         goods: goods1,
         promocode: promoController.text,
         promocode_persent: promocodeResponse?.discount,
+        driverPhoneNumber: driverPhoneController.text,
+        carNumber: carNumberController.text,
       );
 
       var res = await CartService().setOrder(setOrderRequest);
@@ -207,6 +209,8 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
     _confettiController.dispose();
     _animationController.dispose();
     promoController.dispose();
+    driverPhoneController.dispose();
+    carNumberController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -214,11 +218,25 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
   void _togglePromoInput() {
     setState(() {
       expandContainer = true;
+      showDriverInput = false;
     });
 
     Future.delayed(const Duration(milliseconds: 300), () {
       setState(() {
         showPromoInput = true;
+      });
+    });
+  }
+
+  void _toggleDriverInput() {
+    setState(() {
+      expandContainer = true;
+      showPromoInput = false;
+    });
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      setState(() {
+        showDriverInput = true;
       });
     });
   }
@@ -274,6 +292,15 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
     });
   }
 
+  void _cancelDriverInput() {
+    setState(() {
+      showDriverInput = false;
+      driverPhoneController.clear();
+      carNumberController.clear();
+      expandContainer = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var userProvider = context.watch<UserProvider>();
@@ -281,7 +308,7 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      height: expandContainer ? 300 + bottomInset : 250,
+      height: expandContainer ? 380 + bottomInset : 320,
       padding: EdgeInsets.only(bottom: bottomInset),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 22),
@@ -441,7 +468,78 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
                                     ),
                                   ),
                               ],
+                            ),
+                          if (!showDriverInput)
+                            InkWell(
+                              onTap: _toggleDriverInput,
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Указать данные водителя',
+                                  style: TextStyle(
+                                    color: AppColors.primaryColor,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
                             )
+                          else if (showDriverInput)
+                            Column(
+                              children: [
+                                SizedBox(
+                                  height: 40,
+                                  child: TextField(
+                                    controller: driverPhoneController,
+                                    keyboardType: TextInputType.phone,
+                                    decoration: InputDecoration(
+                                      contentPadding: EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 12),
+                                      hintText: 'Введите номер телефона',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 8.0),
+                                SizedBox(
+                                  height: 40,
+                                  child: TextField(
+                                    controller: carNumberController,
+                                    decoration: InputDecoration(
+                                      contentPadding: EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 12),
+                                      hintText: 'Введите номер машины',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: TextButton(
+                                        onPressed: _cancelDriverInput,
+                                        child: const Text(
+                                          'Отменить',
+                                          style: TextStyle(
+                                            color: AppColors.primaryColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                         ],
                       )
                     : InkWell(
@@ -489,14 +587,12 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
                           _setOrder(context, widget.cartItems);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors
-                              .primaryColor, // Задайте основной цвет кнопки
+                          backgroundColor: AppColors.primaryColor,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 32.0,
-                          ), // Увеличьте отступы для кнопки
+                          ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                16), // Задайте радиус скругления для кнопки
+                            borderRadius: BorderRadius.circular(16),
                           ),
                         ),
                         child: const Text(

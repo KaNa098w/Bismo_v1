@@ -189,22 +189,22 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
                         return ListTile(
                           title: Text(item.name ?? 'No Name'),
                           subtitle: Text(item.cateName ?? 'No Category'),
-                          leading: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: CachedNetworkImage(
-                              imageUrl: item.cateName ?? "",
-                              placeholder: (context, url) =>
-                                  const CircularProgressIndicator(),
-                              errorWidget: (context, url, error) => Image.asset(
-                                'assets/images/no_image.png',
-                              ),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                          // leading: Container(
+                          //   width: 50,
+                          //   height: 50,
+                          //   decoration: BoxDecoration(
+                          //     borderRadius: BorderRadius.circular(10),
+                          //   ),
+                          //   child: CachedNetworkImage(
+                          //     imageUrl: item.cateName ?? "",
+                          //     placeholder: (context, url) =>
+                          //         const CircularProgressIndicator(),
+                          //     errorWidget: (context, url, error) => Image.asset(
+                          //       'assets/images/no_image.png',
+                          //     ),
+                          //     fit: BoxFit.cover,
+                          //   ),
+                          // ),
                           trailing: item.group == false
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,

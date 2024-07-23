@@ -19,6 +19,8 @@ class SetOrderRequest {
   String? shirota;
   String? user;
   String? promocode;
+  String? driverPhoneNumber;
+  String? carNumber;
   int? promocode_persent;
   List<SetOrderGoods>? goods;
 
@@ -36,6 +38,8 @@ class SetOrderRequest {
       this.user,
       this.goods,
       this.promocode,
+      this.driverPhoneNumber,
+      this.carNumber,
       this.promocode_persent});
 
   SetOrderRequest.fromJson(Map<String, dynamic> json) {
@@ -57,6 +61,8 @@ class SetOrderRequest {
     shirota = json['shirota'];
     user = json['user'];
     promocode = json['promocode'];
+    carNumber = json['carNumber'];
+    driverPhoneNumber = json['driverPhoneNumber'];
     promocode_persent = json['promocode_persent'];
     if (json['goods'] != null) {
       goods = <SetOrderGoods>[];
