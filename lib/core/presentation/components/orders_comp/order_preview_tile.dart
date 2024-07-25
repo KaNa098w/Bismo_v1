@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:bismo/core/colors.dart';
 import 'package:bismo/core/constants/app_defaults.dart';
 import 'package:bismo/core/exceptions.dart';
@@ -26,6 +25,8 @@ class OrderPreviewTile extends StatefulWidget {
     required this.orderNumber,
     required this.refresh,
     required this.sumOrder,
+    // ignore: non_constant_identifier_names
+    required this.provider_name,
     required JSONBody order,
   }) : super(key: key);
 
@@ -36,6 +37,7 @@ class OrderPreviewTile extends StatefulWidget {
   final void Function() onTap;
   final String orderNumber;
   final void Function() refresh;
+  final String provider_name;
 
   @override
   _OrderPreviewTileState createState() => _OrderPreviewTileState();
@@ -118,6 +120,22 @@ class _OrderPreviewTileState extends State<OrderPreviewTile> {
                   ],
                 ),
                 const SizedBox(height: 8),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     Text(
+                //       'Категория:',
+                //       style:
+                //           TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                //     ),
+                //     Text(
+                //       '${widget.provider_name}',
+                //       style:
+                //           TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                //     )
+                //   ],
+                // ),
+                // const SizedBox(height: 8),
                 Row(
                   children: [
                     Expanded(

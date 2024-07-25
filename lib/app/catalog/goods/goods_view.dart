@@ -434,8 +434,6 @@ class _GoodsViewState extends State<GoodsView> {
                                         ),
                                       ],
                                     ),
-
-// Убедитесь, что строка "Сумма: " также правильно обновляется
                                     if (quantity > 0)
                                       Row(
                                         children: [
@@ -493,7 +491,7 @@ class _GoodsViewState extends State<GoodsView> {
                                               );
                                               return typePrice.name != ""
                                                   ? Text(
-                                                      '$formattedCategory] от $formattedNameт - $formattedPrice₸/шт',
+                                                      '$formattedCategory] от $formattedNameт - $formattedPrice₸',
                                                       style: textStyle,
                                                     )
                                                   : Row(

@@ -19,15 +19,17 @@ class TotalAmountAndPaidData extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Общая сумма',
+                'Адрес доставки:',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold, color: Colors.black),
+                    fontWeight: FontWeight.w600, color: Colors.black),
               ),
               const Spacer(),
               Text(
-                '${order?.orderSum}₸',
+                '${order?.deliveryAddress}',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold, color: Colors.black),
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                    fontSize: 12),
               ),
             ],
           ),
@@ -35,15 +37,31 @@ class TotalAmountAndPaidData extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Было оплачено',
+                'Сумма заказа:',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold, color: Colors.black),
+                    fontWeight: FontWeight.w600, color: Colors.black),
+              ),
+              const Spacer(),
+              Text(
+                '${order?.orderSum}₸',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600, color: Colors.black),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Text(
+                'Было оплачено:',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600, color: Colors.black),
               ),
               const Spacer(),
               Text(
                 'Налично',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold, color: Colors.black),
+                    fontWeight: FontWeight.w600, color: Colors.black),
               ),
             ],
           ),

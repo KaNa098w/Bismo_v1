@@ -48,12 +48,16 @@ class OrderDetailsProductTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              '${data.price}₸',
+              '${data.price}₸/шт',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
             Text(
               '${data.step}шт в упаковке',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            Text(
+              '${data.basketCount} уп. было заказано ',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ],

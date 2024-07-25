@@ -124,6 +124,7 @@ class _AllTabState extends State<AllTab> {
                           date: item.date ?? "",
                           status: _getStatus(item.status as int),
                           sumOrder: item.sumOrder ?? '',
+                          provider_name: '',
                         );
                       } else {
                         return hasMore
