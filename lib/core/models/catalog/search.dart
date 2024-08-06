@@ -31,6 +31,7 @@ class SearchResultItems {
   String? cateId; // Изменение catId на cateId
   int? quantity;
   bool? group;
+  String? photo;
 
   SearchResultItems(
       {this.name,
@@ -38,6 +39,7 @@ class SearchResultItems {
       this.cateName,
       this.cateId, // Изменение catId на cateId
       this.quantity,
+      this.photo,
       this.group});
 
   SearchResultItems.fromJson(Map<String, dynamic> json) {
@@ -45,8 +47,11 @@ class SearchResultItems {
     code = json['code'];
     cateName = json['cate_name'];
     cateId = json['cate_id']; // Изменение catId на cateId
-    quantity = json['quantity'] is int ? json['quantity'] : int.tryParse(json['quantity']);
+    quantity = json['quantity'] is int
+        ? json['quantity']
+        : int.tryParse(json['quantity']);
     group = json['group'];
+    photo = json['photo'];
   }
 
   Map<String, dynamic> toJson() {
@@ -57,6 +62,7 @@ class SearchResultItems {
     data['cate_id'] = cateId; // Изменение catId на cateId
     data['quantity'] = quantity;
     data['group'] = group;
+    data['photo'] = this.photo;
     return data;
   }
 }

@@ -253,7 +253,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                 children: [
                   if (productImages.isNotEmpty || productVideos.isNotEmpty)
                     SizedBox(
-                      height: 250,
+                      height: 300,
                       child: PageView.builder(
                         itemCount: productImages.length + productVideos.length,
                         itemBuilder: (context, index) {
@@ -279,7 +279,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                                       return Image.asset(
                                           'assets/images/no_image.png');
                                     },
-                                    fit: BoxFit.contain,
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
@@ -315,38 +315,37 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                     child: Text(
                       goods!.nomenklatura ?? '',
                       style: const TextStyle(
-                        fontSize: 22,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                   const SizedBox(height: 10),
                   Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Цена: ',
-                          style: TextStyle(fontSize: 20),
+                        Text(
+                          'Цена:',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: Text(
-                            '${goods?.price}₸/шт',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                            ),
+                        Text(
+                          '${goods?.price}₸/шт',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: goods?.typePrice != null
                           ? goods!.typePrice!.map((typePrice) {
@@ -373,47 +372,61 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                               );
 
                               return typePrice.name != ""
-                                  ? Text(
-                                      '$formattedCategory] от $formattedName Цена: $formattedPrice₸/шт',
-                                      style: textStyle,
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 4.0),
+                                      child: Text(
+                                        '$formattedCategory] от $formattedName Цена: $formattedPrice₸/шт',
+                                        style: textStyle,
+                                      ),
                                     )
-                                  : Row(
-                                      children: [
-                                        const Text('А] Цена: '),
-                                        Flexible(
-                                          child: Text(
-                                            '$formattedPrice₸/шт',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: isBold
-                                                  ? FontWeight.bold
-                                                  : FontWeight.w500,
+                                  : Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 4.0),
+                                      child: Row(
+                                        children: [
+                                          const Text('А] Цена: '),
+                                          Flexible(
+                                            child: Text(
+                                              '$formattedPrice₸/шт',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: isBold
+                                                    ? FontWeight.bold
+                                                    : FontWeight.w500,
+                                              ),
+                                              overflow: TextOverflow.visible,
                                             ),
-                                            overflow: TextOverflow.visible,
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     );
                             }).toList()
                           : [const SizedBox()],
                     ),
                   ),
-                  const SizedBox(
-                    width: 12,
-                  ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
                       children: [
-                        const Text('Ваша категория: '),
+                        const Text(
+                          'Ваша категория:',
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(width: 5),
                         Flexible(
                           child: Text(
-                            categoryClient.toString(),
+                            categoryClient ?? 'Не указана',
                             style: const TextStyle(
-                                fontSize: 11, fontWeight: FontWeight.w500),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primaryColor,
+                            ),
                             overflow: TextOverflow.visible,
                           ),
-                          // Text('A'),
                         ),
                       ],
                     ),
@@ -524,6 +537,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
+                            color: Colors.red,
                           ),
                         ),
                       ],
@@ -540,7 +554,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                           style: TextStyle(fontSize: 20),
                         ),
                         Text(
-                          "${(goods?.step)}шт в коробке",
+                          "${(goods?.step)} шт в коробке",
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -638,94 +652,20 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
                             style: TextStyle(color: Colors.blue)),
                       ),
                     ),
-
                   const SizedBox(height: 20),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: TextField(
                       controller: _commentController,
                       decoration: InputDecoration(
-                        labelText: 'Комментария, пожелания',
-                        border: OutlineInputBorder(),
+                        labelText: 'Комментарий, пожелания',
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
                         isDense: true,
                       ),
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  //   child: Row(
-                  //     children: [
-                  //       TextButton.icon(
-                  //         onPressed: () {
-                  //           uploadPhoto(
-                  //             context,
-                  //             '7783734209',
-                  //             goods?.nomenklaturaKod ?? "",
-                  //             goods?.catId ?? "",
-                  //             () {
-                  //               // _fetchGoods(widget.arguments.nomenklaturaKod);
-                  //             },
-                  //             (newPhotoUrl) {
-                  //               // setState(() {
-                  //               //   goods!.photo = newPhotoUrl;
-                  //               // });
-                  //               _fetchGoods(goods?.nomenklaturaKod ?? "");
-                  //               loadProductImages(goods?.nomenklaturaKod ?? "");
-                  //             },
-                  //           );
-                  //         },
-                  //         icon: const Icon(Icons.add_photo_alternate_outlined,
-                  //             color: Colors.blue),
-                  //         label: const Text(
-                  //           'Загрузить фото',
-                  //           style: TextStyle(color: Colors.blue),
-                  //         ),
-                  //       ),
-                  //       const SizedBox(width: 10),
-                  //       TextButton.icon(
-                  //         onPressed: () async {
-                  //           await Navigator.pushNamed(
-                  //             context,
-                  //             '/media_delete_page',
-                  //             arguments: GoodsArguments(
-                  //               'Медиафайлы',
-                  //               '',
-                  //               '',
-                  //               0,
-                  //               goods?.nomenklaturaKod ?? "",
-                  //             ),
-                  //           );
-
-                  //           _fetchGoods(goods?.nomenklaturaKod ?? "");
-                  //           loadProductImages(goods?.nomenklaturaKod ?? "");
-                  //         },
-                  //         icon: const Icon(Icons.delete_outline_rounded,
-                  //             color: Colors.red),
-                  //         label: const Text(
-                  //           'Удалить',
-                  //           style: TextStyle(color: Colors.red),
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  // const SizedBox(height: 10),
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  //   child: TextButton.icon(
-                  //     onPressed: () {
-                  //       uploadVideo(context, goods?.nomenklaturaKod ?? "");
-                  //     },
-                  //     icon: const Icon(Icons.video_chat_outlined,
-                  //         color: Colors.blue),
-                  //     label: const Text(
-                  //       'Загрузить видео',
-                  //       style: TextStyle(color: Colors.blue),
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
             )
@@ -735,7 +675,7 @@ class _ProductGoodsViewState extends State<ProductGoodsView> {
       bottomNavigationBar: goods != null
           ? BottomAppBar(
               child: Container(
-                height: 40,
+                height: 50,
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: ElevatedButton(
                   onPressed: () async {

@@ -48,17 +48,21 @@ class ProductTileSquare extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(AppDefaults.padding / 2),
-                  child: AspectRatio(
-                    aspectRatio: 1 / 1,
-                    child: Image.network(
-                      data.photo ?? '',
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          fallbackImageAsset,
-                          fit: BoxFit.contain,
-                        );
-                      },
+                  child: ClipRRect(
+                    borderRadius:
+                        BorderRadius.circular(20.0), // Закругленные углы
+                    child: AspectRatio(
+                      aspectRatio: 1 / 1,
+                      child: Image.network(
+                        data.photo ?? '',
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            fallbackImageAsset,
+                            fit: BoxFit.contain,
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -72,11 +76,6 @@ class ProductTileSquare extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                // Text(
-                //   'Количество :${data.count ?? 0}шт',
-                //   style: TextStyle(fontSize: 12),
-                // ),
-                // const SizedBox(height: 4),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,12 +103,7 @@ class ProductTileSquare extends StatelessWidget {
                           );
 
                           return typePrice.name != ""
-                              ?
-                              // ? Text(
-                              //     '$formattedCategory] от $formattedNameт - $formattedPrice₸/шт',
-                              //     style: textStyle,
-                              //   )
-                              Text(
+                              ? Text(
                                   'от $formattedNameт - $formattedPrice₸',
                                   style: textStyle,
                                 )
@@ -137,26 +131,6 @@ class ProductTileSquare extends StatelessWidget {
                           )
                         ],
                 ),
-                // Row(
-                //   mainAxisSize: MainAxisSize.min,
-                //   crossAxisAlignment: CrossAxisAlignment.end,
-                //   children: [
-                //     Text(
-                //       'Цена : ${data.price ?? 0}₸',
-                //       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                //             color: Colors.black,
-                //             fontSize: 16, // Specify your desired font size here
-                //           ),
-                //     ),
-                //     const SizedBox(width: 4),
-                //     // Text(
-                //     //   '${data.oldPrice ?? 0}₸',
-                //     //   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                //     //         decoration: TextDecoration.lineThrough,
-                //     //       ),
-                //     // ),
-                //   ],
-                // ),
               ],
             ),
           ),

@@ -90,6 +90,11 @@ class SetOrderRequest {
     data['provider_photo'] = providerPhoto;
     data['shirota'] = shirota;
     data['user'] = user;
+    data['promocode'] = promocode;
+    data['carNumber'] = carNumber;
+    data['driverPhoneNumber'] = driverPhoneNumber;
+    data['promocode_persent'] = promocode_persent;
+
     if (goods != null) {
       data['goods'] = goods!.map((v) => v.toJson()).toList();
     }

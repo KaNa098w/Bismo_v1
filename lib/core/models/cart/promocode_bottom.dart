@@ -13,6 +13,8 @@ import 'package:bismo/core/services/promocode_serivice.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:provider/provider.dart';
 import 'package:bismo/core/models/cart/promocode_response.dart';
@@ -54,6 +56,11 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
   late ConfettiController _confettiController;
   late AnimationController _animationController;
   PromocodeResponse? promocodeResponse;
+  final phoneFormatter = MaskTextInputFormatter(
+      mask: '+7 ### ###-##-##', filter: {"#": RegExp(r'[0-9]')});
+  final carNumberFormatter = MaskTextInputFormatter(
+      mask: '###AAA##',
+      filter: {"A": RegExp(r'[A-Za-z]'), "#": RegExp(r'[0-9]')});
 
   Future<void> _launchURL(String url) async {
     try {
@@ -80,13 +87,14 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
           nomenklatura: item.productDetails?['nomenklatura'],
           comment: item.productDetails?['comment'] ?? "Нет комментарии",
           basketCount: item.quantity ?? 1,
+          categoryClient: item.productDescription,
         );
       }).toList();
 
       SetOrderRequest setOrderRequest = SetOrderRequest(
         provider: "provider_code",
         orderSum: totalPrice,
-        providerName: "",
+        providerName: '',
         deliveryAddress: userProvider.userAddress?.deliveryAddress,
         comment: '',
         counterparty: "provider_code",
@@ -308,7 +316,7 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      height: expandContainer ? 380 + bottomInset : 320,
+      height: expandContainer ? 400 + bottomInset : 320,
       padding: EdgeInsets.only(bottom: bottomInset),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 22),
@@ -366,7 +374,7 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
                                         ),
                                       ),
                                       Text(
-                                        'Цена 25% скидкой: ${CustomNumberFormat.format(totalAmount)}₸🔥',
+                                        'Цена со ${promocodeResponse?.discount}% скидкой: ${CustomNumberFormat.format(totalAmount)}₸🔥',
                                         style: const TextStyle(
                                             fontSize: 16,
                                             color: AppColors.primaryColor,
@@ -491,6 +499,7 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
                                   child: TextField(
                                     controller: driverPhoneController,
                                     keyboardType: TextInputType.phone,
+                                    inputFormatters: [phoneFormatter],
                                     decoration: InputDecoration(
                                       contentPadding: EdgeInsets.symmetric(
                                           vertical: 8, horizontal: 12),
@@ -509,10 +518,15 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
                                   height: 40,
                                   child: TextField(
                                     controller: carNumberController,
+                                    inputFormatters: [
+                                      carNumberFormatter,
+                                      UpperCaseTextFormatter(), // Добавьте этот форматтер
+                                    ],
                                     decoration: InputDecoration(
                                       contentPadding: EdgeInsets.symmetric(
                                           vertical: 8, horizontal: 12),
-                                      hintText: 'Введите номер машины',
+                                      hintText:
+                                          'Введите номер машины: 001AAA01',
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
                                         borderSide: BorderSide(
@@ -620,6 +634,19 @@ class _PromoCodeBottomSheetState extends State<PromoCodeBottomSheet>
           ],
         ),
       ),
+    );
+  }
+}
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return newValue.copyWith(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
     );
   }
 }
