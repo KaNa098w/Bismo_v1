@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -190,8 +190,8 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
                           title: Text(item.name ?? 'No Name'),
                           subtitle: Text(item.cateName ?? 'No Category'),
                           leading: Container(
-                            width: 70,
-                            height: 50,
+                            width: 100,
+                            height: 100,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -214,8 +214,7 @@ class _SearchCatalogViewState extends State<SearchCatalogView> {
                                 )
                               : const Icon(Icons.arrow_forward),
                           onTap: () => _onSearchResultTap(item),
-                        );
-                      },
+                        );                      },
                       separatorBuilder: (context, index) => const Divider(),
                     ),
     );

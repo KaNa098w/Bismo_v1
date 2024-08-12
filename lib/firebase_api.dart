@@ -3,6 +3,7 @@ import 'package:bismo/core/app_routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -36,6 +37,7 @@ void main() async {
 
 class FirebaseApi {
   final _firebaseMessaging = FirebaseMessaging.instance;
+  int _notificationCount = 0;
 
   Future<void> initNotifications(BuildContext context) async {
     // Request permission to show notifications
@@ -77,6 +79,9 @@ class FirebaseApi {
     // Handle messages when the app is in the foreground
     FirebaseMessaging.onMessage.listen((message) {
       if (message.notification != null) {
+        _notificationCount++;
+        FlutterAppBadger.updateBadgeCount(_notificationCount);
+
         flutterLocalNotificationsPlugin.show(
           message.notification.hashCode,
           message.notification?.title,
@@ -105,6 +110,11 @@ class FirebaseApi {
       );
     });
   }
+
+  void clearBadge() {
+    _notificationCount = 0;
+    FlutterAppBadger.removeBadge();
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -129,6 +139,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     firebaseApi.initNotifications(context);
+    firebaseApi.clearBadge(); // Очистка бейджа при открытии экрана
 
     return Scaffold(
       appBar: AppBar(
